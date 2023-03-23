@@ -1,8 +1,3 @@
-include("Atoms.jl")
-include("LJ.jl")
-
-using LinearAlgebra
-
 abstract type Optimizer end
 
 
@@ -24,7 +19,6 @@ abstract type Optimizer end
 - `downhillCheck::Bool`: Some parameter for FIRE. Default values from ASE used.
 """
 mutable struct FIRE <: Optimizer
-	atoms::Cluster
 	dt::Float64
 	maxstep::Float64
 	dtmax::Float64
@@ -37,8 +31,20 @@ mutable struct FIRE <: Optimizer
 	downhillCheck::Bool
 end
 
-FIRE(atoms::Cluster) = FIRE(atoms, 0.1, 0.2, 1.0, 5, 1.1, 0.5, 0.1, 0.99, 0.1, false)
+FIRE() = FIRE(0.1, 0.2, 1.0, 5, 1.1, 0.5, 0.1, 0.99, 0.1, false)
 
+
+"""
+	run(opt::FIRE, fmax::Float64)
+
+reset the variable parameters of FIRE to their default values. Possibly redundant,
+but done for safety.
+"""
+function reset_params!(opt::FIRE)
+	opt.dt = 0.1
+	opt.a = 0.1
+	return nothing
+end
 
 """
 	run(opt::FIRE, fmax::Float64)
@@ -47,10 +53,11 @@ Optimize a structure with FIRE.
 
 Convergence criterion: the maximum force acting upon any atom is less than fmax.
 """
-function run(opt::FIRE, fmax::Float64)
-	natoms = getNAtoms(opt.atoms)
-	f = opt.atoms.forces
-	v = zeros(natoms, 3)
+function optimize!(opt::FIRE, atoms::Cluster, fmax::Float64)
+	natoms = getNAtoms(atoms)
+	calculate!(atoms, atoms.calculator)
+	f = atoms.forces
+	v = zeros(3, natoms)
 	vf = dot(f, v)
 	NSteps = 0
 	i = 0
@@ -81,10 +88,13 @@ function run(opt::FIRE, fmax::Float64)
 			dr = opt.maxstep .* dr ./ normdr
 		end
 		
-		opt.atoms.positions .+= dr
-		calculate(opt.atoms, opt.atoms.calculator)
-		f = opt.atoms.forces
+		atoms.positions .+= dr'
+		calculate!(atoms, atoms.calculator)
+		f = atoms.forces
 	end
+
+	reset_params!(opt)
+	return nothing
 end
 
 
