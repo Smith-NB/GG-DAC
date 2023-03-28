@@ -1,4 +1,4 @@
 
 struct Workhorse <: Atoms
-	_atoms::PyObject
+	_py::PyObject
 end
