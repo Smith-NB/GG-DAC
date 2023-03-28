@@ -1,6 +1,5 @@
+abstract type Atoms end
 abstract type Calculator end
-
-
 
 
 struct ClusterCompressed
@@ -29,7 +28,7 @@ end
 - `forces::Array{Float64}`: Optional. The forces acting on each atom. Typically calculated by the calculator.
 - `stresses::Array{Float64}: Optional. The stresses experienced by each atom in the cluster. Typically calculated by the calculator.
 """
-mutable struct Cluster
+mutable struct Cluster <: Atoms
 	formula::Dict{String, Int64}
 	positions::Matrix{Float64}
 	cell::Matrix{Float64}

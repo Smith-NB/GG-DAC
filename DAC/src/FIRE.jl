@@ -53,7 +53,7 @@ Optimize a structure with FIRE.
 
 Convergence criterion: the maximum force acting upon any atom is less than fmax.
 """
-function optimize!(opt::FIRE, atoms::Cluster, fmax::Float64)
+function optimize!(opt::FIRE, atoms::Atoms, fmax::Float64)
 	natoms = getNAtoms(atoms)
 	#calculateForces!(atoms, atoms.calculator)
 	#f1 = copy(atoms.forces)
