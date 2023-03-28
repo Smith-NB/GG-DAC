@@ -38,16 +38,11 @@ mutable struct Cluster
 	forces::Matrix{Float64}
 	stresses::Array{Float64}
 	CNA::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}
+	validCNA::Bool
+	validEnergies::Bool
+	validForces::Bool
+	validStresses::Bool
 	calculator::Calculator
-	Cluster(formula::Dict{String, Int64},
-	positions::Matrix{Float64},
-	cell::Matrix{Float64},
-	energy::Float64,
-	energies::Vector{Float64},
-	forces::Matrix{Float64},
-	stresses::Array{Float64},
-	CNA::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}
-			) = new(formula, positions, cell, energy, energies, forces, stresses, CNA)
 	Cluster(formula::Dict{String, Int64},
 	positions::Matrix{Float64},
 	cell::Matrix{Float64},
@@ -56,30 +51,77 @@ mutable struct Cluster
 	forces::Matrix{Float64},
 	stresses::Array{Float64},
 	CNA::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}},
+	validCNA::Bool,
+	validEnergies::Bool,
+	validForces::Bool,
+	validStresses::Bool
+			) = new(formula, positions, cell, energy, energies, forces, stresses, CNA, validCNA, validEnergies, validForces, validStresses)
+	Cluster(formula::Dict{String, Int64},
+	positions::Matrix{Float64},
+	cell::Matrix{Float64},
+	energy::Float64,
+	energies::Vector{Float64},
+	forces::Matrix{Float64},
+	stresses::Array{Float64},
+	CNA::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}},
+	validCNA::Bool,
+	validEnergies::Bool,
+	validForces::Bool,
+	validStresses::Bool,
 	calculator::Calculator
-			) = new(formula, positions, cell, energy, energies, forces, stresses, CNA, calculator)
+			) = new(formula, positions, cell, energy, energies, forces, stresses, CNA, validCNA, validEnergies, validForces, validStresses, calculator)
 
 end
 
 #Cluster(formula::Dict{String, Int64}) = Cluster(formula, zeros(Float64, sum(get.([formula], keys(formula), nothing)), 3), zeros(Float64, 3, 3))
 function Cluster(formula::Dict{String, Int64}) 
 	N = sum(get.([formula], keys(formula), nothing))
-	Cluster(formula, zeros(Float64, N, 3), zeros(Float64, 3, 3), 0.0, zeros(Float64, N), zeros(Float64, N, 3), zeros(Float64, N, 3, 3), Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}())
+	Cluster(
+		formula, zeros(Float64, N, 3), zeros(Float64, 3, 3), 
+		0.0, zeros(Float64, N), zeros(Float64, N, 3), zeros(Float64, N, 3, 3), 
+		Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}(), 
+		false, false, false, false
+		)
 end 
 
 function Cluster(formula::Dict{String, Int64}, positions::Matrix{Float64})
 	N = sum(get.([formula], keys(formula), nothing))
-	Cluster(formula, positions, zeros(Float64, 3, 3), 0.0, zeros(Float64, N), zeros(Float64, N, 3), zeros(Float64, N, 3, 3), Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}())
+	Cluster(formula, positions, zeros(Float64, 3, 3), 
+		0.0, zeros(Float64, N), zeros(Float64, N, 3), zeros(Float64, N, 3, 3), 
+		Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}(),
+		false, false, false, false
+		)
 end
 
 function Cluster(formula::Dict{String, Int64}, positions::Matrix{Float64}, cell::Matrix{Float64})
 	N = sum(get.([formula], keys(formula), nothing))
-	Cluster(formula, positions, cell, 0.0, zeros(Float64, N), zeros(Float64, 3, N), zeros(Float64, 3, 3, N), Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}())
-	#Cluster(formula, positions, cell, 0.0, zeros(Float64, N), zeros(Float64, N, 3), zeros(Float64, N, 3, 3), Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}())
+	Cluster(formula, positions, cell, 
+		0.0, zeros(Float64, N), zeros(Float64, 3, N), 
+		zeros(Float64, 3, 3, N), 
+		Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}(),
+		false, false, false, false
+		)
+	
+	#=
+	Cluster(formula, positions, cell, 
+		0.0, zeros(Float64, N), zeros(Float64, N, 3), zeros(Float64, N, 3, 3), 
+		Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}(),
+		false, false
+		)
+	=#
 end
 
 
-Base.copy(c::Cluster) = Cluster(c.formula, c.positions, c.cell, c.energy, c.energies, c.forces, c.stresses, c.CNA, c.calculator)
+Base.copy(c::Cluster) = Cluster(c.formula, c.positions, c.cell, c.energy, c.energies, c.forces, c.stresses, 
+							c.CNA, c.validCNA, c.validEnergies, c.validForces, c.validStresses, c.calculator)
+
+function setPositions!(atoms::Cluster, positions::Matrix{Float64})
+	atoms.positions = positions
+	atoms.validCNA = false
+	atoms.validEnergies = false
+	atoms.validForces = false
+	atoms.validStresses = false
+end
 
 """
 	hasCNAProfile(atoms::Cluster)

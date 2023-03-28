@@ -128,7 +128,8 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 	oldCluster = seed
 	oldCluster.calculator = bh.calculator
 	optimize!(bh.optimizer, oldCluster, bh.fmax)
-	setCNAProfile!(oldCluster, bh.rcut)
+	calculate!(oldCluster, oldCluster.calculator)
+	#setCNAProfile!(oldCluster, bh.rcut)
 
 	# instantiate newCluster
 	newCluster = copy(oldCluster)
@@ -150,16 +151,19 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 
 		#perturb cluster and recalculate energies and CNA profile
 		#println("time to perturbCluster")
-		#@time newCluster.positions = perturbCluster(oldCluster.positions, bh.dr)
+		#@time setPositions!(newCluster, perturbCluster(oldCluster.positions, bh.dr))
 		#println("time to optimize!")
-		#@time optimize!(bh.optimizer, newCluster, bh.fmax)
+		#@time n = optimize!(bh.optimizer, newCluster, bh.fmax)
+		#println(n, " calc calls")
+		#calculateEnergy!(newCluster, newCluster.calculator)
 		#println("time to setCNAProfile!")
 		#@time setCNAProfile!(newCluster, bh.rcut)
 		#println("time to addToVector!")
 		#@time clusterIsUnique = addToVector!(newCluster, bh.clusterVector, 2)
 
-		newCluster.positions = perturbCluster(oldCluster.positions, bh.dr)
+		setPositions!(newCluster, perturbCluster(oldCluster.positions, bh.dr))			
 		optimize!(bh.optimizer, newCluster, bh.fmax)
+		calculateEnergy!(newCluster, newCluster.calculator)
 		setCNAProfile!(newCluster, bh.rcut)
 		clusterIsUnique = addToVector!(newCluster, bh.clusterVector, 2)
 
@@ -223,6 +227,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 			# generate a new seed (only update the positions of oldCluster)
 			oldCluster.positions = generateRandomSeed(bh.formula, bh.boxLength, bh.vacuumAdd, true)
 			optimize!(bh.optimizer, oldCluster, bh.fmax)
+			calculate!(oldCluster, oldCluster.calculator)
 			setCNAProfile!(oldCluster, bh.rcut)
 
 			# reset hopsToReseed
