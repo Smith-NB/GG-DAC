@@ -2,6 +2,8 @@
 #include("../base/FIRE.jl")
 #include("../base/CNA.jl")
 
+using PyCall
+
 struct BasinHopper
 	optimizer::Optimizer
 	calculator::Calculator
@@ -20,7 +22,7 @@ struct BasinHopper
 	logIO::Tuple{IO, Channel}
 	CNAIO::Tuple{IO, Channel}
 	clusterVector::ClusterVector
-	workhorse::PyCall.PyObject
+	workhorse::PyObject
 end
 
 function logCNA(io::Tuple{IO, Channel}, ID::Int64, CNA::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}})
