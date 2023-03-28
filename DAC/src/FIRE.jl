@@ -65,7 +65,7 @@ function optimize!(opt::FIRE, atoms::Cluster, fmax::Float64)
 	#vf = dot(f, v)
 	NSteps = 0
 	i = 0
-	@time while maximum(sum(f.^2, dims=1)) > fmax^2
+	while maximum(sum(f.^2, dims=1)) > fmax^2
 		i += 1
 		is_uphill = false
 		vf = dot(f, v)
@@ -93,7 +93,7 @@ function optimize!(opt::FIRE, atoms::Cluster, fmax::Float64)
 		end
 		
 		atoms.positions .+= dr'
-		@time calculateForces!(atoms, atoms.calculator)
+		calculateForces!(atoms, atoms.calculator)
 		#calculateEnergy!(atoms, atoms.calculator)
 		#rintln(i, " ", atoms.energy, " ", maximum(sum(f.^2, dims=1)).^0.5)
 		#f = atoms.forces
