@@ -20,7 +20,7 @@ struct BasinHopper
 	logIO::Tuple{IO, Channel}
 	CNAIO::Tuple{IO, Channel}
 	clusterVector::ClusterVector
-	workhorse::PyObject
+	workhorse::PyCall.PyObject
 end
 
 function logCNA(io::Tuple{IO, Channel}, ID::Int64, CNA::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}})
