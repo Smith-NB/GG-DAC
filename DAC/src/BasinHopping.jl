@@ -2,8 +2,6 @@
 #include("../base/FIRE.jl")
 #include("../base/CNA.jl")
 
-using PyCall
-
 struct BasinHopper
 	optimizer::Optimizer
 	calculator::Calculator
@@ -128,15 +126,16 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 	end
 	
 	# set some parameters and calculate energy and CNA profile of seed
-	oldCluster = seed
-	oldCluster.calculator = bh.calculator
-	optimize!(bh.optimizer, oldCluster, bh.fmax)
-	calculate!(oldCluster, oldCluster.calculator)
-	#setCNAProfile!(oldCluster, bh.rcut)
+
+	setPositions!(bh.workhorse, getPositions(seed))
+	optimize!(bh.optimizer, bh.workhorse, bh.fmax)
+
+	setPositions!(oldCluster, getPositions(workhorse))
+	setCNAProfile!(oldCluster, bh.rcut)
+
 
 	# instantiate newCluster
-	newCluster = copy(oldCluster)
-	oldPositions = oldCluster.positions
+	oldPositions = getPositions(oldCluster)
 
 	# specify remaining hops to reseed (the value stored in additionalInfo, if present, otherwise value from bh).
 	hopsToReseed = haskey(additionalInfo, "hopsToReseed") ? additionalInfo["hopsToReseed"] : bh.reseedPeriod
@@ -146,6 +145,8 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 	exitOnLocatingTargets = length(targets) > 0
 	targetFound = falses(length(targets))
 	hopsTargetsLocatedAt = zeros(length(targets))
+
+	newCluster = Cluster(bh.formula, getPositions(oldCluster), getCell(oldCluster) )
 
 	# perform n steps
 	for step in 1:steps
@@ -164,9 +165,13 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 		#println("time to addToVector!")
 		#@time clusterIsUnique = addToVector!(newCluster, bh.clusterVector, 2)
 
-		setPositions!(newCluster, perturbCluster(oldCluster.positions, bh.dr))			
-		optimize!(bh.optimizer, newCluster, bh.fmax)
-		calculateEnergy!(newCluster, newCluster.calculator)
+
+		setPositions!(workhorse, perturbCluster(oldPositions, bh.dr))			
+		optimize!(bh.optimizer, workhorse, bh.fmax)
+		calculateEnergy!(workhorse, workhorse.calculator)
+
+		setPositions!(newCluster, getPositions(workhorse))
+		setEnergies!(newCluster, getEnergies(workhorse))
 		setCNAProfile!(newCluster, bh.rcut)
 		clusterIsUnique = addToVector!(newCluster, bh.clusterVector, 2)
 

@@ -13,10 +13,19 @@ struct LJ_ASAP3 <: Calculator
 	asap3Object::PyObject
 end
 
-function calculateForces!(atoms::Cluster, calc::LJ_ASAP3)
-
+struct LJ_ASAP3_BadAtomsException <: Exception
+	type1::Type
+	type2::Type
 end
 
-function calculateForces!(atoms::Workhorse, calc::LJ_ASAP3)
+showerror(io::IO, e::LJ_ASAP3_BadAtomsException) = print(io, "LJ_ASAP3_BadAtomsException !: $type2 cannot calculate on $type1")
 
-end
+calculateEnergy!(atoms::Workhorse, calc::LJ_ASAP3) = nothing
+calculateEnergies!(atoms::Workhorse, calc::LJ_ASAP3) = nothing
+calculateForces!(atoms::Workhorse, calc::LJ_ASAP3) = nothing
+calculateStresses!(atoms::Workhorse, calc::LJ_ASAP3) = nothing
+
+calculateEnergy!(atoms::Cluster, calc::LJ_ASAP3) = throw(LJ_ASAP3_BadAtomsException(typeof(atoms), typeof(calc)))
+calculateEnergies!(atoms::Cluster, calc::LJ_ASAP3) = throw(LJ_ASAP3_BadAtomsException(typeof(atoms), typeof(calc)))
+calculateForces!(atoms::Cluster, calc::LJ_ASAP3) = throw(LJ_ASAP3_BadAtomsException(typeof(atoms), typeof(calc)))
+calculateStresses!(atoms::Cluster, calc::LJ_ASAP3) = throw(LJ_ASAP3_BadAtomsException(typeof(atoms), typeof(calc)))

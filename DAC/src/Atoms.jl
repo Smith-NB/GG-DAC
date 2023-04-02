@@ -114,6 +114,22 @@ end
 Base.copy(c::Cluster) = Cluster(c.formula, c.positions, c.cell, c.energy, c.energies, c.forces, c.stresses, 
 							c.CNA, c.validCNA, c.validEnergies, c.validForces, c.validStresses, c.calculator)
 
+getFormula(atoms::Cluster) = atoms.formula
+getPositions(atoms::Cluster) = atoms.positions
+getCell(atoms::Cluster) = atoms.cell
+getEnergy(atoms::Cluster) = atoms.energy
+getEnergies(atoms::Cluster) = atoms.energies
+getForces(atoms::Cluster) = atoms.forces
+getStresses(atoms::Cluster) = atoms.stresses
+getCNA(atoms::Cluster) = atoms.CNA
+getValidCNA(atoms::Cluster) = atoms.validCNA
+getValidEnergies(atoms::Cluster) = atoms.validEnergies
+getValidForces(atoms::Cluster) = atoms.validForces
+getValidStresses(atoms::Cluster) = atoms.validStresses
+getCalculator(atoms::Cluster) = atoms.calculator
+
+
+setFormula(atoms::Cluster, formula::Dict{String, Int64}) = atoms.formula = formula
 function setPositions!(atoms::Cluster, positions::Matrix{Float64})
 	atoms.positions = positions
 	atoms.validCNA = false
@@ -121,7 +137,18 @@ function setPositions!(atoms::Cluster, positions::Matrix{Float64})
 	atoms.validForces = false
 	atoms.validStresses = false
 end
-
+setCell!(atoms::Cluster, cell::Matrix{Float64}) = atoms.cell = cell
+setCalculator!(atoms::Cluster, calculator::Calculator) = atoms.calculator = calculator
+function setEnergies!(atoms::Cluster, energies::Vector{Float64}) 
+	atoms.energies = energies
+	atoms.energy = sum(energies)
+	validEnergies = true
+end
+setValidCNA!(atoms::Cluster, valid::Bool) = atoms.validCNA = valid
+setValidEnergies!(atoms::Cluster, valid::Bool) = atoms.validEnergies = valid
+setValidForces!(atoms::Cluster, valid::Bool) = atoms.validForces = valid
+setValidStresses!(atoms::Cluster, valid::Bool) = atoms.validStresses = valid
+setCalculator!(atoms::Cluster, calc::Calculator) = atoms.calculator = calculator
 """
 	hasCNAProfile(atoms::Cluster)
 
@@ -144,18 +171,14 @@ end
 
 Returns the atom count of a Matrix type.
 """
-function getNAtoms(coordinates::Matrix{Float64})
-	return trunc(Int, length(coordinates)/3)
-end
+getNAtoms(coordinates::Matrix{Float64}) = trunc(Int, length(coordinates)/3)
 
 """
 	getNAtoms(atoms::Cluster)
 
 Returns the atom count of a Cluster type.
 """
-function getNAtoms(atoms::Cluster)
-	return getNAtoms(atoms.positions)
-end
+getNAtoms(atoms::Cluster) = getNAtoms(atoms.positions)
 
 
 """
