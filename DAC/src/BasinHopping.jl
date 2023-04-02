@@ -128,6 +128,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 	# set some parameters and calculate energy and CNA profile of seed
 
 	setPositions!(bh.workhorse, getPositions(seed))
+	setCell!(bh.workhorse, getCell(seed))
 	optimize!(bh.optimizer, bh.workhorse, bh.fmax)
 
 	setPositions!(oldCluster, getPositions(workhorse))
