@@ -21,6 +21,7 @@ struct BasinHopper
 	CNAIO::Tuple{IO, Channel}
 	clusterVector::ClusterVector
 	workhorse::Workhorse
+	workhorseOpt::PyObject
 end
 
 function logCNA(io::Tuple{IO, Channel}, ID::Int64, CNA::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}})
@@ -129,7 +130,8 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 
 	setPositions!(bh.workhorse, getPositions(seed))
 	setCell!(bh.workhorse, getCell(seed))
-	optimize!(bh.optimizer, bh.workhorse, bh.fmax)
+	bh.workhorseOpt.run(fmax=bh.fmax)
+	#optimize!(bh.optimizer, bh.workhorse, bh.fmax)
 
 	setPositions!(oldCluster, getPositions(workhorse))
 	setCNAProfile!(oldCluster, bh.rcut)
@@ -168,7 +170,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 
 
 		setPositions!(workhorse, perturbCluster(oldPositions, bh.dr))			
-		optimize!(bh.optimizer, workhorse, bh.fmax)
+		bh.workhorseOpt.run(fmax=bh.fmax)
 		calculateEnergy!(workhorse, workhorse.calculator)
 
 		setPositions!(newCluster, getPositions(workhorse))

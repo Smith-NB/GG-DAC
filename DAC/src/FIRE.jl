@@ -93,7 +93,6 @@ function optimize!(opt::FIRE, atoms::Atoms, fmax::Float64)
 		#atoms.positions .+= dr
 		#calculateForces!(atoms, atoms.calculator)
 		f = getForces!(atoms)
-		println(f)
 		#calculateEnergy!(atoms, atoms.calculator)
 		#rintln(i, " ", atoms.energy, " ", maximum(sum(f.^2, dims=1)).^0.5)
 		#f = atoms.forces
