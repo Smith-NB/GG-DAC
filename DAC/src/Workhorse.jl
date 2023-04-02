@@ -33,4 +33,4 @@ setValidCNA!(atoms::Workhorse, valid::Bool) = nothing
 setValidEnergies!(atoms::Workhorse, valid::Bool) = nothing
 setValidForces!(atoms::Workhorse, valid::Bool) = nothing
 setValidStresses!(atoms::Workhorse, valid::Bool) = nothing
-setCalculator!(atoms::Workhorse, calc::LJ_ASAP3) = atoms._py.set_calculator(calc._py)
+setCalculator!(atoms::Workhorse, calc::_py_Calculator) = atoms._py.set_calculator(calc._py)

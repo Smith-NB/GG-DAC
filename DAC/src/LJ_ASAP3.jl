@@ -9,7 +9,7 @@
 - `sigma::Float64`: sigma parameter of the Lennard-Jones potential.
 - `rc::Float64`: Cut-off distance.
 """
-struct LJ_ASAP3 <: Calculator
+struct LJ_ASAP3 <: _py_Calculator
 	_py::PyObject
 end
 
