@@ -58,8 +58,6 @@ function optimize!(opt::FIRE, atoms::Atoms, fmax::Float64)
 	#calculateForces!(atoms, atoms.calculator)
 	f = getForces!(atoms)
 	v = zeros(natoms, 3)
-	#println(size(f))
-	#println(size(v))
 	#vf = dot(f, v)
 	NSteps = 0
 	i = 0
@@ -91,7 +89,10 @@ function optimize!(opt::FIRE, atoms::Atoms, fmax::Float64)
 		end
 
 		#newPositions = getPositions(atoms) + dr
+		println("size of: ", size(dr))
+		println("size of: ", size(getPositions(atoms)))
 		setPositions!(atoms, getPositions(atoms) + dr)
+		println("size of: ", size(getPositions(atoms)))
 		#atoms.positions .+= dr
 		#calculateForces!(atoms, atoms.calculator)
 		f = getForces!(atoms)
