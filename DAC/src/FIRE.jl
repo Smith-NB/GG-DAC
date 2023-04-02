@@ -58,6 +58,8 @@ function optimize!(opt::FIRE, atoms::Atoms, fmax::Float64)
 	#calculateForces!(atoms, atoms.calculator)
 	f = getForces!(atoms)
 	v = zeros(3, natoms)
+	println(size(f))
+	println(size(v))
 	#vf = dot(f, v)
 	NSteps = 0
 	i = 0
