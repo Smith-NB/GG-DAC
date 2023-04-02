@@ -89,8 +89,9 @@ function optimize!(opt::FIRE, atoms::Atoms, fmax::Float64)
 		if normdr > opt.maxstep
 			dr = opt.maxstep .* dr ./ normdr
 		end
-		
-		setPositions!(atoms, getPositions(atoms) .+ dr)
+
+		#newPositions = getPositions(atoms) + dr
+		setPositions!(atoms, getPositions(atoms) + dr)
 		#atoms.positions .+= dr
 		#calculateForces!(atoms, atoms.calculator)
 		f = getForces!(atoms)
