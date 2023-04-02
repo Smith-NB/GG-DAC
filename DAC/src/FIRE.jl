@@ -89,13 +89,11 @@ function optimize!(opt::FIRE, atoms::Atoms, fmax::Float64)
 		end
 
 		#newPositions = getPositions(atoms) + dr
-		println("size of: ", size(dr))
-		println("size of: ", size(getPositions(atoms)))
 		setPositions!(atoms, getPositions(atoms) + dr)
-		println("size of: ", size(getPositions(atoms)))
 		#atoms.positions .+= dr
 		#calculateForces!(atoms, atoms.calculator)
 		f = getForces!(atoms)
+		println(f)
 		#calculateEnergy!(atoms, atoms.calculator)
 		#rintln(i, " ", atoms.energy, " ", maximum(sum(f.^2, dims=1)).^0.5)
 		#f = atoms.forces
