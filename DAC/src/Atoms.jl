@@ -1,5 +1,6 @@
 abstract type Atoms end
 abstract type Calculator end
+abstract type _py_Calculator <: Calculator end
 
 
 struct ClusterCompressed
