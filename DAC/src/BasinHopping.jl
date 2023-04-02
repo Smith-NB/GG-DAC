@@ -133,7 +133,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 	bh.workhorseOpt.run(fmax=bh.fmax)
 	#optimize!(bh.optimizer, bh.workhorse, bh.fmax)
 
-	setPositions!(oldCluster, getPositions(workhorse))
+	setPositions!(oldCluster, getPositions(bh.workhorse))
 	setCNAProfile!(oldCluster, bh.rcut)
 
 
