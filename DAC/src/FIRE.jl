@@ -55,8 +55,8 @@ Convergence criterion: the maximum force acting upon any atom is less than fmax.
 """
 function optimize!(opt::FIRE, atoms::Atoms, fmax::Float64)
 	natoms = getNAtoms(atoms)
-	calculateForces!(atoms, atoms.calculator)
-	f = getForces(atoms)
+	#calculateForces!(atoms, atoms.calculator)
+	f = getForces!(atoms)
 	v = zeros(3, natoms)
 	#vf = dot(f, v)
 	NSteps = 0
@@ -89,8 +89,8 @@ function optimize!(opt::FIRE, atoms::Atoms, fmax::Float64)
 		end
 		
 		atoms.positions .+= dr'
-		calculateForces!(atoms, atoms.calculator)
-		f = getForces(atoms)
+		#calculateForces!(atoms, atoms.calculator)
+		f = getForces!(atoms)
 		#calculateEnergy!(atoms, atoms.calculator)
 		#rintln(i, " ", atoms.energy, " ", maximum(sum(f.^2, dims=1)).^0.5)
 		#f = atoms.forces

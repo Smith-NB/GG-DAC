@@ -119,6 +119,10 @@ getPositions(atoms::Cluster) = atoms.positions
 getCell(atoms::Cluster) = atoms.cell
 getEnergy(atoms::Cluster) = atoms.energy
 getEnergies(atoms::Cluster) = atoms.energies
+function getForces!(atoms::Cluster) 
+	calculateForces!(atoms, getCalculator(atoms))
+	return atoms.forces
+end
 getForces(atoms::Cluster) = atoms.forces
 getStresses(atoms::Cluster) = atoms.stresses
 getCNA(atoms::Cluster) = atoms.CNA
