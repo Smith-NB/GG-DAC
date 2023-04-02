@@ -153,7 +153,7 @@ setValidCNA!(atoms::Cluster, valid::Bool) = atoms.validCNA = valid
 setValidEnergies!(atoms::Cluster, valid::Bool) = atoms.validEnergies = valid
 setValidForces!(atoms::Cluster, valid::Bool) = atoms.validForces = valid
 setValidStresses!(atoms::Cluster, valid::Bool) = atoms.validStresses = valid
-setCalculator!(atoms::Cluster, calc::Calculator) = atoms.calculator = calculator
+setCalculator!(atoms::Cluster, calc::Calculator) = atoms.calculator = calc
 """
 	hasCNAProfile(atoms::Cluster)
 

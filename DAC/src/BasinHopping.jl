@@ -171,12 +171,12 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 		#@time clusterIsUnique = addToVector!(newCluster, bh.clusterVector, 2)
 
 
-		setPositions!(workhorse, perturbCluster(oldPositions, bh.dr))			
+		setPositions!(bh.workhorse, perturbCluster(oldPositions, bh.dr))			
 		bh.workhorseOpt.run(fmax=bh.fmax)
-		calculateEnergy!(workhorse, workhorse.calculator)
+		calculateEnergy!(bh.workhorse, bh.workhorse.calculator)
 
-		setPositions!(newCluster, getPositions(workhorse))
-		setEnergies!(newCluster, getEnergies(workhorse))
+		setPositions!(newCluster, getPositions(bh.workhorse))
+		setEnergies!(newCluster, getEnergies(bh.workhorse))
 		setCNAProfile!(newCluster, bh.rcut)
 		clusterIsUnique = addToVector!(newCluster, bh.clusterVector, 2)
 
