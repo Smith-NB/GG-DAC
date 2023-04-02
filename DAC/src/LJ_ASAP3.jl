@@ -10,7 +10,7 @@
 - `rc::Float64`: Cut-off distance.
 """
 struct LJ_ASAP3 <: Calculator
-	asap3Object::PyObject
+	_py::PyObject
 end
 
 struct LJ_ASAP3_BadAtomsException <: Exception
