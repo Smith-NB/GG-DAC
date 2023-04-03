@@ -211,11 +211,6 @@ function getCNAProfile(atoms::Cluster, rcut::Float64)
 	return storedCNA
 end
 
-function setCNAProfile!(atoms::Cluster, rcut::Float64)
-	atoms.CNA = getCNAProfile(atoms, rcut)
-	atoms.validCNA = true
-end
-
 function getCNASimilarity(x::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}, y::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}})
 	intersection = 0
 	union = 0

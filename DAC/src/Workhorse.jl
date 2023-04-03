@@ -16,10 +16,10 @@ end
 
 getPositions(atoms::Workhorse) = atoms._py.get_positions()
 getCell(atoms::Workhorse) = atoms._py.get_cell()
-getEnergy(atoms::Workhorse) = atoms._py.get_potential_energy()
-getEnergies(atoms::Workhorse) = atoms._py.get_potential_energies()
+getEnergy!(atoms::Workhorse) = atoms._py.get_potential_energy()
+getEnergies!(atoms::Workhorse) = atoms._py.get_potential_energies()
 getForces!(atoms::Workhorse) = atoms._py.get_forces()
-getStresses(atoms::Workhorse) = atoms._py.get_stresses()
+getStresses!(atoms::Workhorse) = atoms._py.get_stresses()
 getCNA(atoms::Workhorse) = throw(:CNA_is_not_defined_for_DAC_Workhorse)
 getValidCNA(atoms::Workhorse) = true
 getValidEnergies(atoms::Workhorse) = true

@@ -149,11 +149,19 @@ function setEnergies!(atoms::Cluster, energies::Vector{Float64})
 	atoms.energy = sum(energies)
 	validEnergies = true
 end
+setEnergy!(atoms::Cluster, energy::Float64) = atoms.energy = energy
 setValidCNA!(atoms::Cluster, valid::Bool) = atoms.validCNA = valid
 setValidEnergies!(atoms::Cluster, valid::Bool) = atoms.validEnergies = valid
 setValidForces!(atoms::Cluster, valid::Bool) = atoms.validForces = valid
 setValidStresses!(atoms::Cluster, valid::Bool) = atoms.validStresses = valid
 setCalculator!(atoms::Cluster, calc::Calculator) = atoms.calculator = calc
+function setCNAProfile!(atoms::Cluster, rcut::Float64)
+	atoms.CNA = getCNAProfile(atoms, rcut)
+	atoms.validCNA = true
+end
+setCNAProfile!(atoms::Cluster, cna::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}) = atoms.CNA = cna
+
+
 """
 	hasCNAProfile(atoms::Cluster)
 
