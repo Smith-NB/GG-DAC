@@ -119,6 +119,11 @@ function addToVector!(cluster::Cluster, clusterVector::ClusterVector, dp::Int64)
 
 end
 
+function optRun(_opt::PyObject, workhorse::Workhorse, fmax::Float64)
+	opt = _opt(workhorse._py, logfile=nothing)
+	opt.run(fmax=fmax)
+end
+
 function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additionalInfo::Dict{String, Union{Number, Vector{Float64}}})
 
 	# If needed, generate a random seed.
@@ -132,7 +137,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 
 	setPositions!(bh.workhorse, getPositions(seed))
 	setCell!(bh.workhorse, getCell(seed))
-	bh.workhorseOpt.run(fmax=bh.fmax)
+	optRun(bh.workhorseOpt, bh.workhorse, bh.fmax)
 	#optimize!(bh.optimizer, bh.workhorse, bh.fmax)
 
 	setPositions!(oldCluster, getPositions(bh.workhorse))
@@ -238,7 +243,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 			oldCluster = generateRandomSeed(bh.formula, bh.boxLength, bh.vacuumAdd, true)
 
 			setPositions!(bh.workhorse, getPositions(seed))
-			bh.workhorseOpt.run(fmax=bh.fmax)
+			optRun(bh.workhorseOpt, bh.workhorse, bh.fmax)
 			setPositions!(oldCluster, getPositions(bh.workhorse))
 			setEnergy!(oldCluster, getEnergy!(bh.workhorse))
 			setCNAProfile!(oldCluster, bh.rcut)
