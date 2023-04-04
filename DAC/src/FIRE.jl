@@ -102,7 +102,7 @@ function optimize!(opt::FIRE, atoms::Atoms, fmax::Float64)
 	atoms.validEnergies = false
 	atoms.validStresses = false
 	atoms.validForces = true
-	return i
+	return i+1
 end
 
 

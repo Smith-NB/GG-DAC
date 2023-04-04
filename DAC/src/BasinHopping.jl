@@ -169,7 +169,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 
 
 		setPositions!(bh.workhorse, perturbCluster(getPositions(oldCluster), bh.dr))			
-		bh.workhorseOpt.run(fmax=bh.fmax)
+		ncalls = bh.workhorseOpt.run(fmax=bh.fmax)
 
 		setPositions!(newCluster, getPositions(bh.workhorse))
 		setEnergy!(newCluster, getEnergy!(bh.workhorse))
@@ -181,6 +181,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 		end
 
 		print(bh.io[1], "\nGenerated new cluster, E = ", getEnergy(newCluster))
+		print(bh.io[1], "\n$ncalls made to py")
 
 		# determine if hop to new structure is to be accepted
 		acceptHop = getAcceptanceBoolean(bh.metC, oldCluster, newCluster)
