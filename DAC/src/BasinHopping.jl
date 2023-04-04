@@ -174,7 +174,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 
 
 		setPositions!(bh.workhorse, perturbCluster(getPositions(oldCluster), bh.dr))			
-		ncalls = bh.workhorseOpt.run(fmax=bh.fmax)
+		optRun(bh.workhorseOpt, bh.workhorse, bh.fmax)
 
 		setPositions!(newCluster, getPositions(bh.workhorse))
 		setEnergy!(newCluster, getEnergy!(bh.workhorse))
