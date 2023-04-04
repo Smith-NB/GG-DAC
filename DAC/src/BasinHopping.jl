@@ -242,9 +242,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 			print(bh.io[1], bh.reseedPeriod, " steps have occured since the last improvement. reseeding.")
 			
 			# generate a new seed (only update the positions of oldCluster)
-			oldCluster = generateRandomSeed(bh.formula, bh.boxLength, bh.vacuumAdd, true)
-
-			setPositions!(bh.workhorse, getPositions(seed))
+			setPositions!(bh.workhorse, generateRandomSeed(bh.formula, bh.boxLength, bh.vacuumAdd, true))
 			bh.workhorseOpt.run(fmax=bh.fmax)
 			setPositions!(oldCluster, getPositions(bh.workhorse))
 			setEnergy!(oldCluster, getEnergy!(bh.workhorse))
