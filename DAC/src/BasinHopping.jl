@@ -137,7 +137,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 
 	setPositions!(bh.workhorse, getPositions(seed))
 	setCell!(bh.workhorse, getCell(seed))
-	optRun(bh.workhorseOpt, bh.workhorse, bh.fmax)
+	bh.workhorseOpt.run(fmax=bh.fmax)
 	#optimize!(bh.optimizer, bh.workhorse, bh.fmax)
 
 	setPositions!(oldCluster, getPositions(bh.workhorse))
@@ -171,10 +171,12 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 		#@time setCNAProfile!(newCluster, bh.rcut)
 		#println("time to addToVector!")
 		#@time clusterIsUnique = addToVector!(newCluster, bh.clusterVector, 2)
-
+		if step % 30 == 0
+			GC.gc()
+		end
 
 		setPositions!(bh.workhorse, perturbCluster(getPositions(oldCluster), bh.dr))			
-		optRun(bh.workhorseOpt, bh.workhorse, bh.fmax)
+		ncalls = bh.workhorseOpt.run(fmax=bh.fmax)
 
 		setPositions!(newCluster, getPositions(bh.workhorse))
 		setEnergy!(newCluster, getEnergy!(bh.workhorse))
@@ -186,6 +188,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 		end
 
 		print(bh.io[1], "\nGenerated new cluster, E = ", getEnergy(newCluster))
+		print(bh.io[1], "\n$ncalls made to py")
 
 		# determine if hop to new structure is to be accepted
 		acceptHop = getAcceptanceBoolean(bh.metC, oldCluster, newCluster)
@@ -242,7 +245,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 			oldCluster = generateRandomSeed(bh.formula, bh.boxLength, bh.vacuumAdd, true)
 
 			setPositions!(bh.workhorse, getPositions(seed))
-			optRun(bh.workhorseOpt, bh.workhorse, bh.fmax)
+			bh.workhorseOpt.run(fmax=bh.fmax)
 			setPositions!(oldCluster, getPositions(bh.workhorse))
 			setEnergy!(oldCluster, getEnergy!(bh.workhorse))
 			setCNAProfile!(oldCluster, bh.rcut)
