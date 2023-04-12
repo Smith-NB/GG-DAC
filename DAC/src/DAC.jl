@@ -3,6 +3,7 @@ module DAC
 using LinearAlgebra
 using Random
 using PyCall
+using HDF5
 
 include("MyLib.jl")
 
