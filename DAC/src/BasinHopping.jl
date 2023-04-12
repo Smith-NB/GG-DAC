@@ -131,20 +131,20 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 		seed = generateRandomSeed(bh.formula, bh.boxLength, bh.vacuumAdd)
 	end
 	
-	# set some parameters and calculate energy and CNA profile of seed
-
 	oldCluster = seed
 
+	#set the positions of the workhorse
 	setPositions!(bh.workhorse, getPositions(seed))
 	setCell!(bh.workhorse, getCell(seed))
 	bh.workhorseOpt.run(fmax=bh.fmax)
-	#optimize!(bh.optimizer, bh.workhorse, bh.fmax)
 
+	#update oldCluster with the optimized positions
 	setPositions!(oldCluster, getPositions(bh.workhorse))
+	setEnergy!(newCluster, getEnergy!(bh.workhorse))
 	setCNAProfile!(oldCluster, bh.rcut)
 
 
-	# specify remaining hops to reseed (the value stored in additionalInfo, if present, otherwise value from bh).
+	# specify variables from additionalInfo
 	hopsToReseed = haskey(additionalInfo, "hopsToReseed") ? additionalInfo["hopsToReseed"] : bh.reseedPeriod
 	Emin = haskey(additionalInfo, "Emin") ? additionalInfo["Emin"] : Inf
 	targets = haskey(additionalInfo, "targets") ? additionalInfo["targets"] : Vector{Float64}()
@@ -160,29 +160,22 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 		println(bh.io[1], "\n================================\n")
 		println(bh.io[1], "Attempting step ", step)
 
-		#perturb cluster and recalculate energies and CNA profile
-		#println("time to perturbCluster")
-		#@time setPositions!(newCluster, perturbCluster(oldCluster.positions, bh.dr))
-		#println("time to optimize!")
-		#@time n = optimize!(bh.optimizer, newCluster, bh.fmax)
-		#println(n, " calc calls")
-		#calculateEnergy!(newCluster, newCluster.calculator)
-		#println("time to setCNAProfile!")
-		#@time setCNAProfile!(newCluster, bh.rcut)
-		#println("time to addToVector!")
-		#@time clusterIsUnique = addToVector!(newCluster, bh.clusterVector, 2)
+		#manual Garbage collection (gross).
 		if step % 30 == 0
 			GC.gc()
 		end
 
+		#perturb and optimize with the workhorse
 		setPositions!(bh.workhorse, perturbCluster(getPositions(oldCluster), bh.dr))			
 		bh.workhorseOpt.run(fmax=bh.fmax)
 
+		#update newCluster with optimized workhorse
 		setPositions!(newCluster, getPositions(bh.workhorse))
 		setEnergy!(newCluster, getEnergy!(bh.workhorse))
 		setCNAProfile!(newCluster, bh.rcut)
-		clusterIsUnique = addToVector!(newCluster, bh.clusterVector, 2)
 
+		#check if the cluster is unique, add it to the vector of clusters, and update the CNA log.
+		clusterIsUnique = addToVector!(newCluster, bh.clusterVector, 2)
 		if clusterIsUnique
 			logCNA(bh.CNAIO, step, getCNA(newCluster))
 		end
@@ -192,9 +185,8 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 		# determine if hop to new structure is to be accepted
 		acceptHop = getAcceptanceBoolean(bh.metC, oldCluster, newCluster)
 		acceptStr = acceptHop ? "accepted." : "rejected."
+
 		print(bh.io[1], "\nThe current step has been " * acceptStr)
-
-
 
 		# if accepted, update
 		if acceptHop
@@ -238,7 +230,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 
 		# Check if time for reseed. Will not trigger if hopsToReseed is negative.
 		if hopsToReseed == 0
-			print(bh.io[1], bh.reseedPeriod, " steps have occured since the last improvement. reseeding.")
+			print(bh.io[1], bh.reseedPeriod, " steps have occured since the last improvement. reseeding.\n")
 			
 			# generate a new seed (only update the positions of oldCluster)
 			setPositions!(bh.workhorse, generateRandomSeed(bh.formula, bh.boxLength, bh.vacuumAdd, true))
@@ -247,8 +239,8 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 			setEnergy!(oldCluster, getEnergy!(bh.workhorse))
 			setCNAProfile!(oldCluster, bh.rcut)
 
+			#check if the cluster is unique, add it to the vector of clusters, and update the CNA log.
 			clusterIsUnique = addToVector!(oldCluster, bh.clusterVector, 2)
-
 			if clusterIsUnique
 				logCNA(bh.CNAIO, step, getCNA(oldCluster))
 			end
