@@ -158,7 +158,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 	targets					= haskey(additionalInfo, "targets") 				? additionalInfo["targets"] 				: Vector{Float64}()
 	targetRounding 	 		= haskey(additionalInfo, "targetRounding") 			? additionalInfo["targetRounding"] 			: 2
 	targetsFound 			= haskey(additionalInfo, "targetsFound") 			? additionalInfo["targetsFound"] 			: falses(length(targets))
-	targetsLocatedAt		= haskey(additionalInfo, "targetsLocatedAt") 		? additionalInfo["targetsLocatedAt"] 		: zeros(length(targets))
+	targetsLocatedAt		= haskey(additionalInfo, "targetsLocatedAt") 		? additionalInfo["targetsLocatedAt"] 		: zeros(Int64, length(targets))
 
 	# If there is at least on etarget, exit on locating it/them.
 	exitOnLocatingTargets = length(targets) > 0 
