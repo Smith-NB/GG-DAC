@@ -149,7 +149,8 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 	setCNAProfile!(oldCluster, bh.rcut)
 
 
-	# Specify variables from additionalInfo	.
+	# Specify variables from additionalInfo.
+	step  					= haskey(additionalInfo, "stepsCompleted")			? additionalInfo["stepsCompleted"] 			: 0
 	hopsToReseed  			= haskey(additionalInfo, "hopsToReseed")			? additionalInfo["hopsToReseed"] 			: bh.reseedPeriod
 	reseedEnergyToBeat		= haskey(additionalInfo, "reseedEnergyToBeat")		? additionalInfo["reseedEnergyToBeat"] 		: Inf
 	Emin  					= haskey(additionalInfo, "Emin") 					? additionalInfo["Emin"] 					: Inf
@@ -164,7 +165,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 
 	newCluster = Cluster(bh.formula, getPositions(oldCluster), getCell(oldCluster))
 
-	step = 0
+	
 	while step < steps
 		step += 1
 		println(bh.io[1], "\n================================\n")
@@ -270,7 +271,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 
 	# Log resumption information.
 	resumeFile = open("informationForResuming.txt", "w")
-	print(resumeFile, "Steps_completed:$step\n")
+	print(resumeFile, "stepsCompleted:$step\n")
 	print(resumeFile, "Emin:$Emin\n")
 	print(resumeFile, "EminLocatedAt:$EminLocatedAt\n")
 	print(resumeFile, "reseedEnergyToBeat:$reseedEnergyToBeat\n")
