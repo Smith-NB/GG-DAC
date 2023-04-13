@@ -156,7 +156,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 	EminLocatedAt			= haskey(additionalInfo, "EminLocatedAt")			? additionalInfo["EminLocatedAt"] 			: 0
 	targets					= haskey(additionalInfo, "targets") 				? additionalInfo["targets"] 				: Vector{Float64}()
 	targetRounding 	 		= haskey(additionalInfo, "targetRounding") 			? additionalInfo["targetRounding"] 			: 2
-	targetsFound 			= haskey(additionalInfo, "targetFound") 			? additionalInfo["targetFound"] 			: falses(length(targets))
+	targetsFound 			= haskey(additionalInfo, "targetsFound") 			? additionalInfo["targetsFound"] 			: falses(length(targets))
 	targetsLocatedAt		= haskey(additionalInfo, "targetsLocatedAt") 		? additionalInfo["targetsLocatedAt"] 		: zeros(length(targets))
 
 	# If there is at least on etarget, exit on locating it/them.
@@ -228,10 +228,10 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 			for t in 1:length(targets)
 				if round(getEnergy(oldCluster), digits=targetRounding) == targets[t]
 					print(bh.io[1], "\nTarget ", targets[t], " has been located at step ", step)
-					targetFound[t] = true
+					targetsFound[t] = true
 					hopsTargetsLocatedAt[t] = step
 				end
-				if !targetFound[t]
+				if !targetsFound[t]
 					allTargetsFound = false
 				end
 			end
