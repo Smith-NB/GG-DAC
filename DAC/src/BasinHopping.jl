@@ -229,7 +229,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 				if round(getEnergy(oldCluster), digits=targetRounding) == targets[t]
 					print(bh.io[1], "\nTarget ", targets[t], " has been located at step ", step)
 					targetsFound[t] = true
-					hopsTargetsLocatedAt[t] = step
+					targetsLocatedAt[t] = step
 				end
 				if !targetsFound[t]
 					allTargetsFound = false
