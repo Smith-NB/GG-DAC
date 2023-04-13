@@ -145,7 +145,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 
 	# Update oldCluster with the optimized positions.
 	setPositions!(oldCluster, getPositions(bh.workhorse))
-	setEnergy!(newCluster, getEnergy!(bh.workhorse))
+	setEnergy!(oldCluster, getEnergy!(bh.workhorse))
 	setCNAProfile!(oldCluster, bh.rcut)
 
 
