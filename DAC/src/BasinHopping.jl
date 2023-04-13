@@ -270,14 +270,14 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 
 	# Log resumption information.
 	resumeFile = open("informationForResuming.txt", "w")
-	print("Steps_completed:$step\n")
-	print("Emin:$Emin\n")
-	print("EminLocatedAt:$EminLocatedAt\n")
-	print("reseedEnergyToBeat:$reseedEnergyToBeat\n")
-	print("hopsToReseed:$hopsToReseed\n")
-	print("targets:$targets\n")
-	print("targetsFound:$targetsFound\n")
-	print("targetsLocatedAt:$targetsLocatedAt\n")
+	print(resumeFile, "Steps_completed:$step\n")
+	print(resumeFile, "Emin:$Emin\n")
+	print(resumeFile, "EminLocatedAt:$EminLocatedAt\n")
+	print(resumeFile, "reseedEnergyToBeat:$reseedEnergyToBeat\n")
+	print(resumeFile, "hopsToReseed:$hopsToReseed\n")
+	print(resumeFile, "targets:$targets\n")
+	print(resumeFile, "targetsFound:$targetsFound\n")
+	print(resumeFile, "targetsLocatedAt:$targetsLocatedAt\n")
 	close(resumeFile)
 	
 end
