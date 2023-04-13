@@ -124,6 +124,11 @@ function optRun(_opt::PyObject, workhorse::Workhorse, fmax::Float64)
 	opt.run(fmax=fmax)
 end
 
+function logResumptionInfo()
+
+
+end
+
 function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additionalInfo::Dict{String, Union{Number, Vector{Float64}}})
 
 	# If needed, generate a random seed.
@@ -133,25 +138,29 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 	
 	oldCluster = seed
 
-	#set the positions of the workhorse
+	# Set the positions of the workhorse.
 	setPositions!(bh.workhorse, getPositions(seed))
 	setCell!(bh.workhorse, getCell(seed))
 	bh.workhorseOpt.run(fmax=bh.fmax)
 
-	#update oldCluster with the optimized positions
+	# Update oldCluster with the optimized positions.
 	setPositions!(oldCluster, getPositions(bh.workhorse))
 	setEnergy!(newCluster, getEnergy!(bh.workhorse))
 	setCNAProfile!(oldCluster, bh.rcut)
 
 
-	# specify variables from additionalInfo
-	hopsToReseed = haskey(additionalInfo, "hopsToReseed") ? additionalInfo["hopsToReseed"] : bh.reseedPeriod
-	Emin = haskey(additionalInfo, "Emin") ? additionalInfo["Emin"] : Inf
-	targets = haskey(additionalInfo, "targets") ? additionalInfo["targets"] : Vector{Float64}()
-	targetRounding = haskey(additionalInfo, "targetRounding") ? additionalInfo["targetRounding"] : 2
-	exitOnLocatingTargets = length(targets) > 0
-	targetFound = falses(length(targets))
-	hopsTargetsLocatedAt = zeros(length(targets))
+	# Specify variables from additionalInfo	.
+	hopsToReseed  			= haskey(additionalInfo, "hopsToReseed")			? additionalInfo["hopsToReseed"] 			: bh.reseedPeriod
+	reseedEnergyToBeat		= haskey(additionalInfo, "reseedEnergyToBeat")		? additionalInfo["reseedEnergyToBeat"] 		: Inf
+	Emin  					= haskey(additionalInfo, "Emin") 					? additionalInfo["Emin"] 					: Inf
+	EminLocatedAt			= haskey(additionalInfo, "EminLocatedAt")			? additionalInfo["EminLocatedAt"] 			: 0
+	targets					= haskey(additionalInfo, "targets") 				? additionalInfo["targets"] 				: Vector{Float64}()
+	targetRounding 	 		= haskey(additionalInfo, "targetRounding") 			? additionalInfo["targetRounding"] 			: 2
+	targetFound 			= haskey(additionalInfo, "targetFound") 			? additionalInfo["targetFound"] 			: falses(length(targets))
+	targetsLocatedAt		= haskey(additionalInfo, "targetsLocatedAt") 		? additionalInfo["targetsLocatedAt"] 		: zeros(length(targets))
+
+	# If there is at least on etarget, exit on locating it/them.
+	exitOnLocatingTargets = length(targets) > 0 
 
 	newCluster = Cluster(bh.formula, getPositions(oldCluster), getCell(oldCluster))
 
@@ -161,21 +170,22 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 		println(bh.io[1], "\n================================\n")
 		println(bh.io[1], "Attempting step ", step)
 
-		#manual Garbage collection (gross).
+		#= Manual Garbage collection (gross). When using asap3 as the workhorse, something goes wrong such that the refcount
+		    of an object exceeds 100. This causes an assertion in C++ to fail. =#
 		if step % 30 == 0
 			GC.gc()
 		end
 
-		#perturb and optimize with the workhorse
+		# Perturb and optimize with the workhorse.
 		setPositions!(bh.workhorse, perturbCluster(getPositions(oldCluster), bh.dr))			
 		bh.workhorseOpt.run(fmax=bh.fmax)
 
-		#update newCluster with optimized workhorse
+		# Update newCluster with optimized workhorse.
 		setPositions!(newCluster, getPositions(bh.workhorse))
 		setEnergy!(newCluster, getEnergy!(bh.workhorse))
 		setCNAProfile!(newCluster, bh.rcut)
 
-		#check if the cluster is unique, add it to the vector of clusters, and update the CNA log.
+		# Check if the cluster is unique, add it to the vector of clusters, and update the CNA log.
 		clusterIsUnique = addToVector!(newCluster, bh.clusterVector, 2)
 		if clusterIsUnique
 			logCNA(bh.CNAIO, step, getCNA(newCluster))
@@ -183,28 +193,34 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 
 		print(bh.io[1], "\nGenerated new cluster, E = ", getEnergy(newCluster))
 
-		# determine if hop to new structure is to be accepted
+		# Determine if hop to new structure is to be accepted.
 		acceptHop = getAcceptanceBoolean(bh.metC, oldCluster, newCluster)
 		acceptStr = acceptHop ? "accepted." : "rejected."
 
 		print(bh.io[1], "\nThe current step has been " * acceptStr)
 
-		# if accepted, update
+		# If accepted, update.
 		if acceptHop
-			# if new LES found, update Emin and reset hopsToReseed
+			# If new LES found, update Emin and reset hopsToReseed.
 			if getEnergy(newCluster) < Emin
 				Emin = getEnergy(newCluster)
+			end
+
+			if getEnergy(newCluster) < reseedEnergyToBeat
 				hopsToReseed = bh.reseedPeriod
 			end
 
-			# update oldCluster to newCluster
+			# Update oldCluster to newCluster.
 			setPositions!(oldCluster, getPositions(newCluster))
 			setEnergy!(oldCluster, getEnergy(newCluster))
 			setCNAProfile!(oldCluster, getCNA(newCluster))
 			
-		else # if hop was rejected
+		else # If hop was rejected.
 			hopsToReseed -= 1
 		end
+
+		# Log the move.
+		logStep(bh.logIO, step, newCluster.energy, acceptHop)
 
 		# Check if the new cluster is a target. Exit if all targets found.
 		if acceptHop && exitOnLocatingTargets
@@ -220,39 +236,48 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 				end
 			end
 
-			# all targets found, exit.
+			# All targets found, exit.
 			if allTargetsFound
 				print(bh.io[1], "\nAll targets have been located.\nRun ending.\n")
 				return nothing
 			end
 		end
 
-		logStep(bh.logIO, step, newCluster.energy, acceptHop)
-
 		# Check if time for reseed. Will not trigger if hopsToReseed is negative.
 		if hopsToReseed == 0
 
 			print(bh.io[1], bh.reseedPeriod, " steps have occured since the last improvement. reseeding.\n")
 			
-			# generate a new seed (only update the positions of oldCluster)
+			# Generate a new seed (only update the positions of oldCluster).
 			setPositions!(bh.workhorse, generateRandomSeed(bh.formula, bh.boxLength, bh.vacuumAdd, true))
 			bh.workhorseOpt.run(fmax=bh.fmax)
 			setPositions!(oldCluster, getPositions(bh.workhorse))
 			setEnergy!(oldCluster, getEnergy!(bh.workhorse))
 			setCNAProfile!(oldCluster, bh.rcut)
 
-			#check if the cluster is unique, add it to the vector of clusters, and update the CNA log.
+			# Check if the cluster is unique, add it to the vector of clusters, and update the CNA log.
 			clusterIsUnique = addToVector!(oldCluster, bh.clusterVector, 2)
 			if clusterIsUnique
 				logCNA(bh.CNAIO, step, getCNA(oldCluster))
 			end
 
-			# reset hopsToReseed
+			# Reset hopsToReseed.
 			hopsToReseed = bh.reseedPeriod
 			step += 1 #treat the reseed as an additional hop.
 		end
 
 	end
 
+	# Log resumption information.
+	resumeFile = open("informationForResuming.txt", "w")
+	print("Steps_completed:$step\n")
+	print("Emin:$Emin\n")
+	print("EminLocatedAt:$EminLocatedAt\n")
+	print("reseedEnergyToBeat:$reseedEnergyToBeat\n")
+	print("hopsToReseed:$hopsToReseed\n")
+	print("targets:$targets\n")
+	print("targetsFound:$targetsFound\n")
+	print("targetsLocatedAt:$targetsLocatedAt\n")
+	close(resumeFile)
 	
 end
