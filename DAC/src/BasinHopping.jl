@@ -129,7 +129,7 @@ function logResumptionInfo()
 
 end
 
-function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additionalInfo::Dict{String, Union{Number, Vector{Float64}}})
+function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additionalInfo::Dict{String, Union{Number, Vector{Float64}, Vector{Int64}, Vector{Bool}}})
 
 	# If needed, generate a random seed.
 	if seed == "random"
