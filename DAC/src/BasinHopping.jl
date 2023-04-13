@@ -155,8 +155,9 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 
 	newCluster = Cluster(bh.formula, getPositions(oldCluster), getCell(oldCluster))
 
-	# perform n steps
-	for step in 1:steps
+	step = 0
+	while step < steps
+		step += 1
 		println(bh.io[1], "\n================================\n")
 		println(bh.io[1], "Attempting step ", step)
 
@@ -230,6 +231,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 
 		# Check if time for reseed. Will not trigger if hopsToReseed is negative.
 		if hopsToReseed == 0
+
 			print(bh.io[1], bh.reseedPeriod, " steps have occured since the last improvement. reseeding.\n")
 			
 			# generate a new seed (only update the positions of oldCluster)
@@ -247,6 +249,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 
 			# reset hopsToReseed
 			hopsToReseed = bh.reseedPeriod
+			step += 1 #treat the reseed as an additional hop.
 		end
 
 	end
