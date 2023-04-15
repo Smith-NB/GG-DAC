@@ -385,6 +385,25 @@ function write_xyz(filename::String, atoms::Cluster)
 	close(newfile)
 end
 
+function formulaDictToString(formula::Dict{String, Int64})
+	s = ""
+	for key in formula
+		s *= key
+		s *= string(formula[key])
+	end
 
+	return s
+end
 
+function formulaDictToString(atoms::Cluster) = formulaDictToString(atoms.formula)
+
+function view(atoms::Cluster)
+	_view = pyimport("ase.visualize").view
+	_atoms = pyimport("ase").Atoms
+
+	for 
+
+	atoms = _atoms(formulaDictToString(atoms.formula), positions = atoms.positions, cell = atoms.cell)
+	_view(atoms)
+end
 

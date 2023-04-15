@@ -240,7 +240,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 			# All targets found, exit.
 			if allTargetsFound
 				print(bh.io[1], "\nAll targets have been located.\nRun ending.\n")
-				return nothing
+				break
 			end
 		end
 
@@ -281,4 +281,5 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 	print(resumeFile, "targetsLocatedAt:$targetsLocatedAt\n")
 	close(resumeFile)
 	
+	return nothing
 end
