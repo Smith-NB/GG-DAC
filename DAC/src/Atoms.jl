@@ -395,7 +395,9 @@ function formulaDictToString(formula::Dict{String, Int64})
 	return s
 end
 
-function formulaDictToString(atoms::Cluster) = formulaDictToString(atoms.formula)
+function formulaDictToString(atoms::Cluster) 
+	return formulaDictToString(atoms.formula)
+end
 
 function view(atoms::Cluster)
 	_view = pyimport("ase.visualize").view
