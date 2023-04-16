@@ -200,6 +200,9 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 
 		print(bh.io[1], "\nThe current step has been " * acceptStr)
 
+		# Decrease number of hops until next reseed.
+		hopsToReseed -= 1
+
 		# If accepted, update.
 		if acceptHop
 			# If new LES found, update Emin and reset hopsToReseed.
@@ -207,8 +210,10 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 				Emin = getEnergy(newCluster)
 			end
 
+			# Check if a new LES has been found since the last reseed.
 			if getEnergy(newCluster) < reseedEnergyToBeat
 				hopsToReseed = bh.reseedPeriod
+				reseedEnergyToBeat = getEnergy(newCluster)
 			end
 
 			# Update oldCluster to newCluster.
@@ -216,8 +221,6 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 			setEnergy!(oldCluster, getEnergy(newCluster))
 			setCNAProfile!(oldCluster, getCNA(newCluster))
 			
-		else # If hop was rejected.
-			hopsToReseed -= 1
 		end
 
 		# Log the move.
