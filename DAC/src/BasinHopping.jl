@@ -165,7 +165,10 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 
 	newCluster = Cluster(bh.formula, getPositions(oldCluster), getCell(oldCluster))
 
-	
+	# Used for determining when the Garbage collector should be run.
+	# Reseeds cause the `step` iteration to desync with the modulus.
+	iterations = 1
+
 	while step < steps
 		step += 1
 		println(bh.io[1], "\n================================\n")
@@ -173,9 +176,11 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 
 		#= Manual Garbage collection (gross). When using asap3 as the workhorse, something goes wrong such that the refcount
 		    of an object exceeds 100. This causes an assertion in C++ to fail. =#
-		if step % 30 == 0
+		if iterations % 30 == 0
 			GC.gc()
 		end
+
+		iterations += 1
 
 		# Perturb and optimize with the workhorse.
 		setPositions!(bh.workhorse, perturbCluster(getPositions(oldCluster), bh.dr))			
