@@ -301,7 +301,7 @@ function stringToCNA(s::String)
 	freqCNAPair = [split(x, ':') for x in split(s, ';')]
 	CNA = Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}(undef, length(freqCNAPair))
 	for i in 1:length(freqCNAPair)
-		cna::Tuple{UInt8, UInt8, UInt8} = (parse(UInt8, x) for x in freqCNAPair[i][1])
+		cna::Tuple{UInt8, UInt8, UInt8} = (parse(UInt8, x) for x in split(freqCNAPair[i][1], ','))
 		freq::UInt16 = freqCNAPair[i][2]
 		CNA[i] = Pair(cna, freq)
 	end
