@@ -299,11 +299,14 @@ function stringToCNA(s::String)
 	#5,5,5:16;5,4,4:8;4,3,3:26;4,2,2:15;4,2,1:7;3,2,2:21;3,1,1:16;3,0,0:1;2,1,1:20;2,0,0:14;1,0,0:1;
 	#Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}
 	freqCNAPair = [split(x, ':') for x in split(s, ';')]
-	CNA = Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}(undef, length(freqCNAPair))
+	CNA = Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}(undef, length(freqCNAPair))[]
 	for i in 1:length(freqCNAPair)
+		if length(freqCNAPair[i]) < 2 
+			continue
+		end
 		println(split(freqCNAPair[i][1], ','))
 		println(freqCNAPair[i][2])
-		cna::Tuple{UInt8, UInt8, UInt8} = (parse(UInt8, String(x)) for x in split(freqCNAPair[i][1], ','))
+		cna::Tuple{UInt8, UInt8, UInt8} = Tuple(parse(UInt8, String(x)) for x in split(freqCNAPair[i][1], ','))
 		freq::UInt16 = freqCNAPair[i][2]
 		CNA[i] = Pair(cna, freq)
 	end
