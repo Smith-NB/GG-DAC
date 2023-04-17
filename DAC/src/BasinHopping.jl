@@ -45,8 +45,8 @@ function logCNA(io::Tuple{IO, Channel}, ID::Int64, CNA::Vector{Pair{Tuple{UInt8,
 end
 
 
-function logStep(io::Tuple{IO, Channel}, step::Int64, energy::Float64, accepted::Bool)
-	s = "Step " * string(step) * ", energy " * string(energy) * ", accepted " * string(accepted) * "\n"
+function logStep(io::Tuple{IO, Channel}, step::Int64, clusterID::Int64, energy::Float64, accepted::Bool)
+	s = "Step " * string(step) * ", ID " * string(clusterID) * ", energy " * string(energy) * ", accepted " * string(accepted)  * "\n"
 
 	# add the string to the file channel. this line will block if the channel is full, i.e. by another thread
 	put!(io[2], s)
@@ -57,8 +57,8 @@ function logStep(io::Tuple{IO, Channel}, step::Int64, energy::Float64, accepted:
 	end
 end
 
-function logStep(io::Tuple{IO, Channel}, step::Int64, energy::Float64, accepted::Bool, sim::Float64)
-	s = file, "Step " * string(step) * ", energy " * string(energy) * ", accepted " * string(accepted) * ", similarity, " * string(sim) * "\n"
+function logStep(io::Tuple{IO, Channel}, step::Int64, clusterID::Int64, energy::Float64, accepted::Bool, sim::Float64)
+	s = "Step " * string(step) * ", ID " * string(clusterID) * ", energy " * string(energy) * ", accepted " * string(accepted) * ", similarity, " * string(sim) * "\n"
 
 	# add the string to the file channel. this line will block if the channel is full, i.e. by another thread
 	put!(io[2], s)
@@ -126,10 +126,6 @@ function optRun(_opt::PyObject, workhorse::Workhorse, fmax::Float64)
 	opt.run(fmax=fmax)
 end
 
-function logResumptionInfo()
-
-
-end
 
 function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additionalInfo::Dict{String, Union{Number, Vector{Float64}, Vector{Int64}, Vector{Bool}}})
 
@@ -198,9 +194,10 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 		clusterID = addToVector!(newCluster, bh.clusterVector, 2)
 		if clusterID > 0
 			logCNA(bh.CNAIO, clusterID, getCNA(newCluster))
+			print(bh.io[1], "\nGenerated new cluster:\n\tID = $clusterID\n\tE = $(getEnergy(newCluster))")
+		else
+			print(bh.io[1], "\nRegenerated cluster:\n\tID = $clusterID\n\tE = $(getEnergy(newCluster))")
 		end
-
-		print(bh.io[1], "\nGenerated new cluster, E = ", getEnergy(newCluster))
 
 		# Determine if hop to new structure is to be accepted.
 		acceptHop = getAcceptanceBoolean(bh.metC, oldCluster, newCluster)
@@ -232,7 +229,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 		end
 
 		# Log the move.
-		logStep(bh.logIO, step, newCluster.energy, acceptHop)
+		logStep(bh.logIO, step, abs(clusterID), newCluster.energy, acceptHop)
 
 		# Check if the new cluster is a target. Exit if all targets found.
 		if acceptHop && exitOnLocatingTargets
@@ -257,7 +254,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 
 		# Check if time for reseed. Will not trigger if hopsToReseed is negative.
 		if hopsToReseed == 0
-
+			step += 1 #treat the reseed as an additional hop.
 			print(bh.io[1], bh.reseedPeriod, " steps have occured since the last improvement. reseeding.\n")
 			
 			# Generate a new seed (only update the positions of oldCluster).
@@ -268,14 +265,19 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 			setCNAProfile!(oldCluster, bh.rcut)
 
 			# Check if the cluster is unique, add it to the vector of clusters, and update the CNA log.
-			clusterIsUnique = addToVector!(oldCluster, bh.clusterVector, 2)
-			if clusterIsUnique
-				logCNA(bh.CNAIO, step, getCNA(oldCluster))
+			clusterID = addToVector!(oldCluster, bh.clusterVector, 2)
+			if clusterID > 0
+				logCNA(bh.CNAIO, clusterID, getCNA(oldCluster))
+				print(bh.io[1], "\nGenerated new cluster:\n\tID = $clusterID\n\tE = $(getEnergy(oldCluster))")
+			else
+				print(bh.io[1], "\nRegenerated cluster:\n\tID = $clusterID\n\tE = $(getEnergy(oldCluster))")
 			end
 
+			# Log the step. 
+			logStep(bh.logIO, step, abs(clusterID), oldCluster.energy, true)
+			
 			# Reset hopsToReseed.
 			hopsToReseed = bh.reseedPeriod
-			step += 1 #treat the reseed as an additional hop.
 		end
 
 	end
