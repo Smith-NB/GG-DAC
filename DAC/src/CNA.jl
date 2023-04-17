@@ -305,7 +305,7 @@ function stringToCNA(s::String)
 			continue
 		end
 		cna::Tuple{UInt8, UInt8, UInt8} = Tuple(parse(UInt8, String(x)) for x in split(freqCNAPair[i][1], ','))
-		freq::UInt16 = parse(UInt16, freqCNAPair[i][2])
+		freq::UInt16 = parse(UInt16, String(freqCNAPair[i][2]))
 		CNA[i] = Pair(cna, freq)
 	end
 end
