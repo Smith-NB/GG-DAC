@@ -7,6 +7,7 @@ struct ClusterCompressed
 	positions::Array{Float64}
 	energy::Float64
 	CNA::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}
+	ID::Int64
 end
 
 mutable struct ClusterVector

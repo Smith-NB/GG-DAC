@@ -72,7 +72,7 @@ end
 function addToVector!(cluster::Cluster, clusterVector::ClusterVector, dp::Int64)
 	#= binary search =#
 	energy = round(cluster.energy, digits=dp)
-	clusterAlreadyPresent = false
+	presentClusterID = 0
 	L = 1
 	R = clusterVector.N+1
 
@@ -84,7 +84,7 @@ function addToVector!(cluster::Cluster, clusterVector::ClusterVector, dp::Int64)
 			startM = m
 			while m < clusterVector.N && clusterVector.vec[m].energy == energy
 				if clusterVector.vec[m].CNA == cluster.CNA
-					clusterAlreadyPresent = true
+					presentClusterID = clusterVector.vec[m].ID
 					break
 				end
 				m += 1
@@ -93,7 +93,7 @@ function addToVector!(cluster::Cluster, clusterVector::ClusterVector, dp::Int64)
 			m = startM - 1
 			while m > 0 && clusterVector.vec[m].energy == energy
 				if clusterVector.vec[m].CNA == cluster.CNA
-					clusterAlreadyPresent = true
+					presentClusterID = clusterVector.vec[m].ID
 					break
 				end
 				m -= 1
@@ -108,14 +108,15 @@ function addToVector!(cluster::Cluster, clusterVector::ClusterVector, dp::Int64)
 		end
 	end	
 
-	if !clusterAlreadyPresent
+	# If cluster is new, add it to the vector.
+	if presentClusterID == 0
 		R = R == 0 ? 1 : R
-		insert!(clusterVector.vec, R, ClusterCompressed(cluster.positions, round(cluster.energy, digits=dp), cluster.CNA))
 		clusterVector.N += 1
+		insert!(clusterVector.vec, R, ClusterCompressed(cluster.positions, round(cluster.energy, digits=dp), cluster.CNA, clusterVector.N))
 	end
 
-	# return true if an insertion to the vector was made
-	return !clusterAlreadyPresent
+	# return 0 if the cluster was added, otherwise return the index in the vector the cluster was found at.
+	return presentClusterID
 
 end
 
@@ -192,8 +193,8 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 		setCNAProfile!(newCluster, bh.rcut)
 
 		# Check if the cluster is unique, add it to the vector of clusters, and update the CNA log.
-		clusterIsUnique = addToVector!(newCluster, bh.clusterVector, 2)
-		if clusterIsUnique
+		clusterLocationInVector = addToVector!(newCluster, bh.clusterVector, 2)
+		if clusterLocationInVector != 0
 			logCNA(bh.CNAIO, step, getCNA(newCluster))
 		end
 
