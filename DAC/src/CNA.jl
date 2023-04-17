@@ -308,4 +308,6 @@ function stringToCNA(s::String)
 		freq::UInt16 = parse(UInt16, String(freqCNAPair[i][2]))
 		CNA[i] = Pair(cna, freq)
 	end
+
+	return CNA
 end
