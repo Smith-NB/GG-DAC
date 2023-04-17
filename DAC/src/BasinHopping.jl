@@ -84,7 +84,7 @@ function addToVector!(cluster::Cluster, clusterVector::ClusterVector, dp::Int64)
 			startM = m
 			while m < clusterVector.N && clusterVector.vec[m].energy == energy
 				if clusterVector.vec[m].CNA == cluster.CNA
-					presentClusterID = clusterVector.vec[m].ID
+					presentClusterID = -clusterVector.vec[m].ID # ClusterId will be negative if already present in Vector
 					break
 				end
 				m += 1
@@ -93,12 +93,12 @@ function addToVector!(cluster::Cluster, clusterVector::ClusterVector, dp::Int64)
 			m = startM - 1
 			while m > 0 && clusterVector.vec[m].energy == energy
 				if clusterVector.vec[m].CNA == cluster.CNA
-					presentClusterID = clusterVector.vec[m].ID
+					presentClusterID = -clusterVector.vec[m].ID # ClusterId will be negative if already present in Vector
 					break
 				end
 				m -= 1
 			end
-			#
+
 			break
 
 		elseif clusterVector.vec[m].energy < energy
@@ -112,7 +112,8 @@ function addToVector!(cluster::Cluster, clusterVector::ClusterVector, dp::Int64)
 	if presentClusterID == 0
 		R = R == 0 ? 1 : R
 		clusterVector.N += 1
-		insert!(clusterVector.vec, R, ClusterCompressed(cluster.positions, round(cluster.energy, digits=dp), cluster.CNA, clusterVector.N))
+		presentClusterID = clusterVector.N # Set cluster ID to be the new ID of the cluster
+		insert!(clusterVector.vec, R, ClusterCompressed(cluster.positions, round(cluster.energy, digits=dp), cluster.CNA, presentClusterID))
 	end
 
 	# return 0 if the cluster was added, otherwise return the index in the vector the cluster was found at.
@@ -193,9 +194,10 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 		setCNAProfile!(newCluster, bh.rcut)
 
 		# Check if the cluster is unique, add it to the vector of clusters, and update the CNA log.
-		clusterLocationInVector = addToVector!(newCluster, bh.clusterVector, 2)
-		if clusterLocationInVector != 0
-			logCNA(bh.CNAIO, step, getCNA(newCluster))
+		# clusterID will be negative if is was already in the vector.
+		clusterID = addToVector!(newCluster, bh.clusterVector, 2)
+		if clusterID > 0
+			logCNA(bh.CNAIO, clusterID, getCNA(newCluster))
 		end
 
 		print(bh.io[1], "\nGenerated new cluster, E = ", getEnergy(newCluster))
