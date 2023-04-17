@@ -273,6 +273,13 @@ function getCNASimilarity(x::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}, y
 	=#
 end
 
+
+"""
+	getCNASimilarity(x::Dict{Tuple{UInt8, UInt8, UInt8}, UInt16}, y::Dict{Tuple{UInt8, UInt8, UInt8}, UInt16})
+
+Takes two cluster CNA profiles (formatted as dictionaries) and calculates
+the similarity between them.
+"""
 function getCNASimilarity(x::Dict{Tuple{UInt8, UInt8, UInt8}, UInt16}, y::Dict{Tuple{UInt8, UInt8, UInt8}, UInt16})
 	intersection = 0
 	union = 0
@@ -295,15 +302,24 @@ function getCNASimilarity(x::Dict{Tuple{UInt8, UInt8, UInt8}, UInt16}, y::Dict{T
 	return intersection/union
 end
 
+"""
+	stringToCNA(s::String)
+
+Takes a string formatted as: "ncn,nb,nl:freq;ncn,nb,nl:freq;...ncn,nb,nl:freq;"
+and converts it to a CNA profile of type 
+Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}} 
+where:
+	ncn,nb,nl is the CNA signagure, e.g. (5, 5, 5) = "5,5,5"
+	freq is the frequency 
+"""
 function stringToCNA(s::String)
-	#5,5,5:16;5,4,4:8;4,3,3:26;4,2,2:15;4,2,1:7;3,2,2:21;3,1,1:16;3,0,0:1;2,1,1:20;2,0,0:14;1,0,0:1;
-	#Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}
+	
 	freqCNAPair = [split(x, ':') for x in split(s, ';')]
-	CNA = Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}(undef, length(freqCNAPair))
-	for i in 1:length(freqCNAPair)
-		if length(freqCNAPair[i]) < 2 
-			continue
-		end
+	n = length(freqCNAPair[length(freqCNAPair)]) == 1 ? length(freqCNAPair) -1 : length(freqCNAPair)
+	CNA = Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}(undef, n)
+	
+	# For all CNA signature & frequency pairs
+	for i in 1:n
 		cna::Tuple{UInt8, UInt8, UInt8} = Tuple(parse(UInt8, String(x)) for x in split(freqCNAPair[i][1], ','))
 		freq::UInt16 = parse(UInt16, String(freqCNAPair[i][2]))
 		CNA[i] = Pair(cna, freq)
