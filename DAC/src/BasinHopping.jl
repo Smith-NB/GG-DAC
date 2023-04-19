@@ -45,7 +45,7 @@ function logCNA(io::Tuple{IO, Channel}, ID::Int64, CNA::Vector{Pair{Tuple{UInt8,
 end
 
 
-function logStep(io::Tuple{IO, Channel}, step::Int64, clusterID::Int64, energy::Float64, accepted::Bool)
+function logStep(io::Tuple{IO, Channel}, step::Int64, clusterID::Int64, energy::Float64, accepted::String)
 	s = "Step " * string(step) * ", ID " * string(clusterID) * ", energy " * string(energy) * ", accepted " * string(accepted)  * "\n"
 
 	# add the string to the file channel. this line will block if the channel is full, i.e. by another thread
@@ -57,7 +57,7 @@ function logStep(io::Tuple{IO, Channel}, step::Int64, clusterID::Int64, energy::
 	end
 end
 
-function logStep(io::Tuple{IO, Channel}, step::Int64, clusterID::Int64, energy::Float64, accepted::Bool, sim::Float64)
+function logStep(io::Tuple{IO, Channel}, step::Int64, clusterID::Int64, energy::Float64, accepted::String, sim::Float64)
 	s = "Step " * string(step) * ", ID " * string(clusterID) * ", energy " * string(energy) * ", accepted " * string(accepted) * ", similarity, " * string(sim) * "\n"
 
 	# add the string to the file channel. this line will block if the channel is full, i.e. by another thread
@@ -229,7 +229,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 		end
 
 		# Log the move.
-		logStep(bh.logIO, step, abs(clusterID), newCluster.energy, acceptHop)
+		logStep(bh.logIO, step, abs(clusterID), newCluster.energy, string(acceptHop))
 
 		# Check if the new cluster is a target. Exit if all targets found.
 		if acceptHop && exitOnLocatingTargets
@@ -274,7 +274,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 			end
 
 			# Log the step. 
-			logStep(bh.logIO, step, abs(clusterID), oldCluster.energy, true)
+			logStep(bh.logIO, step, abs(clusterID), oldCluster.energy, "reseed")
 			
 			# Reset hopsToReseed.
 			hopsToReseed = bh.reseedPeriod
