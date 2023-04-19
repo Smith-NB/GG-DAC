@@ -193,7 +193,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 		# clusterID will be negative if is was already in the vector.
 		clusterID = addToVector!(newCluster, bh.clusterVector, 2)
 		if clusterID > 0
-			logCNA(bh.CNAIO, clusterID, getCNA(newCluster))
+			logCNA(bh.CNAIO, clusterID, getCNA(newCluster), getEnergy(newCluster))
 			print(bh.io[1], "\nGenerated new cluster:\n\tID = $clusterID\n\tE = $(getEnergy(newCluster))")
 		else
 			print(bh.io[1], "\nRegenerated cluster:\n\tID = $clusterID\n\tE = $(getEnergy(newCluster))")
@@ -267,7 +267,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 			# Check if the cluster is unique, add it to the vector of clusters, and update the CNA log.
 			clusterID = addToVector!(oldCluster, bh.clusterVector, 2)
 			if clusterID > 0
-				logCNA(bh.CNAIO, clusterID, getCNA(oldCluster))
+				logCNA(bh.CNAIO, clusterID, getCNA(oldCluster), getEnergy(oldCluster))
 				print(bh.io[1], "\nGenerated new cluster:\n\tID = $clusterID\n\tE = $(getEnergy(oldCluster))")
 			else
 				print(bh.io[1], "\nRegenerated cluster:\n\tID = $clusterID\n\tE = $(getEnergy(oldCluster))")
