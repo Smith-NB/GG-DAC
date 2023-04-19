@@ -24,14 +24,14 @@ struct BasinHopper
 	workhorseOpt::PyObject
 end
 
-function logCNA(io::Tuple{IO, Channel}, ID::Int64, CNA::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}})
+function logCNA(io::Tuple{IO, Channel}, ID::Int64, CNA::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}, energy::Float64)
 	# create the string to log from the given CNA and cluster ID
 	s = string(ID) * "="
 	for pair in CNA
 		s *= string(pair.first[1]) * "," * string(pair.first[2]) * "," * string(pair.first[3]) * ":" * string(pair.second) * ";"
 	end
 	# create break line
-	s *= "\n"
+	s *= "E$energy\n"
 
 	# add the string to the file channel. this line will block if the channel is full, i.e. by another thread
 	put!(io[2], s)
