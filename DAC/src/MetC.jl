@@ -6,10 +6,10 @@ struct EnergyMetC <: MetC
 end
 
 struct EnergyAndStructureMetC <: MetC
-	cSCM::Float64
 	cE::Float64
-	simFunction::Function
+	cSCM::Float64
 	eFunction::Function
+	simFunction::Function
 	autoAcceptDownhillMove::Bool
 	io::Tuple{IO, Channel}
 end
