@@ -31,7 +31,7 @@ function getAcceptanceBoolean(MetC::EnergyMetC, oldCluster::Cluster, newCluster:
 	
 	# push a string to the channel then take the string in the channel and print it to the output file.
 	put!(MetC.io[2], "\nChance to accept = " * string(probability))
-	while isready(io[2])
+	while isready(MetC.io[2])
 		print(MetC.io[1], take!(MetC.io[2]))
 	end
 	
@@ -58,7 +58,7 @@ function getAcceptanceBoolean(MetC::EnergyAndStructureMetC, oldCluster::Cluster,
 	simScore = MetC.simFunction(getCNASimilarity(getCNA(oldCluster), getCNA(newCluster))) * MetC.cSCM
 
 	put!(MetC.io[2], "\nChance to accept = " * string(eScore + simScore))
-	while isready(io[2])
+	while isready(MetC.io[2])
 		print(MetC.io[1], take!(MetC.io[2]))
 	end
 
