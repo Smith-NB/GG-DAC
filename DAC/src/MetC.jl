@@ -5,6 +5,21 @@ struct EnergyMetC <: MetC
 	io::Tuple{IO, Channel}
 end
 
+struct EnergyAndStructureMetC <: MetC
+	cSCM::Float64
+	cE::Float64
+	simFunction::Function
+	eFunction::Function
+	autoAcceptDownhillMove::Bool
+	io::Tuple{IO, Channel}
+end
+
+"""
+	getAcceptanceBoolean(MetC::EnergyMetC, oldCluster::Cluster, newCluster::Cluster)
+
+Returns true or false for accepting the move from the oldCluster to the newCluster
+	based on  the EnergyMetC.
+"""
 function getAcceptanceBoolean(MetC::EnergyMetC, oldCluster::Cluster, newCluster::Cluster)
 	
 	if newCluster.energy < oldCluster.energy
@@ -25,3 +40,24 @@ function getAcceptanceBoolean(MetC::EnergyMetC, oldCluster::Cluster, newCluster:
 	return accept
 
 end
+
+
+"""
+	getAcceptanceBoolean(MetC::EnergyAndStructureMetC, oldCluster::Cluster, newCluster::Cluster)
+
+Returns true or false for accepting the move from the oldCluster to the newCluster
+	based on  the EnergyAndStructureMetC.
+"""
+function getAcceptanceBoolean(MetC::EnergyAndStructureMetC, oldCluster::Cluster, newCluster::Cluster)
+
+	if MetC.autoAcceptDownhillMove && getEnergy(newCluster) < getEnergy(oldCluster)
+		return true
+	end
+
+	eScore = MetC.eFunction(getEnergy(oldCluster), getEnergy(newCluster)) * MetC.cE
+	simScore = MetC.simFunction(getCNASimilarity(getCNA(oldCluster), getCNA(newCluster))) * MetC.cSCM
+
+	accept = (eScore + simScore) > rand()
+	return accept
+
+end	
