@@ -129,6 +129,8 @@ end
 
 function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additionalInfo::Dict{String, Union{Number, Vector{Float64}, Vector{Int64}, Vector{Bool}}})
 
+	time = 
+
 	# If needed, generate a random seed.
 	if seed == "random"
 		seed = generateRandomSeed(bh.formula, bh.boxLength, bh.vacuumAdd)
@@ -168,6 +170,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 	iterations = 1
 
 	while step < steps
+		if 
 		step += 1
 		println(bh.io[1], "\n================================\n")
 		println(bh.io[1], "Attempting step ", step)
