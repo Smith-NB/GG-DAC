@@ -389,7 +389,7 @@ end
 function formulaDictToString(formula::Dict{String, Int64})
 	s = ""
 	for key in formula
-		s *= key
+		s *= string(key)
 		s *= string(formula[key])
 	end
 
