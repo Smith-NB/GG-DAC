@@ -218,9 +218,9 @@ function getNormalCNAProfile(atoms::Cluster, rcut::Float64)
 	commonNeighbours = zeros(Int64, natoms)
 	visited = trues(natoms, 2)
 
-	normalCNA = Vector{Dict{Tuple{UInt8, UInt8, UInt8}, UInt16}()}(undef, natoms)
+	normalCNA = Vector{Dict{Tuple{UInt8, UInt8, UInt8}, UInt16}}(undef, natoms)
 	for i in 1:natoms
-		normalCNA[i] = Dict{Tuple{UInt8, UInt8, UInt8}, UInt16}()() 
+		normalCNA[i] = Dict{Tuple{UInt8, UInt8, UInt8}, UInt16}() 
 	end
 
 	#for each bonding pair in cluster
