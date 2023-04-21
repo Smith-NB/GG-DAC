@@ -211,6 +211,64 @@ function getCNAProfile(atoms::Cluster, rcut::Float64)
 	return storedCNA
 end
 
+function getNormalCNAProfile(atoms::Cluster, rcut::Float64)
+	natoms = getNAtoms(atoms)
+	bondlist, graphbonds = getNeighbourList(atoms, rcut)
+	nbonds = length(bondlist)
+	commonNeighbours = zeros(Int64, natoms)
+	visited = trues(natoms, 2)
+
+	normalCNA = Vector{Dict{Tuple{UInt8, UInt8, UInt8}, UInt16}()}(undef, natoms)
+	for i in 1:natoms
+		normalCNA[i] = Dict{Tuple{UInt8, UInt8, UInt8}, UInt16}()() 
+	end
+
+	#for each bonding pair in cluster
+	for i in 1:nbonds
+		ncn::UInt8 = 0
+		nb::UInt8 = 0
+
+		#for each atom in cluster
+		for j in 1:natoms
+			#check if atom is bonded to both atoms of current pair
+			if graphbonds[j, bondlist[i][1]] == true && graphbonds[j, bondlist[i][2]] == true
+				ncn += 1
+				commonNeighbours[ncn] = j
+				#check if bonds exist between current and previosuly discovered common neighbours
+				for k in 1:ncn-1
+					if graphbonds[commonNeighbours[k], j] == true
+						nb += 1
+					end
+				end
+			end
+		end
+		#find the longest chain of bonds between common neighbours
+		nl::UInt8 = findLongestChain(graphbonds, commonNeighbours, ncn, visited)
+
+		#add signature to profile
+		sig = (ncn, nb, nl)
+		if haskey(normalCNA[bondlist[i][1]], sig)
+			normalCNA[bondlist[i][1]][sig] += 1
+		else
+			normalCNA[bondlist[i][1]][sig] = 1
+		end
+
+		if haskey(normalCNA[bondlist[i][2]], sig)
+			normalCNA[bondlist[i][2]][sig] += 1
+		else
+			normalCNA[bondlist[i][2]][sig] = 1
+		end
+
+		#reset oommonNeighbours
+		for j in 1:ncn
+			commonNeighbours[j] = 0
+		end
+	end
+
+	return normalCNA
+
+end
+
 function getCNASimilarity(x::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}, y::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}})
 	intersection = 0
 	union = 0
