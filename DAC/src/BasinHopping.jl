@@ -129,7 +129,7 @@ end
 
 function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additionalInfo::Dict{String, Union{Number, Vector{Float64}, Vector{Int64}, Vector{Bool}}})
 
-	time = 
+	start = now()
 
 	# If needed, generate a random seed.
 	if seed == "random"
@@ -170,7 +170,12 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 	iterations = 1
 
 	while step < steps
-		if 
+		
+		# Break loop if walltime exceeded.
+		if (now() - start) / Hour(1) > bh.walltime
+			break
+		end
+
 		step += 1
 		println(bh.io[1], "\n================================\n")
 		println(bh.io[1], "Attempting step ", step)
