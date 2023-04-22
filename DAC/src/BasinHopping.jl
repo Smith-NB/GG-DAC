@@ -75,7 +75,6 @@ function addToVector!(cluster::Union{Cluster, ClusterCompressed}, clusterVector:
 	presentClusterID = 0
 	L = 1
 	R = clusterVector.N+1
-	println()
 	while L < R
 		m = trunc(Int, (R + L)/2)
 
