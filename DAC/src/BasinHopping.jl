@@ -107,7 +107,7 @@ function addToVector!(cluster::Union{Cluster, ClusterCompressed}, clusterVector:
 			R = m
 		end
 	end	
-	println(presentClusterID, R)
+	println("$energy, $presentClusterID, $R")
 	# If cluster is new, add it to the vector.
 	if presentClusterID == 0
 		R = R == 0 ? 1 : R
