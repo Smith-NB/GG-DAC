@@ -69,7 +69,7 @@ function logStep(io::Tuple{IO, Channel}, step::Int64, clusterID::Int64, energy::
 	end
 end
 
-function addToVector!(cluster::Cluster, clusterVector::ClusterVector, dp::Int64)
+function addToVector!(cluster::Union{Cluster, ClusterCompressed}, clusterVector::ClusterVector, dp::Int64)
 	#= binary search =#
 	energy = round(cluster.energy, digits=dp)
 	presentClusterID = 0
@@ -118,7 +118,6 @@ function addToVector!(cluster::Cluster, clusterVector::ClusterVector, dp::Int64)
 
 	# return 0 if the cluster was added, otherwise return the index in the vector the cluster was found at.
 	return presentClusterID
-
 end
 
 function optRun(_opt::PyObject, workhorse::Workhorse, fmax::Float64)
