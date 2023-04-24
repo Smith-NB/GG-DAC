@@ -302,8 +302,8 @@ end
 
 function classifyAtoms(coordinates::Matrix{Float64}, rcut::Float64)
 
-	nCNA = getNormalCNAProfile(cluster, rcut)
-	N = getNAtoms(cluster)
+	nCNA = getNormalCNAProfile(coordinates, rcut)
+	N = getNAtoms(coordinates)
 	atomClass = Vector{Int64}(undef, N)
 	sigs = [(4, 2, 1), (3, 1, 1), (3, 2, 2), (2, 1, 1), (4, 2, 2), (5, 5, 5), (2, 0, 0), (4, 3, 3)]
 
@@ -356,7 +356,7 @@ classifyAtoms(cluster::Cluster, rcut::Float64) = classifyAtoms(cluster.positions
 
 function classifyCluster(coordinates::Matrix{Float64}, rcut::Float64)
 
-	tag = classifyAtoms(cluster, rcut)
+	tag = classifyAtoms(coordinates, rcut)
 
 	icoAtoms = Vector{Int64}
 	icoBonds = Vector{Int64}
@@ -375,7 +375,7 @@ function classifyCluster(coordinates::Matrix{Float64}, rcut::Float64)
 	nAmb = 0
 	nClass14 = 0
 
-	N = getNAtoms(cluster)
+	N = getNAtoms(coordinates)
 
 
 	# Count atoms of each type and store some atom indicies for Ih cases.
@@ -411,9 +411,9 @@ function classifyCluster(coordinates::Matrix{Float64}, rcut::Float64)
 	for i in 1:nIcoAtoms
 		for j in i+1:nIcoAtoms
 			#calculate distance between soube atoms
-			d = ((cluster.positions[icoAtoms[i]][1] - cluster.positions[icoAtoms[j]][1])^2
-				+(cluster.positions[icoAtoms[i]][2] - cluster.positions[icoAtoms[j]][2])^2
-				+(cluster.positions[icoAtoms[i]][3] - cluster.positions[icoAtoms[j]][3])^2
+			d = ((coordinates[icoAtoms[i]][1] - coordinates[icoAtoms[j]][1])^2
+				+(coordinates[icoAtoms[i]][2] - coordinates[icoAtoms[j]][2])^2
+				+(coordinates[icoAtoms[i]][3] - coordinates[icoAtoms[j]][3])^2
 				)^0.5
 			if d <= rcut
 				icoBonds[i] += 1
@@ -426,9 +426,9 @@ function classifyCluster(coordinates::Matrix{Float64}, rcut::Float64)
 	# Check which 12/14 atoms are bonding (antiMackay 555/433)
 	for i in 1:nIco12Atoms
 		for j in i+1:nIco12Atoms
-			d = ((cluster.positions[ico12Atoms[i]][1] - cluster.positions[ico12Atoms[j]][1])^2
-				+(cluster.positions[ico12Atoms[i]][2] - cluster.positions[ico12Atoms[j]][2])^2
-				+(cluster.positions[ico12Atoms[i]][3] - cluster.positions[ico12Atoms[j]][3])^2
+			d = ((coordinates[ico12Atoms[i]][1] - coordinates[ico12Atoms[j]][1])^2
+				+(coordinates[ico12Atoms[i]][2] - coordinates[ico12Atoms[j]][2])^2
+				+(coordinates[ico12Atoms[i]][3] - coordinates[ico12Atoms[j]][3])^2
 				)^0.5
 			if d <= rcut
 				nIco12Bonds += 1
@@ -439,9 +439,9 @@ function classifyCluster(coordinates::Matrix{Float64}, rcut::Float64)
 	# Check if all cores are true cores. (a core bonding to a 12 or 14 atom is a false core.)
 	for i in 1:nIcoCores
 		for j in 1:nIco12Atoms
-			d = ((cluster.positions[nIcoCores[i]][1] - cluster.positions[ico12Atoms[j]][1])^2
-				+(cluster.positions[nIcoCores[i]][2] - cluster.positions[ico12Atoms[j]][2])^2
-				+(cluster.positions[nIcoCores[i]][3] - cluster.positions[ico12Atoms[j]][3])^2
+			d = ((coordinates[nIcoCores[i]][1] - coordinates[ico12Atoms[j]][1])^2
+				+(coordinates[nIcoCores[i]][2] - coordinates[ico12Atoms[j]][2])^2
+				+(coordinates[nIcoCores[i]][3] - coordinates[ico12Atoms[j]][3])^2
 				)^0.5
 			if d <= rcut
 				if nIcoCores > 1
