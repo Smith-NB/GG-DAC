@@ -300,7 +300,7 @@ function centreCluster!(atoms::Cluster)
 	atoms.positions .+= translation
 end
 
-function classifyAtoms(cluster::Cluster, rcut::Float64)
+function classifyAtoms(coordinates::Matrix{Float64}, rcut::Float64)
 
 	nCNA = getNormalCNAProfile(cluster, rcut)
 	N = getNAtoms(cluster)
@@ -352,7 +352,9 @@ function classifyAtoms(cluster::Cluster, rcut::Float64)
 	return atomClass
 end
 
-function classifyCluster(cluster::Cluster, rcut::Float64)
+classifyAtoms(cluster::Cluster, rcut::Float64) = classifyAtoms(cluster.positions, rcut)
+
+function classifyCluster(coordinates::Matrix{Float64}, rcut::Float64)
 
 	tag = classifyAtoms(cluster, rcut)
 
@@ -477,10 +479,9 @@ function classifyCluster(cluster::Cluster, rcut::Float64)
 	else
 		return "AMB"
 	end
-	
-
-
 end
+
+classifyCluster(cluster::Cluster, rcut::Float64) = classifyCluster(cluster.positions, rcut)
 
 function read_xyzs(filename::String, formula::Dict{String, Int64})
 	lines = readlines(filename)

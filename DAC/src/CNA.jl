@@ -211,9 +211,9 @@ function getCNAProfile(atoms::Cluster, rcut::Float64)
 	return storedCNA
 end
 
-function getNormalCNAProfile(atoms::Cluster, rcut::Float64)
-	natoms = getNAtoms(atoms)
-	bondlist, graphbonds = getNeighbourList(atoms, rcut)
+function getNormalCNAProfile(coordinates::Matrix{Float64}, rcut::Float64)
+	natoms = getNAtoms(coordinates)
+	bondlist, graphbonds = getNeighbourList(coordinates, rcut)
 	nbonds = length(bondlist)
 	commonNeighbours = zeros(Int64, natoms)
 	visited = trues(natoms, 2)
@@ -268,6 +268,9 @@ function getNormalCNAProfile(atoms::Cluster, rcut::Float64)
 	return normalCNA
 
 end
+
+getNormalCNAProfile(atoms::Cluster, rcut::Float64) = getNormalCNAProfile(atoms.positions, rcut)
+
 
 function getCNASimilarity(x::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}, y::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}})
 	intersection = 0
