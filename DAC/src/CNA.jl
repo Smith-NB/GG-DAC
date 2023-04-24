@@ -9,7 +9,7 @@ of all bonds in a cluster.
 Return table starts with the number of bonds and then lists the indices of atoms the given
 atom is bonded too. After nbond+1 entries, row is padded with 0's.
 """
-function getNeighbourList(coordinates::Matrix{Float64, rcut::Float64)
+function getNeighbourList(coordinates::Matrix{Float64}, rcut::Float64)
 	r = getDistances(coordinates)
 	natoms = getNAtoms(coordinates)
 
