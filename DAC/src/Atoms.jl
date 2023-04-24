@@ -300,6 +300,188 @@ function centreCluster!(atoms::Cluster)
 	atoms.positions .+= translation
 end
 
+function classifyAtoms(cluster::Cluster, rcut::Float64)
+
+	nCNA = getNormalCNAProfile(cluster, rcut)
+	N = getNAtoms(cluster)
+	atomClass = Vector{Int64}(undef, N)
+	sigs = [(4, 2, 1), (3, 1, 1), (3, 2, 2), (2, 1, 1), (4, 2, 2), (5, 5, 5), (2, 0, 0), (4, 3, 3)]
+
+	for n in 1:N
+		# Set non-present sigs to 0.
+		for s in sigs
+			if !haskey(nCNA[n], s)
+				nCNA[n][s] = 0
+			end
+		end
+
+		# Classify atom.
+		if nCNA[n][(5, 5, 5)] >= 6
+			atomClass[n] = 11
+		elseif nCNA[n][(5, 5, 5)] >= 3
+			atomClass[n] = 13
+		elseif nCNA[n][(5, 5, 5)] == 2
+			atomClass[n] = 6
+		elseif nCNA[n][(5, 5, 5)] == 1
+			if nCNA[n][(2, 0, 0)] == 2
+				atomClass[n] = 12
+			else
+				atomClass[n] = 7
+			end
+		elseif nCNA[n][(4, 2, 2)] >= 5
+			atomClass[n] = 5
+		elseif nCNA[n][(4, 2, 1)] >= 4
+			atomClass[n] = 1
+		elseif nCNA[n][(3, 1, 1)] >= 3 && nCNA[n][(3, 2, 2)] == 0
+			atomClass[n] = 2
+		elseif nCNA[n][(2, 1, 1)] >= 3
+			atomClass[n] = 3
+		elseif nCNA[n][(2, 1, 1)] == 2 && nCNA[n][(3, 1, 1)] == 2
+			atomClass[n] = 4
+		elseif nCNA[n][(3, 1, 1)] >= 3 && nCNA[n][(3, 2, 2)] >= 1
+			atomClass[n] = 8
+		elseif nCNA[n][(3, 1, 1)] >= 1 && nCNA[n][(2, 0, 0)] == 2 && nCNA[n][(2, 1, 1)] >= 1
+			atomClass[n] = 9
+		elseif nCNA[n][(4, 3, 3)] >= 1 && nCNA[n][(2, 0, 0)] == 2
+			atomClass[n] = 14
+		else
+			atomClass[n] = 10
+		end
+	end
+
+	return atomClass
+end
+
+function classifyCluster(cluster::Cluster, rcut::Float64)
+
+	tag = classifyAtoms(cluster, rcut)
+
+	icoAtoms = Vector{Int64}
+	icoBonds = Vector{Int64}
+	ico12Atoms = Vector{Int64}
+	icoCores = Vector{Int64}
+	nIcoAtoms = 0
+	nIcoBonds = 0
+	nIco12Atoms = 0
+	nIco12Bonds = 0
+	nIcoCores = 0
+
+	nFCC = 0
+	nHCP = 0
+	nIcoSpines = 0
+	nPartIcoCores = 0
+	nAmb = 0
+	nClass14 = 0
+
+	N = getNAtoms(cluster)
+
+
+	# Count atoms of each type and store some atom indicies for Ih cases.
+	for n in 1:N
+		if tag[n] in [6, 7, 11, 12, 13]
+			push!(icoAtoms, n)
+			nIcoAtoms += 1
+			push!(icoBonds, 0)
+			if tag[n] == 11
+				nIcoCores += 1
+				push!(icoCores, n)
+			elseif tag[n] == 12
+				push!(ico12Atoms, n)
+				nIco12Atoms += 1
+			elseif tag[n] == 13
+				nPartIcoCores += 1
+			end
+		elseif tag[n] in [1, 2, 3, 4]
+			nFCC += 1
+		elseif tag[n] == 5
+			nHCP += 1
+		elseif tag[n] == 10
+			nAmb += 1
+		elseif tag[n] == 14
+			nClass14 += 1
+			push!(ico12Atoms, n)
+			nIco12Atoms += 1
+		end
+
+	end
+
+	# Determine which ico spine atoms are bonding.
+	for i in 1:nIcoAtoms
+		for j in i+1:nIcoAtoms
+			#calculate distance between soube atoms
+			d = ((cluster.positions[icoAtoms[i]][1] - cluster.positions[icoAtoms[j]][1])^2
+				+(cluster.positions[icoAtoms[i]][2] - cluster.positions[icoAtoms[j]][2])^2
+				+(cluster.positions[icoAtoms[i]][3] - cluster.positions[icoAtoms[j]][3])^2
+				)^0.5
+			if d <= rcut
+				icoBonds[i] += 1
+				icoBonds[j] += 1
+				nIcoBonds += 1
+			end
+		end		
+	end
+
+	# Check which 12/14 atoms are bonding (antiMackay 555/433)
+	for i in 1:nIco12Atoms
+		for j in i+1:nIco12Atoms
+			d = ((cluster.positions[ico12Atoms[i]][1] - cluster.positions[ico12Atoms[j]][1])^2
+				+(cluster.positions[ico12Atoms[i]][2] - cluster.positions[ico12Atoms[j]][2])^2
+				+(cluster.positions[ico12Atoms[i]][3] - cluster.positions[ico12Atoms[j]][3])^2
+				)^0.5
+			if d <= rcut
+				nIco12Bonds += 1
+			end
+		end	
+	end
+
+	# Check if all cores are true cores. (a core bonding to a 12 or 14 atom is a false core.)
+	for i in 1:nIcoCores
+		for j in 1:nIco12Atoms
+			d = ((cluster.positions[nIcoCores[i]][1] - cluster.positions[ico12Atoms[j]][1])^2
+				+(cluster.positions[nIcoCores[i]][2] - cluster.positions[ico12Atoms[j]][2])^2
+				+(cluster.positions[nIcoCores[i]][3] - cluster.positions[ico12Atoms[j]][3])^2
+				)^0.5
+			if d <= rcut
+				if nIcoCores > 1
+					nIcoCores -= 1
+				else
+					nIcoCores = -1
+				end
+				break
+			end
+		end
+	end
+
+	# Determine and return class.
+	if nIcoCores != 0
+		if nIcoCores > 3
+			return "POLYICO"
+		elseif nIcoCores > 2
+			return "TRICO"
+		elseif nIcoCores > 1
+			return "TWICO"
+		elseif nIcoCores == -1
+			return "EXICO"
+		else
+			return nIco12Bonds != 0 ? "ANTIICO" : "ICO"
+		end
+	elseif nIcoAtoms != 0 && nPartIcoCores == 0
+		return "DEC"
+	elseif nIcoAtoms == 0 && nHCP + nFCC > nAmb
+		if nHCP == 0
+			return "FCC"
+		elseif nFCC == 0
+			return "HCP"
+		end
+		return "TWI"
+	else
+		return "AMB"
+	end
+	
+
+
+end
+
 function read_xyzs(filename::String, formula::Dict{String, Int64})
 	lines = readlines(filename)
 	natoms = parse(Int64, lines[1])

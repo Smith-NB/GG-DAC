@@ -360,6 +360,13 @@ function getCNASimilarity(x::Dict{Tuple{UInt8, UInt8, UInt8}, UInt16}, y::Dict{T
 	return intersection/union
 end
 
+function CNAToString(cna::Dict{Tuple{UInt8, UInt8, UInt8}, UInt16})
+	s = ""
+	for sig in keys(cna)
+		s *= "($(sig[1]), $(sig[2]), $(sig[3])): $(cna[sig]) "
+	end
+	return s
+end
 """
 	stringToCNA(s::String)
 
