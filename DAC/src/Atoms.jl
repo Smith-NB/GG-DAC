@@ -407,10 +407,12 @@ function classifyCluster(coordinates::Matrix{Float64}, rcut::Float64)
 
 	end
 
+	prinln(shape(coordinates))
 	# Determine which ico spine atoms are bonding.
 	for i in 1:nIcoAtoms
 		for j in i+1:nIcoAtoms
 			#calculate distance between soube atoms
+			println("$i $j $(icoAtoms[i]) $(icoAtoms[j])")
 			d = ((coordinates[icoAtoms[i]][1] - coordinates[icoAtoms[j]][1])^2
 				+(coordinates[icoAtoms[i]][2] - coordinates[icoAtoms[j]][2])^2
 				+(coordinates[icoAtoms[i]][3] - coordinates[icoAtoms[j]][3])^2
