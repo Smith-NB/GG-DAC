@@ -154,9 +154,14 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 	Emin  					= haskey(additionalInfo, "Emin") 					? additionalInfo["Emin"] 					: Inf
 	EminLocatedAt			= haskey(additionalInfo, "EminLocatedAt")			? additionalInfo["EminLocatedAt"] 			: 0
 	targets					= haskey(additionalInfo, "targets") 				? additionalInfo["targets"] 				: Vector{Float64}()
+	targetCNAs				= haskey(additionalInfo, "targetCNAs") 				? additionalInfo["targetCNAs"] 				: Vector{CNAProfile}()
 	targetRounding 	 		= haskey(additionalInfo, "targetRounding") 			? additionalInfo["targetRounding"] 			: 2
 	targetsFound 			= haskey(additionalInfo, "targetsFound") 			? additionalInfo["targetsFound"] 			: falses(length(targets))
 	targetsLocatedAt		= haskey(additionalInfo, "targetsLocatedAt") 		? additionalInfo["targetsLocatedAt"] 		: zeros(Int64, length(targets))
+
+	# Boolean for checking CNAs of targets
+	checkCNAsOfTarget = length(targetCNAs) > 0
+
 
 	# If there is at least on etarget, exit on locating it/them.
 	exitOnLocatingTargets = length(targets) > 0 
@@ -242,10 +247,23 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 			allTargetsFound = true
 			for t in 1:length(targets)
 				if round(getEnergy(oldCluster), digits=targetRounding) == targets[t]
-					print(bh.io[1], "\nTarget ", targets[t], " has been located at step ", step)
-					targetsFound[t] = true
-					targetsLocatedAt[t] = step
+					
+					found = false
+
+					# If CNA checking enabled, ensure CNAs match
+					if checkCNAsOfTarget && targetsCNAs[t] == getCNAProfile(oldCluster)
+						found = true
+					elseif !checkCNAsOfTarget # If CNA checking disabled, assume target is found.
+						found = true
+					end
+
+					if found
+						print(bh.io[1], "\nTarget ", targets[t], " has been located at step ", step)
+						targetsFound[t] = true
+						targetsLocatedAt[t] = step
+					end
 				end
+				
 				if !targetsFound[t]
 					allTargetsFound = false
 				end

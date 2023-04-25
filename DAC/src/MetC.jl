@@ -8,9 +8,9 @@ end
 
 struct EnergyWithReferenceRestrictionMetC <: MetC
 	kT::Float64
-	io::Tuple{IO, Channel}
 	refCNA::CNAProfile
 	sigmaCut::Float64
+	io::Tuple{IO, Channel}
 end
 
 struct EnergyAndStructureMetC <: MetC
