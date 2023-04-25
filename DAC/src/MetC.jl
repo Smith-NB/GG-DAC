@@ -5,6 +5,14 @@ struct EnergyMetC <: MetC
 	io::Tuple{IO, Channel}
 end
 
+
+struct EnergyWithReferenceRestrictionMetC <: MetC
+	kT::Float64
+	io::Tuple{IO, Channel}
+	refCNA::CNAProfile
+	sigmaCut::Float64
+end
+
 struct EnergyAndStructureMetC <: MetC
 	cE::Float64
 	cSCM::Float64
@@ -18,7 +26,7 @@ end
 	getAcceptanceBoolean(MetC::EnergyMetC, oldCluster::Cluster, newCluster::Cluster)
 
 Returns true or false for accepting the move from the oldCluster to the newCluster
-	based on  the EnergyMetC.
+	based on the EnergyMetC.
 """
 function getAcceptanceBoolean(MetC::EnergyMetC, oldCluster::Cluster, newCluster::Cluster)
 	
@@ -41,12 +49,43 @@ function getAcceptanceBoolean(MetC::EnergyMetC, oldCluster::Cluster, newCluster:
 
 end
 
+"""
+	getAcceptanceBoolean(MetC::EnergyWithReferenceRestrictionMetC, oldCluster::Cluster, newCluster::Cluster)
+
+Returns true or false for accepting the move from the oldCluster to the newCluster
+	based on the EnergyMetC, with the added restriction that if the newCluster is less
+	similar to some reference than `sigmaCut`, the hop is rejected.
+"""
+function getAcceptanceBoolean(MetC::EnergyWithReferenceRestrictionMetC, oldCluster::Cluster, newCluster::Cluster)
+	
+	if getCNASimilarity(MetC.refCNA, getCNAProfile(newCluster)) < MetC.sigmaCut
+		return false
+	end
+
+	if newCluster.energy < oldCluster.energy
+		return true
+	end
+
+	probability = exp((oldCluster.energy - newCluster.energy) / MetC.kT)
+	
+	
+	# push a string to the channel then take the string in the channel and print it to the output file.
+	put!(MetC.io[2], "\nChance to accept = " * string(probability))
+	while isready(MetC.io[2])
+		print(MetC.io[1], take!(MetC.io[2]))
+	end
+	
+	accept = probability > rand()
+	return accept
+
+end
+
 
 """
 	getAcceptanceBoolean(MetC::EnergyAndStructureMetC, oldCluster::Cluster, newCluster::Cluster)
 
 Returns true or false for accepting the move from the oldCluster to the newCluster
-	based on  the EnergyAndStructureMetC.
+	based on the EnergyAndStructureMetC.
 """
 function getAcceptanceBoolean(MetC::EnergyAndStructureMetC, oldCluster::Cluster, newCluster::Cluster)
 
