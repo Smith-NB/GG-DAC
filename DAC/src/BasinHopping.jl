@@ -125,7 +125,7 @@ function optRun(_opt::PyObject, workhorse::Workhorse, fmax::Float64)
 end
 
 
-function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additionalInfo::Dict{String, Union{Number, Vector{Float64}, Vector{Int64}, Vector{Bool}}})
+function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additionalInfo::Dict{String, Any})
 
 	start = now()
 
@@ -263,7 +263,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 						targetsLocatedAt[t] = step
 					end
 				end
-				
+
 				if !targetsFound[t]
 					allTargetsFound = false
 				end
