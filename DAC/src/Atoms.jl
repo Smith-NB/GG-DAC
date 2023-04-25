@@ -439,9 +439,9 @@ function classifyCluster(coordinates::Matrix{Float64}, rcut::Float64)
 	# Check if all cores are true cores. (a core bonding to a 12 or 14 atom is a false core.)
 	for i in 1:nIcoCores
 		for j in 1:nIco12Atoms
-			d = ((coordinates[nIcoCores[i], 1] - coordinates[ico12Atoms[j], 1])^2
-				+(coordinates[nIcoCores[i], 2] - coordinates[ico12Atoms[j], 2])^2
-				+(coordinates[nIcoCores[i], 3] - coordinates[ico12Atoms[j], 3])^2
+			d = ((coordinates[IcoCores[i], 1] - coordinates[ico12Atoms[j], 1])^2
+				+(coordinates[IcoCores[i], 2] - coordinates[ico12Atoms[j], 2])^2
+				+(coordinates[IcoCores[i], 3] - coordinates[ico12Atoms[j], 3])^2
 				)^0.5
 			if d <= rcut
 				if nIcoCores > 1
