@@ -569,6 +569,40 @@ function write_xyz(filename::String, atoms::Cluster)
 	close(newfile)
 end
 
+
+"""
+	write_xyz(filename::String, atoms::Cluster)
+
+Takes a path (should end in ".xyz") to a file to write and saves a Cluster type
+to that path as a .xyz file. Also stores the `tags' of each atom.
+"""
+function write_xyz(filename::String, atoms::Cluster, tags::Vector{Int64})
+	newfile = open(filename, "w")
+	natoms = getNAtoms(atoms)
+
+	print(newfile, natoms, "\n")
+
+	print(newfile, "Lattice=\"", atoms.cell[1])
+	for i in 2:9
+		print(newfile, " ", atoms.cell[i])
+	end
+	print(newfile, "\" Properties=species:S:1:pos:R:3:tags:I:1 pbc=\"F F F\"\n")
+
+	elements = keys(atoms.formula)
+	tab = "        " #8 spaces
+	for (element, freq) in atoms.formula
+		for i in 1:freq
+			print(newfile, element) 
+			for j in 1:3
+				s = rpad(round(atoms.positions[i, j], sigdigits=10), 11, "0") #pad
+				print(newfile, tab, s)
+			end
+			print(newfile, tab * string(tags[i]) * "\n")
+		end
+	end
+	close(newfile)
+end
+
 function formulaDictToString(formula::Dict{String, Int64})
 	s = ""
 	for key in keys(formula)
