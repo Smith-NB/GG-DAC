@@ -358,10 +358,10 @@ function classifyCluster(coordinates::Matrix{Float64}, rcut::Float64)
 
 	tag = classifyAtoms(coordinates, rcut)
 
-	icoAtoms = Vector{Int64}
-	icoBonds = Vector{Int64}
-	ico12Atoms = Vector{Int64}
-	icoCores = Vector{Int64}
+	icoAtoms = Vector{Int64}()
+	icoBonds = Vector{Int64}()
+	ico12Atoms = Vector{Int64}()
+	icoCores = Vector{Int64}()
 	nIcoAtoms = 0
 	nIcoBonds = 0
 	nIco12Atoms = 0
