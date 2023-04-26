@@ -249,7 +249,6 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 				if round(getEnergy(oldCluster), digits=targetRounding) == targets[t]
 					
 					found = false
-					println(target)
 					# If CNA checking enabled, ensure CNAs match
 					if checkCNAsOfTarget && getCNASimimlarity(targetCNAs[t], getCNAProfile(oldCluster)) == 1.0
 						found = true
