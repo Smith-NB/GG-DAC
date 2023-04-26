@@ -63,6 +63,7 @@ function getAcceptanceBoolean(MetC::EnergyWithReferenceRestrictionMetC, oldClust
 		while isready(MetC.io[2])
 			print(MetC.io[1], take!(MetC.io[2]))
 		end
+		return false
 	end
 
 	if newCluster.energy < oldCluster.energy
