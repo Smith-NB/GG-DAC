@@ -166,7 +166,7 @@ function setCNAProfile!(atoms::Cluster, rcut::Float64)
 	atoms.CNA = getCNAProfile(atoms, rcut)
 	atoms.validCNA = true
 end
-setCNAProfile!(atoms::Cluster, cna::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}) = atoms.CNA = cna
+setCNAProfile!(atoms::Cluster, cna::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}) = atoms.CNA, atoms.validCNA = cna, true
 
 
 """
