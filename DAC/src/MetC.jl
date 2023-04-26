@@ -57,9 +57,12 @@ Returns true or false for accepting the move from the oldCluster to the newClust
 	similar to some reference than `sigmaCut`, the hop is rejected.
 """
 function getAcceptanceBoolean(MetC::EnergyWithReferenceRestrictionMetC, oldCluster::Cluster, newCluster::Cluster)
-	
-	if getCNASimilarity(MetC.refCNA, getCNAProfile(newCluster)) < MetC.sigmaCut
-		return false
+	s = getCNASimilarity(MetC.refCNA, getCNAProfile(newCluster))
+	if s < MetC.sigmaCut
+		put!(MetC.io[2], "\nChance to accept = 0\nSimilarity to ref: $s")
+		while isready(MetC.io[2])
+			print(MetC.io[1], take!(MetC.io[2]))
+		end
 	end
 
 	if newCluster.energy < oldCluster.energy
