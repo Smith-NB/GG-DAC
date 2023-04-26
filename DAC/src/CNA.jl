@@ -1,5 +1,5 @@
 
-CNAProfile = Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}
+const CNAProfile = Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}
 
 #struct CNAProfile <: Dict{Tuple{UInt8, UInt8, UInt8}, UInt16} end
 

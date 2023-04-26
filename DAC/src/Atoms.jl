@@ -133,7 +133,13 @@ getValidEnergies(atoms::Cluster) = atoms.validEnergies
 getValidForces(atoms::Cluster) = atoms.validForces
 getValidStresses(atoms::Cluster) = atoms.validStresses
 getCalculator(atoms::Cluster) = atoms.calculator
-
+function getCNAProfile(atoms::Cluster) 
+	if atoms.validCNA
+		return atoms.CNA
+	else
+		return nothing
+	end
+end
 
 setFormula(atoms::Cluster, formula::Dict{String, Int64}) = atoms.formula = formula
 function setPositions!(atoms::Cluster, positions::Matrix{Float64})
