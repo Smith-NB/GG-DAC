@@ -251,7 +251,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 					found = false
 
 					# If CNA checking enabled, ensure CNAs match
-					if checkCNAsOfTarget && targetsCNAs[t] == getCNAProfile(oldCluster)
+					if checkCNAsOfTarget && targetCNAs[t] == getCNAProfile(oldCluster)
 						found = true
 					elseif !checkCNAsOfTarget # If CNA checking disabled, assume target is found.
 						found = true
