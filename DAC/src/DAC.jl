@@ -16,6 +16,7 @@ include("FIRE.jl")
 include("LJ.jl")
 include("LJ_ASAP3.jl")
 include("MetC.jl")
+include("Reseed.jl")
 include("generateRandomSeed.jl")
 include("BasinHopping.jl")
 

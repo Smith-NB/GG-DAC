@@ -6,6 +6,7 @@ struct BasinHopper
 	optimizer::Optimizer
 	calculator::Calculator
 	metC::MetC
+	reseeder::Reseeder
 	formula::Dict{String, Int64}
 	boxLength::Number
 	vacuumAdd::Number
@@ -22,6 +23,7 @@ struct BasinHopper
 	clusterVector::ClusterVector
 	workhorse::Workhorse
 	workhorseOpt::PyObject
+	version::String
 end
 
 function logCNA(io::Tuple{IO, Channel}, ID::Int64, CNA::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}, energy::Float64)
@@ -125,7 +127,13 @@ function optRun(_opt::PyObject, workhorse::Workhorse, fmax::Float64)
 end
 
 
-function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additionalInfo::Dict{String, Any})
+function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additionalInfo::Dict{String, Any}, version::String)
+
+	if version != "v1.1.0" || bh.version != "v1.1.0"
+		println(bh.io[1], "The version number passed to the hop function or BasinHopper constructor does not match\nthe hard coded
+			version number. Double check you are using the correct run script. This program will now terminate.")
+		return nothing
+	end
 
 	start = now()
 
@@ -148,16 +156,16 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 
 
 	# Specify variables from additionalInfo.
-	step  					= haskey(additionalInfo, "stepsCompleted")			? additionalInfo["stepsCompleted"] 			: 0
-	hopsToReseed  			= haskey(additionalInfo, "hopsToReseed")			? additionalInfo["hopsToReseed"] 			: bh.reseedPeriod
-	reseedEnergyToBeat		= haskey(additionalInfo, "reseedEnergyToBeat")		? additionalInfo["reseedEnergyToBeat"] 		: Inf
-	Emin  					= haskey(additionalInfo, "Emin") 					? additionalInfo["Emin"] 					: Inf
-	EminLocatedAt			= haskey(additionalInfo, "EminLocatedAt")			? additionalInfo["EminLocatedAt"] 			: 0
-	targets					= haskey(additionalInfo, "targets") 				? additionalInfo["targets"] 				: Vector{Float64}()
-	targetCNAs				= haskey(additionalInfo, "targetCNAs") 				? additionalInfo["targetCNAs"] 				: Vector{CNAProfile}()
-	targetRounding 	 		= haskey(additionalInfo, "targetRounding") 			? additionalInfo["targetRounding"] 			: 2
-	targetsFound 			= haskey(additionalInfo, "targetsFound") 			? additionalInfo["targetsFound"] 			: falses(length(targets))
-	targetsLocatedAt		= haskey(additionalInfo, "targetsLocatedAt") 		? additionalInfo["targetsLocatedAt"] 		: zeros(Int64, length(targets))
+	step  							= haskey(additionalInfo, "stepsCompleted")			? additionalInfo["stepsCompleted"] 			: 0
+	bh.reseeder.hopsToReseed  		= haskey(additionalInfo, "hopsToReseed")			? additionalInfo["hopsToReseed"] 			: bh.reseeder.reseedPeriod
+	bh.reseeder.reseedEnergyToBeat	= haskey(additionalInfo, "reseedEnergyToBeat")		? additionalInfo["reseedEnergyToBeat"] 		: Inf
+	Emin  							= haskey(additionalInfo, "Emin") 					? additionalInfo["Emin"] 					: Inf
+	EminLocatedAt					= haskey(additionalInfo, "EminLocatedAt")			? additionalInfo["EminLocatedAt"] 			: 0
+	targets							= haskey(additionalInfo, "targets") 				? additionalInfo["targets"] 				: Vector{Float64}()
+	targetCNAs						= haskey(additionalInfo, "targetCNAs") 				? additionalInfo["targetCNAs"] 				: Vector{CNAProfile}()
+	targetRounding 	 				= haskey(additionalInfo, "targetRounding") 			? additionalInfo["targetRounding"] 			: 2
+	targetsFound 					= haskey(additionalInfo, "targetsFound") 			? additionalInfo["targetsFound"] 			: falses(length(targets))
+	targetsLocatedAt				= haskey(additionalInfo, "targetsLocatedAt") 		? additionalInfo["targetsLocatedAt"] 		: zeros(Int64, length(targets))
 
 	# Boolean for checking CNAs of targets
 	checkCNAsOfTarget = length(targetCNAs) > 0
@@ -217,7 +225,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 		print(bh.io[1], "\nThe current step has been " * acceptStr)
 
 		# Decrease number of hops until next reseed.
-		hopsToReseed -= 1
+		updateHopsToReseed(bh.reseeder)
 
 		# If accepted, update.
 		if acceptHop
@@ -227,10 +235,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 			end
 
 			# Check if a new LES has been found since the last reseed.
-			if getEnergy(newCluster) < reseedEnergyToBeat
-				hopsToReseed = bh.reseedPeriod
-				reseedEnergyToBeat = getEnergy(newCluster)
-			end
+			checkNewlyAcceptedStructure(bh.reseeder, newCluster)
 
 			# Update oldCluster to newCluster.
 			setPositions!(oldCluster, getPositions(newCluster))
@@ -276,7 +281,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 		end
 
 		# Check if time for reseed. Will not trigger if hopsToReseed is negative.
-		if hopsToReseed == 0
+		if timeToReseed(bh.reseeder)
 			step += 1 #treat the reseed as an additional hop.
 			print(bh.io[1], bh.reseedPeriod, " steps have occured since the last improvement. reseeding.\n")
 			
@@ -310,7 +315,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 	print(resumeFile, "stepsCompleted:$step\n")
 	print(resumeFile, "Emin:$Emin\n")
 	print(resumeFile, "EminLocatedAt:$EminLocatedAt\n")
-	print(resumeFile, "reseedEnergyToBeat:$reseedEnergyToBeat\n")
+	print(resumeFile, "reseedEnergyToBeat:$(bh.reseeder.reseedEnergyToBeat)\n")
 	print(resumeFile, "hopsToReseed:$hopsToReseed\n")
 	print(resumeFile, "targets:$targets\n")
 	print(resumeFile, "targetsFound:$targetsFound\n")

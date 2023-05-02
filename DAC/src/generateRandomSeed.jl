@@ -83,3 +83,8 @@ end
 function perturbCluster(atoms::Cluster, dr::Float64)
 	return perturbCluster(atoms.positions, dr)
 end
+
+function getSeedFromPool(pool::Vector{Matrix{Float64}}, n::Int64)
+	r = rand(1:n)
+	return pool[r]
+end
