@@ -225,7 +225,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 		print(bh.io[1], "\nThe current step has been " * acceptStr)
 
 		# Decrease number of hops until next reseed.
-		updateHopsToReseed(bh.reseeder)
+		updateHopsToReseed!(bh.reseeder)
 
 		# If accepted, update.
 		if acceptHop
@@ -235,7 +235,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 			end
 
 			# Check if a new LES has been found since the last reseed.
-			checkNewlyAcceptedStructure(bh.reseeder, newCluster)
+			checkNewlyAcceptedStructure!(bh.reseeder, newCluster)
 
 			# Update oldCluster to newCluster.
 			setPositions!(oldCluster, getPositions(newCluster))
@@ -281,7 +281,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 		end
 
 		# Check if time for reseed. Will not trigger if hopsToReseed is negative.
-		if timeToReseed(bh.reseeder)
+		if timeToReseed!(bh.reseeder)
 			step += 1 #treat the reseed as an additional hop.
 			print(bh.io[1], bh.reseedPeriod, " steps have occured since the last improvement. reseeding.\n")
 			

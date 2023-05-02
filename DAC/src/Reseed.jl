@@ -12,9 +12,9 @@ mutable struct NewLESReseeder <: Reseeder
 	args::Vector{Any}
 end
 
-function timeToReseed(r::NewLESReseeder)
+function timeToReseed!(r::NewLESReseeder)
 	if r.hopsToReseed <= 0
-		resetHopsToReseed(r)
+		resetHopsToReseed!(r)
 		return true
 	end
 
@@ -22,16 +22,16 @@ function timeToReseed(r::NewLESReseeder)
 
 end
 
-function checkNewlyAcceptedStructure(r::NewLESReseeder, newCluster::Cluster)
+function checkNewlyAcceptedStructure!(r::NewLESReseeder, newCluster::Cluster)
 	if getEnergy(newCluster) < r.reseedEnergyToBeat
-		resetHopsToReseed(r)
+		resetHopsToReseed!(r)
 		r.reseedEnergyToBeat = getEnergy(newCluster)
 	end
 end
 
-updateHopsToReseed(r::NewLESReseeder) = r.hopsToReseed -= 1
+updateHopsToReseed!(r::NewLESReseeder) = r.hopsToReseed -= 1
 
-resetHopsToReseed(r::NewLESReseeder) = r.hopsToReseed = r.reseedPeriod
+resetHopsToReseed!(r::NewLESReseeder) = r.hopsToReseed, r.reseedEnergyToBeat = r.reseedPeriod, Inf
 
 #=============================================================================#
 #===============================ReseedDisabled================================#
