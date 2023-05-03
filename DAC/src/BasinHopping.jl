@@ -316,7 +316,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 	print(resumeFile, "Emin:$Emin\n")
 	print(resumeFile, "EminLocatedAt:$EminLocatedAt\n")
 	print(resumeFile, "reseedEnergyToBeat:$(bh.reseeder.reseedEnergyToBeat)\n")
-	print(resumeFile, "hopsToReseed:$hopsToReseed\n")
+	print(resumeFile, "hopsToReseed:$(bh.reseeder.hopsToReseed)\n")
 	print(resumeFile, "targets:$targets\n")
 	print(resumeFile, "targetsFound:$targetsFound\n")
 	print(resumeFile, "targetsLocatedAt:$targetsLocatedAt\n")
