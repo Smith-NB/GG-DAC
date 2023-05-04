@@ -155,16 +155,16 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 
 
 	# Specify variables from additionalInfo.
-	step  							= haskey(additionalInfo, "stepsCompleted")			? additionalInfo["stepsCompleted"] 			: 0
-	bh.reseeder.hopsToReseed  		= haskey(additionalInfo, "hopsToReseed")			? additionalInfo["hopsToReseed"] 			: getReseedPeriod(bh.reseeder)
-	bh.reseeder.reseedEnergyToBeat	= haskey(additionalInfo, "reseedEnergyToBeat")		? additionalInfo["reseedEnergyToBeat"] 		: Inf
-	Emin  							= haskey(additionalInfo, "Emin") 					? additionalInfo["Emin"] 					: Inf
-	EminLocatedAt					= haskey(additionalInfo, "EminLocatedAt")			? additionalInfo["EminLocatedAt"] 			: 0
-	targets							= haskey(additionalInfo, "targets") 				? additionalInfo["targets"] 				: Vector{Float64}()
-	targetCNAs						= haskey(additionalInfo, "targetCNAs") 				? additionalInfo["targetCNAs"] 				: Vector{CNAProfile}()
-	targetRounding 	 				= haskey(additionalInfo, "targetRounding") 			? additionalInfo["targetRounding"] 			: 2
-	targetsFound 					= haskey(additionalInfo, "targetsFound") 			? additionalInfo["targetsFound"] 			: falses(length(targets))
-	targetsLocatedAt				= haskey(additionalInfo, "targetsLocatedAt") 		? additionalInfo["targetsLocatedAt"] 		: zeros(Int64, length(targets))
+	step  								= haskey(additionalInfo, "stepsCompleted")			? additionalInfo["stepsCompleted"] 			: 0
+	setHopsToReseed!(bh.reseeder, 		  haskey(additionalInfo, "hopsToReseed")			? additionalInfo["hopsToReseed"] 			: getReseedPeriod(bh.reseeder))
+	setReseedEnergyToBeat!(bh.reseeder,   haskey(additionalInfo, "reseedEnergyToBeat")		? additionalInfo["reseedEnergyToBeat"] 		: Inf)
+	Emin  								= haskey(additionalInfo, "Emin") 					? additionalInfo["Emin"] 					: Inf
+	EminLocatedAt						= haskey(additionalInfo, "EminLocatedAt")			? additionalInfo["EminLocatedAt"] 			: 0
+	targets								= haskey(additionalInfo, "targets") 				? additionalInfo["targets"] 				: Vector{Float64}()
+	targetCNAs							= haskey(additionalInfo, "targetCNAs") 				? additionalInfo["targetCNAs"] 				: Vector{CNAProfile}()
+	targetRounding 	 					= haskey(additionalInfo, "targetRounding") 			? additionalInfo["targetRounding"] 			: 2
+	targetsFound 						= haskey(additionalInfo, "targetsFound") 			? additionalInfo["targetsFound"] 			: falses(length(targets))
+	targetsLocatedAt					= haskey(additionalInfo, "targetsLocatedAt") 		? additionalInfo["targetsLocatedAt"] 		: zeros(Int64, length(targets))
 
 	# Boolean for checking CNAs of targets
 	checkCNAsOfTarget = length(targetCNAs) > 0
