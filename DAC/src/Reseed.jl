@@ -37,7 +37,7 @@ function getReseedPeriod(r::NewLESReseeder) return r.reseedPeriod end
 
 function getHopsToReseed(r::NewLESReseeder) return r.hopsToReseed end
 
-function getHopsToReseed(r::NewLESReseeder) return r.reseedEnergyToBeat end
+function getReseedEnergyToBeat(r::NewLESReseeder) return r.reseedEnergyToBeat end
 
 setHopsToReseed!(r::NewLESReseeder, hopsToReseed::Int64) = r.hopsToReseed = hopsToReseed
 
@@ -62,7 +62,7 @@ function getReseedPeriod(r::ReseedDisabled) return -1 end
 
 function getHopsToReseed(r::ReseedDisabled) return -1 end
 
-function getHopsToReseed(r::ReseedDisabled) return Inf end
+function getReseedEnergyToBeat(r::ReseedDisabled) return Inf end
 
 function setHopsToReseed!(r::ReseedDisabled, reseedPeriod::Int64) end
 
