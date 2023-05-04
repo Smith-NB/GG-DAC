@@ -33,7 +33,7 @@ updateHopsToReseed!(r::NewLESReseeder) = r.hopsToReseed -= 1
 
 resetHopsToReseed!(r::NewLESReseeder) = r.hopsToReseed, r.reseedEnergyToBeat = r.reseedPeriod, Inf
 
-function getReseedPeriod(r::ReseedDisabled) return r.reseedPeriod end
+function getReseedPeriod(r::NewLESReseeder) return r.reseedPeriod end
 
 #=============================================================================#
 #===============================ReseedDisabled================================#
