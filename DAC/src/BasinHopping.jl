@@ -12,7 +12,6 @@ struct BasinHopper
 	vacuumAdd::Number
 	kT::Number
 	dr::Number
-	reseedPeriod::Int64
 	fmax::Number
 	rcut::Number
 	walltime::Number
@@ -157,7 +156,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 
 	# Specify variables from additionalInfo.
 	step  							= haskey(additionalInfo, "stepsCompleted")			? additionalInfo["stepsCompleted"] 			: 0
-	bh.reseeder.hopsToReseed  		= haskey(additionalInfo, "hopsToReseed")			? additionalInfo["hopsToReseed"] 			: bh.reseeder.reseedPeriod
+	bh.reseeder.hopsToReseed  		= haskey(additionalInfo, "hopsToReseed")			? additionalInfo["hopsToReseed"] 			: getReseedPeriod(bh.reseeder)
 	bh.reseeder.reseedEnergyToBeat	= haskey(additionalInfo, "reseedEnergyToBeat")		? additionalInfo["reseedEnergyToBeat"] 		: Inf
 	Emin  							= haskey(additionalInfo, "Emin") 					? additionalInfo["Emin"] 					: Inf
 	EminLocatedAt					= haskey(additionalInfo, "EminLocatedAt")			? additionalInfo["EminLocatedAt"] 			: 0
@@ -283,7 +282,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 		# Check if time for reseed. Will not trigger if hopsToReseed is negative.
 		if timeToReseed!(bh.reseeder)
 			step += 1 #treat the reseed as an additional hop.
-			print(bh.io[1], bh.reseedPeriod, " steps have occured since the last improvement. reseeding.\n")
+			print(bh.io[1], getReseedPeriod(bh.reseeder), " steps have occured since the last improvement. reseeding.\n")
 			
 			# Generate a new seed (only update the positions of oldCluster).
 			setPositions!(bh.workhorse, bh.reseeder.getReseedStructure(bh.reseeder.args...))
@@ -305,7 +304,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 			logStep(bh.logIO, step, abs(clusterID), oldCluster.energy, "reseed")
 			
 			# Reset hopsToReseed.
-			hopsToReseed = bh.reseedPeriod
+			hopsToReseed = getReseedPeriod(bh.reseeder)
 		end
 
 	end
