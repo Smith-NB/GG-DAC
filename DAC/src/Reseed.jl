@@ -55,6 +55,6 @@ function resetHopsToReseed(r::ReseedDisabled) return nothing end
 
 function getReseedPeriod(r::ReseedDisabled) return -1 end
 
-function setReseedPeriod!(r::ReseedDisabled, reseedPeriod::Int64) end
+function setHopsToReseed!(r::ReseedDisabled, reseedPeriod::Int64) end
 
 function setReseedEnergyToBeat!(r::ReseedDisabled, energy::Float64) end
