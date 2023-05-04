@@ -45,13 +45,13 @@ setReseedEnergyToBeat!(r::NewLESReseeder, energy::Float64) = r.reseedEnergyToBea
 
 struct ReseedDisabled <: Reseeder end
 
-function timeToReseed(r::ReseedDisabled) return false end
+function timeToReseed!(r::ReseedDisabled) return false end
 
-function checkNewlyAcceptedStructure(r::ReseedDisabled, newCluster::Cluster) return nothing end
+function checkNewlyAcceptedStructure!(r::ReseedDisabled, newCluster::Cluster) return nothing end
 
-function updateHopsToReseed(r::ReseedDisabled) return nothing end
+function updateHopsToReseed!(r::ReseedDisabled) return nothing end
 
-function resetHopsToReseed(r::ReseedDisabled) return nothing end
+function resetHopsToReseed!(r::ReseedDisabled) return nothing end
 
 function getReseedPeriod(r::ReseedDisabled) return -1 end
 
