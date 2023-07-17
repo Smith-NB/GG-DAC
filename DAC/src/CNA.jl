@@ -382,6 +382,15 @@ function CNAToString(cna::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}})
 	end
 	return s
 end
+
+function CNAToLogString(cna::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}})
+	# create the string to log from the given CNA and cluster ID
+	s = ""
+	for pair in cna
+		s *= string(pair.first[1]) * "," * string(pair.first[2]) * "," * string(pair.first[3]) * ":" * string(pair.second) * ";"
+	end
+	return nothing
+end
 """
 	stringToCNA(s::String)
 
