@@ -374,6 +374,14 @@ function CNAToString(cna::Dict{Tuple{UInt8, UInt8, UInt8}, UInt16})
 	end
 	return s
 end
+
+function CNAToString(cna::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}})
+	s = ""
+	for i in 1:length(cna)
+		s *= "($(cna[i].first[1]), $(cna[i].first[2]), $(cna[i].first[3])): $(cna[i].second) "
+	end
+	return s
+end
 """
 	stringToCNA(s::String)
 
@@ -399,3 +407,8 @@ function stringToCNA(s::String)
 
 	return CNA
 end
+
+#function getCNA(name::String)
+#	if name == "LJ38GM"
+#		return 
+#end
