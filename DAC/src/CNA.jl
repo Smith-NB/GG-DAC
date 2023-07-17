@@ -389,7 +389,7 @@ function CNAToLogString(cna::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}})
 	for pair in cna
 		s *= string(pair.first[1]) * "," * string(pair.first[2]) * "," * string(pair.first[3]) * ":" * string(pair.second) * ";"
 	end
-	return nothing
+	return s
 end
 """
 	stringToCNA(s::String)
