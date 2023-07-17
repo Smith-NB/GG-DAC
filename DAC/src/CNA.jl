@@ -417,7 +417,16 @@ function stringToCNA(s::String)
 	return CNA
 end
 
-#function getCNA(name::String)
-#	if name == "LJ38GM"
-#		return 
-#end
+function getCNA(name::String)
+	if name == "LJ38GM"
+		return "4,2,1:60;3,1,1:48;2,1,1:24;2,0,0:12;"
+	elseif name == "LJ55GM"
+		return "5,5,5:24;4,2,2:90;3,2,2:60;3,1,1:60;"
+	elseif  name == "LJ75GM"
+		return "5,5,5:4;4,2,2:65;4,2,1:90;3,2,2:20;3,1,1:90;3,0,0:10;2,1,1:20;2,0,0:20;"
+	elseif  name == "LJ98GM"
+		return "5,5,5:18;4,3,3:24;4,2,2:156;4,2,1:66;3,2,2:12;3,1,1:72;3,0,0:12;2,1,1:36;2,0,0:36;"
+	elseif  name == "LJ104GM"
+		return "5,5,5:5;4,2,2:97;4,2,1:158;3,2,2:22;3,1,1:106;3,0,0:12;2,1,1:41;2,0,0:16;1,0,0:2;"
+	end
+end
