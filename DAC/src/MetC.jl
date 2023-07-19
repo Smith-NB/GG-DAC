@@ -143,7 +143,7 @@ mutable struct HISTOMetC <: MetC
 	io::Tuple{IO, Channel}
 end
 
-function HISTOMetC(kT::Float64, w::Float64, delta::Float64, resetPeriod, clusterVector::ClusterVector, waitTime::Int64, io::Tuple{IO, Channel})
+function HISTOMetC(kT::Float64, w::Float64, delta::Float64, resetPeriod::Float64, clusterVector::ClusterVector, waitTime::Int64, io::Tuple{IO, Channel})
 	refCNA = Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}()
 	refID = -1
 	timeElapsed = 0
