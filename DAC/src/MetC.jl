@@ -169,18 +169,18 @@ function getAcceptanceBoolean(MetC::HISTOMetC, oldCluster::Cluster, newCluster::
 
 		hScore = 0
 	else
-		histSum = sum(hist) # used to normalise bar heights
+		histSum = sum(MetC.hist) # used to normalise bar heights
 		if histSum == 0 # avoid division by zero
 			histSum = 1
 		end
 
 		simOld = getCNASimilarity(getCNA(oldCluster), refCNA)
-		binOld = simOld != 1.0 ? trunc(Int64, 1/delta) : trunc(Int64, simOld/delta) # get bin of old Cluster
-		hOld   = hist[binOld]/histSum # get height (normalised) of bars
+		binOld = simOld != 1.0 ? trunc(Int64, 1/MetC.delta) : trunc(Int64, simOld/MetC.delta) # get bin of old Cluster
+		hOld   = MetC.hist[binOld]/histSum # get height (normalised) of bars
 		
 		simNew = getCNASimilarity(getCNA(newCluster), refCNA)
-		binNew = simNew != 1.0 ? trunc(Int64, 1/delta) : trunc(Int64, simNew/delta) # get bin of new Cluster
-		hNew   = hist[binNew]/histSum # get height (normalised) of bars
+		binNew = simNew != 1.0 ? trunc(Int64, 1/MetC.delta) : trunc(Int64, simNew/MetC.delta) # get bin of new Cluster
+		hNew   = MetC.hist[binNew]/histSum # get height (normalised) of bars
 
 		hScore = MetC.w * (hOld - hNew)
 		updateHist = true
@@ -197,7 +197,7 @@ function getAcceptanceBoolean(MetC::HISTOMetC, oldCluster::Cluster, newCluster::
 	accept = probability > rand()
 
 	if accept && updateHist
-		hist[binNew] += 1
+		MetC.hist[binNew] += 1
 	end
 
 	return accept
