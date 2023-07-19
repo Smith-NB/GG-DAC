@@ -148,7 +148,7 @@ function HISTOMetC(kT::Float64, w::Float64, delta::Float64, resetPeriod::Float64
 	refID = -1
 	timeElapsed = 0
 	hist = zeros(Int64, trunc(Int64, 1/delta))
-	return HISTOMetC(kT, w, delta, refCNA, refID, clusterVector, waitTime, hist, io)
+	return HISTOMetC(kT, w, delta, resetPeriod, refCNA, refID, clusterVector, waitTime, timeElapsed, hist, io)
 end
 
 function getAcceptanceBoolean(MetC::HISTOMetC, oldCluster::Cluster, newCluster::Cluster)
