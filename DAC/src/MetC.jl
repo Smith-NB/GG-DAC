@@ -161,7 +161,7 @@ function getAcceptanceBoolean(MetC::HISTOMetC, oldCluster::Cluster, newCluster::
 	updateHist = false
 	binNew = nothing
 	if length(MetC.refCNA) == 0
-		if MetC.waitTime >= MetC.timeElapsed
+		if MetC.timeElapsed >= MetC.waitTime
 			MetC.refCNA = MetC.clusterVector.vec[1].CNA
 			MetC.refID = MetC.clusterVector.vec[1].ID
 		end
