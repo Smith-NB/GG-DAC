@@ -176,13 +176,13 @@ function getAcceptanceBoolean(MetC::HISTOMetC, oldCluster::Cluster, newCluster::
 		end
 
 		simOld = getCNASimilarity(getCNA(oldCluster), MetC.refCNA)
-		binOld = simOld == 1.0 ? trunc(Int64, 1/MetC.delta) : trunc(Int64, simOld/MetC.delta) # get bin of old Cluster
+		binOld = simOld == 1.0 ? trunc(Int64, 1/MetC.delta) : trunc(Int64, simOld/MetC.delta) + 1 # get bin of old Cluster
 		hOld   = MetC.hist[binOld]/histSum # get height (normalised) of bars
 		
 		put!(MetC.io[2], "\nsimOld=$(simOld)\nbinOld=$(binOld)\nhOld=$(hOld)")
 
 		simNew = getCNASimilarity(getCNA(newCluster), MetC.refCNA)
-		binNew = simNew == 1.0 ? trunc(Int64, 1/MetC.delta) : trunc(Int64, simNew/MetC.delta) # get bin of new Cluster
+		binNew = simNew == 1.0 ? trunc(Int64, 1/MetC.delta) : trunc(Int64, simNew/MetC.delta) + 1 # get bin of new Cluster
 		hNew   = MetC.hist[binNew]/histSum # get height (normalised) of bars
 
 		put!(MetC.io[2], "\nsimNew=$(simNew)\nbinNew=$(binNew)\nhNew=$(hNew)")
