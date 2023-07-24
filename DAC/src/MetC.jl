@@ -178,9 +178,13 @@ function getAcceptanceBoolean(MetC::HISTOMetC, oldCluster::Cluster, newCluster::
 		binOld = simOld != 1.0 ? trunc(Int64, 1/MetC.delta) : trunc(Int64, simOld/MetC.delta) # get bin of old Cluster
 		hOld   = MetC.hist[binOld]/histSum # get height (normalised) of bars
 		
+		put!(MetC.io[2], "\nsimOld=$(simOld)\nbinOld=$(binOld)\nhOld=$(hOld)")
+
 		simNew = getCNASimilarity(getCNA(newCluster), MetC.refCNA)
 		binNew = simNew != 1.0 ? trunc(Int64, 1/MetC.delta) : trunc(Int64, simNew/MetC.delta) # get bin of new Cluster
 		hNew   = MetC.hist[binNew]/histSum # get height (normalised) of bars
+
+		put!(MetC.io[2], "\nsimNew=$(simNew)\nbinNew=$(binNew)\nhNew=$(hNew)")\
 
 		hScore = MetC.w * (hOld - hNew)
 		updateHist = true
@@ -189,7 +193,7 @@ function getAcceptanceBoolean(MetC::HISTOMetC, oldCluster::Cluster, newCluster::
 	probability = exp((oldCluster.energy - newCluster.energy + hScore) / MetC.kT)	
 
 	# push a string to the channel then take the string in the channel and print it to the output file.
-	put!(MetC.io[2], "\nhScore = $hScore)\nChance to accept = " * string(probability))
+	put!(MetC.io[2], "\nhScore = $(hScore)\nChance to accept = " * string(probability))
 	while isready(MetC.io[2])
 		print(MetC.io[1], take!(MetC.io[2]))
 	end
