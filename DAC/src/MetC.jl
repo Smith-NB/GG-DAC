@@ -184,7 +184,7 @@ function getAcceptanceBoolean(MetC::HISTOMetC, oldCluster::Cluster, newCluster::
 		binNew = simNew != 1.0 ? trunc(Int64, 1/MetC.delta) : trunc(Int64, simNew/MetC.delta) # get bin of new Cluster
 		hNew   = MetC.hist[binNew]/histSum # get height (normalised) of bars
 
-		put!(MetC.io[2], "\nsimNew=$(simNew)\nbinNew=$(binNew)\nhNew=$(hNew)")\
+		put!(MetC.io[2], "\nsimNew=$(simNew)\nbinNew=$(binNew)\nhNew=$(hNew)")
 
 		hScore = MetC.w * (hOld - hNew)
 		updateHist = true
