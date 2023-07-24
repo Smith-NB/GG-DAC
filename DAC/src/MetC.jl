@@ -161,7 +161,6 @@ function getAcceptanceBoolean(MetC::HISTOMetC, oldCluster::Cluster, newCluster::
 	binNew = nothing
 	put!(MetC.io[2], "\nlenRefCNA=$(length(MetC.refCNA)) timeElapsed=$(MetC.timeElapsed)")
 	if length(MetC.refCNA) == 0
-		put!(MetC.io[2], "\nChance to accept = " * string(probability))
 		if MetC.timeElapsed >= MetC.waitTime
 			MetC.refCNA = MetC.clusterVector.vec[1].CNA
 			MetC.refID = MetC.clusterVector.vec[1].ID
