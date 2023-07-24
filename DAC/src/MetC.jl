@@ -157,10 +157,11 @@ function getAcceptanceBoolean(MetC::HISTOMetC, oldCluster::Cluster, newCluster::
 		return true
 	end
 
-
 	updateHist = false
 	binNew = nothing
+	put!(MetC.io[2], "\nlenRefCNA=$(length(refCNA)) timeElapsed=$(MetC.timeElapsed)")
 	if length(MetC.refCNA) == 0
+		put!(MetC.io[2], "\nChance to accept = " * string(probability))
 		if MetC.timeElapsed >= MetC.waitTime
 			MetC.refCNA = MetC.clusterVector.vec[1].CNA
 			MetC.refID = MetC.clusterVector.vec[1].ID
@@ -189,7 +190,7 @@ function getAcceptanceBoolean(MetC::HISTOMetC, oldCluster::Cluster, newCluster::
 	probability = exp((oldCluster.energy - newCluster.energy + hScore) / MetC.kT)	
 
 	# push a string to the channel then take the string in the channel and print it to the output file.
-	put!(MetC.io[2], "\nChance to accept = " * string(probability))
+	put!(MetC.io[2], "\nhScore = $hScore)\nChance to accept = " * string(probability))
 	while isready(MetC.io[2])
 		print(MetC.io[1], take!(MetC.io[2]))
 	end
