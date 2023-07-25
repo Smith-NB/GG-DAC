@@ -208,3 +208,88 @@ function getAcceptanceBoolean(MetC::HISTOMetC, oldCluster::Cluster, newCluster::
 	return accept
 
 end
+
+
+#=============================================================================#
+#================================HISTOAbsMetC=================================#
+#=============================================================================#
+
+mutable struct HISTOAbsMetC <: MetC
+	kT::Float64
+	w::Float64
+	delta::Float64
+	resetPeriod::Float64
+	refCNA::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}
+	refID::Int64
+	clusterVector::ClusterVector
+	waitTime::Int64
+	timeElapsed::Int64
+	hist::Vector{Int64}
+	io::Tuple{IO, Channel}
+end
+
+function HISTOAbsMetC(kT::Float64, w::Float64, delta::Float64, resetPeriod::Float64, clusterVector::ClusterVector, waitTime::Int64, io::Tuple{IO, Channel})
+	refCNA = Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}()
+	refID = -1
+	timeElapsed = 0
+	hist = zeros(Int64, trunc(Int64, 1/delta))
+	return HISTOAbsMetC(kT, w, delta, resetPeriod, refCNA, refID, clusterVector, waitTime, timeElapsed, hist, io)
+end
+
+function getAcceptanceBoolean(MetC::HISTOAbsMetC, oldCluster::Cluster, newCluster::Cluster)
+
+	if newCluster.energy < oldCluster.energy
+		return true
+	end
+
+	updateHist = false
+	binNew = nothing
+	put!(MetC.io[2], "\nlenRefCNA=$(length(MetC.refCNA)) timeElapsed=$(MetC.timeElapsed)")
+	if length(MetC.refCNA) == 0
+		if MetC.timeElapsed >= MetC.waitTime
+			MetC.refCNA = MetC.clusterVector.vec[1].CNA
+			MetC.refID = MetC.clusterVector.vec[1].ID
+			put!(MetC.io[2], "\nSETTING refCNA: $(MetC.refCNA)\nrefID: $(MetC.refID)")
+		end
+		MetC.timeElapsed += 1
+
+		hScore = 0
+	else
+		histSum = sum(MetC.hist) # used to normalise bar heights
+		if histSum == 0 # avoid division by zero
+			histSum = 1
+		end
+
+		simOld = getCNASimilarity(getCNA(oldCluster), MetC.refCNA)
+		binOld = simOld == 1.0 ? trunc(Int64, 1/MetC.delta) : trunc(Int64, simOld/MetC.delta) + 1 # get bin of old Cluster
+		hOld   = MetC.hist[binOld]/histSum # get height (normalised) of bars
+		
+		put!(MetC.io[2], "\nsimOld=$(simOld)\nbinOld=$(binOld)\nhOld=$(hOld)")
+
+		simNew = getCNASimilarity(getCNA(newCluster), MetC.refCNA)
+		binNew = simNew == 1.0 ? trunc(Int64, 1/MetC.delta) : trunc(Int64, simNew/MetC.delta) + 1 # get bin of new Cluster
+		hNew   = MetC.hist[binNew]/histSum # get height (normalised) of bars
+
+		put!(MetC.io[2], "\nsimNew=$(simNew)\nbinNew=$(binNew)\nhNew=$(hNew)")
+
+		hScore = MetC.w * (hOld - hNew)
+		updateHist = true
+	end
+	
+	probability = (1 - MetC.w) * exp((oldCluster.energy - newCluster.energy) / MetC.kT) + hScore
+
+	# push a string to the channel then take the string in the channel and print it to the output file.
+	put!(MetC.io[2], "\nhScore = $(hScore)\nChance to accept = " * string(probability))
+	while isready(MetC.io[2])
+		print(MetC.io[1], take!(MetC.io[2]))
+	end
+	
+	accept = probability > rand()
+
+	if accept && updateHist
+		MetC.hist[binNew] += 1
+	end
+
+	return accept
+
+end
