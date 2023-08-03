@@ -581,15 +581,15 @@ end
 Takes a path (should end in ".xyz") to a file to write and saves a Cluster type
 to that path as a .xyz file.
 """
-function write_xyz(filename::String, positions::Matrix{Float64}, formula::Dict{String, Int64})
+function write_xyz(filename::String, positions::Matrix{Float64}, formula::Dict{String, Int64}, cell::Float64)
 	
 	newfile = open(filename, "w")
 	natoms = getNAtoms(positions)
 
 	print(newfile, natoms, "\n")
 
-
-	print(newfile, "Properties=species:S:1:pos:R:3 pbc=\"F F F\"\n")
+	print(newfile, "Lattice=\"$(cell) 0.0 0.0 0.0 $(cell) 0.0 0.0 0.0 $(cell)")
+	print(newfile, "\" Properties=species:S:1:pos:R:3 pbc=\"F F F\"\n")
 
 	elements = keys(formula)
 	tab = "        " #8 spaces
