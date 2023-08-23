@@ -297,6 +297,7 @@ function getInclusionRadiusOfCluster(coords::Matrix{Float64})
     end
 
     return maxSize/2.0
+end	
 
 function getInclusionRadiusOfCluster(atoms::Cluster)
     return getInclusionRadiusOfCluster(atoms.positions)

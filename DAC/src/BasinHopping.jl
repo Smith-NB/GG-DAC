@@ -11,7 +11,7 @@ struct BasinHopper
 	boxLength::Number
 	vacuumAdd::Number
 	kT::Number
-	dr::Number
+	perturber::Function
 	fmax::Number
 	rcut::Number
 	walltime::Number
@@ -199,7 +199,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 		iterations += 1
 
 		# Perturb and optimize with the workhorse.
-		setPositions!(bh.workhorse, perturbCluster(getPositions(oldCluster), bh.dr))			
+		setPositions!(bh.workhorse, bh.perturber(getPositions(oldCluster)))
 		bh.workhorseOpt.run(fmax=bh.fmax)
 
 		# Update newCluster with optimized workhorse.

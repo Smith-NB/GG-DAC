@@ -83,5 +83,5 @@ function sphericalToCartesian(ρ::Float64, θ::Float64, φ::Float64)
     y = ρ * sin(φ) * sin(θ)
     z = ρ * cos(φ)
 
-    return (x, y, z)
+    return [x, y, z]
 end
