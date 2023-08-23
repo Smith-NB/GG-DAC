@@ -128,7 +128,7 @@ end
 
 function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additionalInfo::Dict{String, Any}, version::String)
 
-	if version != "v1.1.1" || bh.version != "v1.1.1"
+	if version != "v1.2.0" || bh.version != "v1.2.0"
 		println(bh.io[1], "The version number passed to the hop function or BasinHopper constructor does not match\nthe hard coded
 			version number. Double check you are using the correct run script. This program will now terminate.")
 		return nothing
