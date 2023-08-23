@@ -207,22 +207,27 @@ getNAtoms(atoms::Cluster) = getNAtoms(atoms.positions)
 Returns the distances between all atoms from a Maxtrix of atomic coordinates.
 """
 function getDistances(coordinates::Matrix{Float64})
-	natoms = trunc(Int, length(coordinates)/3)
+    natoms = trunc(Int, length(coordinates)/3)
 
 
-	d2 = zeros(Float64, natoms, natoms, 3)
-	r = zeros(Float64, natoms, natoms)
-	
-	for i in 1:3
-		for j in 1:natoms
-			d2[j, :, i] = (coordinates[j, i] .- coordinates[:, i]).^2
-		end
-	end
-	for ii in 1:natoms
-		r[:, ii] = sum(d2[ii, :, :], dims=2).^0.5
-	end
-	
-	return r
+    d2 = Array{Float64}(undef, natoms, natoms, 3)
+    r = Matrix{Float64}(undef, natoms, natoms)
+
+    for k in 1:3
+        for i in 1:natoms
+            d2[i, i, k] = 0.0
+            for j in i+1:natoms
+                d2[j, i, k] = (coordinates[i, k] - coordinates[j, k])^2
+                d2[i, j, k] = d2[j, i, k]
+            end
+        end
+    end
+    for i in 1:natoms
+        r[:, i] = sum(d2[i, :, :], dims=2).^0.5
+    end
+
+    
+    return r
 end
 
 """
@@ -266,6 +271,35 @@ Returns the neighbours for all atoms from a Cluster type, neighbours being other
 """
 function getNeighboursList(atoms::Cluster, maxBondingDistance::Float64)
 	return getNeighboursList(atoms.positions, maxBondingDistance)
+end
+
+
+"""
+	inclusionRadiusOfCluster(coords::Matrix{Float64})
+
+Returns the radous of a sphere that can completely inclose the cluster with a radium from the center of mass of
+	to the most out atom from the centre of mass.
+"""
+function getInclusionRadiusOfCluster(coords::Matrix{Float64})
+    maxSize = -Inf
+    N = getNAtoms(coords)
+    for i in 1:N
+        for j in i+1:N
+            xDist = coords[i, 1] - coords[j, 1]
+            yDist = coords[i, 2] - coords[j, 2]
+            zDist = coords[i, 3] - coords[j, 3]
+            dist = sqrt(xDist^2 + yDist^2 + zDist^2)
+
+            if dist > maxSize
+                maxSize = dist
+            end
+        end
+    end
+
+    return maxSize/2.0
+
+function getInclusionRadiusOfCluster(atoms::Cluster)
+    return getInclusionRadiusOfCluster(atoms.positions)
 end
 
 

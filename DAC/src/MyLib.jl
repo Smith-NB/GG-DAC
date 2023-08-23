@@ -74,3 +74,14 @@ function binarySearch(A::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}, n::In
 
     return -1
 end
+
+function sphericalToCartesian(ρ::Float64, θ::Float64, φ::Float64)
+    φ *= π/180
+    θ *= π/180
+
+    x = ρ * sin(φ) * cos(θ)
+    y = ρ * sin(φ) * sin(θ)
+    z = ρ * cos(φ)
+
+    return (x, y, z)
+end
