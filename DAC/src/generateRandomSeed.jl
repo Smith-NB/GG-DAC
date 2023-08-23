@@ -99,7 +99,6 @@ function perturbClusterSurface(coords::Matrix{Float64}, nAtomsToMove::Number, rC
 	minCoordAtoms = findall(i->i==minCoord, coordinationNumbers)
 
 	atomsToMove = nothing
-	println("\n\n$minCoordAtoms\n\n")
 	# if the number of low coord atoms is less than nAtomsToMove, only move the fewer amount
 	if length(minCoordAtoms) <= nAtomsToMove 
 		nAtomsToMove = length(minCoordAtoms)
