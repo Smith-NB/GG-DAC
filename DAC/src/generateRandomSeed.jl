@@ -1,3 +1,9 @@
+"""
+	isClusterCoherent(clusterCoords::Matrix{Float64}, maxDistance::Number)
+
+Returns true if a cluster is coherent, else false. Cohenerncy is that all atoms form one cluster - if one or more atoms
+	cannot be reached by any other atom in a graph via bonds of size maxDistance, the cluster is incoherent.
+"""
 function isClusterCoherent(clusterCoords::Matrix{Float64}, maxDistance::Number)
 
 	N = trunc(Int, length(clusterCoords)/3)
@@ -21,7 +27,12 @@ function isClusterCoherent(clusterCoords::Matrix{Float64}, maxDistance::Number)
 	return length(atomsNotReached) == 0
 end
 
+"""
+	generateRandomSeed(formula::Dict{String, Int64}, boxLength::Number, vacuumAdd::Number, returnCoordsOnly::Bool=false)
 
+Returns a DC.Cluster or Matrix{Float64} (`returnCoordsOnly` dependant) type with randomly generated positions of atoms inside
+	a box of size `boxLength` and with a cell of size `boxLength` + `vacuumAdd`.
+"""
 function generateRandomSeed(formula::Dict{String, Int64}, boxLength::Number, vacuumAdd::Number, returnCoordsOnly::Bool=false)
 	# get number of atoms
 	N = 0
@@ -152,6 +163,13 @@ function perturbCluster(atoms::Cluster, dr::Float64)
 	return perturbCluster(atoms.positions, dr)
 end
 
+"""	
+	getSeedFromPool(pool::Vector{Matrix{Float64}}, n::Int64) 
+	
+Given a `pool` of cluster coordinates of size `n`, randomly return one the coordinates of one
+	cluster in the pool.
+
+"""
 function getSeedFromPool(pool::Vector{Matrix{Float64}}, n::Int64)
 	r = rand(1:n)
 	return pool[r]
