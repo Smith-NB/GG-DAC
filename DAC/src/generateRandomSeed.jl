@@ -115,11 +115,12 @@ function perturbClusterSurface(coords::Matrix{Float64}, nAtomsToMove::Number, rC
 	end
 
 	sphericalCoords = rand(nAtomsToMove, 2)*360
+	newCoords = copy(coords)
 	for i in 1:nAtomsToMove
-		coords[atomsToMove[i], :] = sphericalToCartesian(radius, sphericalCoords[i, 1], sphericalCoords[i, 2]) + centreOfMass[:]
+		newCoords[atomsToMove[i], :] = sphericalToCartesian(radius, sphericalCoords[i, 1], sphericalCoords[i, 2]) + centreOfMass[:]
 	end
 
-	return coords
+	return newCoords
 
 end
 
