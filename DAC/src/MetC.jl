@@ -18,23 +18,19 @@ Returns true or false for accepting the move from the oldCluster to the newClust
 	based on the EnergyMetC.
 """
 function getAcceptanceBoolean(MetC::EnergyMetC, oldCluster::Cluster, newCluster::Cluster)
-	
+	metcLog = ""
 	if newCluster.energy < oldCluster.energy
-		return true
+		return true, metcLog
 	end
 
 	probability = exp((oldCluster.energy - newCluster.energy) / MetC.kT)
 	
 	
-	# push a string to the channel then take the string in the channel and print it to the output file.
-	put!(MetC.io[2], "\nChance to accept = " * string(probability))
-	while isready(MetC.io[2])
-		print(MetC.io[1], take!(MetC.io[2]))
-	end
+	metcLog += "\nChance to accept = $(string(probability))"
 	
 	
 	accept = probability > rand()
-	return accept
+	return accept, metcLog
 
 end
 
@@ -58,30 +54,28 @@ Returns true or false for accepting the move from the oldCluster to the newClust
 	similar to some reference than `sigmaCut`, the hop is rejected.
 """
 function getAcceptanceBoolean(MetC::EnergyWithReferenceRestrictionMetC, oldCluster::Cluster, newCluster::Cluster)
+	metcLog = ""
 	s = getCNASimilarity(MetC.refCNA, getCNAProfile(newCluster))
+
 	if s < MetC.sigmaCut
-		put!(MetC.io[2], "\nChance to accept = 0\nSimilarity to ref: $s")
-		while isready(MetC.io[2])
-			print(MetC.io[1], take!(MetC.io[2]))
-		end
-		return false
+
+		metcLog +=  "\nChance to accept = 0\nSimilarity to ref: $s"
+		return false, metcLog
 	end
 
 	if newCluster.energy < oldCluster.energy
-		return true
+		return true, metcLog
 	end
 
 	probability = exp((oldCluster.energy - newCluster.energy) / MetC.kT)
 	
 	
 	# push a string to the channel then take the string in the channel and print it to the output file.
-	put!(MetC.io[2], "\nChance to accept = " * string(probability))
-	while isready(MetC.io[2])
-		print(MetC.io[1], take!(MetC.io[2]))
-	end
+	metcLog += "\nChance to accept = $(string(probability))"
+
 	
 	accept = probability > rand()
-	return accept
+	return accept, metcLog
 
 end
 
@@ -106,21 +100,19 @@ Returns true or false for accepting the move from the oldCluster to the newClust
 	based on the EnergyAndStructureMetC.
 """
 function getAcceptanceBoolean(MetC::EnergyAndStructureMetC, oldCluster::Cluster, newCluster::Cluster)
-
+	metcLog = ""
 	if MetC.autoAcceptDownhillMove && getEnergy(newCluster) < getEnergy(oldCluster)
-		return true
+		return true, metcLog
 	end
 
 	eScore = MetC.eFunction(getEnergy(oldCluster), getEnergy(newCluster)) * MetC.cE
 	simScore = MetC.simFunction(getCNASimilarity(getCNA(oldCluster), getCNA(newCluster))) * MetC.cSCM
 
-	put!(MetC.io[2], "\nChance to accept = " * string(eScore + simScore))
-	while isready(MetC.io[2])
-		print(MetC.io[1], take!(MetC.io[2]))
-	end
+	metcLog += "\nChance to accept = $(string(eScore + simScore))"
+
 
 	accept = (eScore + simScore) > rand()
-	return accept
+	return accept, metcLog
 
 end	
 
@@ -154,19 +146,19 @@ function HISTOMetC(kT::Float64, w::Float64, delta::Float64, resetPeriod::Float64
 end
 
 function getAcceptanceBoolean(MetC::HISTOMetC, oldCluster::Cluster, newCluster::Cluster)
-
+	metcLog = ""
 	if newCluster.energy < oldCluster.energy
-		return true
+		return true, metcLog
 	end
 
 	updateHist = false
 	binNew = nothing
-	put!(MetC.io[2], "\nlenRefCNA=$(length(MetC.refCNA)) timeElapsed=$(MetC.timeElapsed)")
+	metcLog +=  "\nlenRefCNA=$(length(MetC.refCNA)) timeElapsed=$(MetC.timeElapsed)"
 	if length(MetC.refCNA) == 0
 		if MetC.timeElapsed >= MetC.waitTime
 			MetC.refCNA = MetC.clusterVector.vec[1].CNA
 			MetC.refID = MetC.clusterVector.vec[1].ID
-			put!(MetC.io[2], "\nSETTING refCNA: $(MetC.refCNA)\nrefID: $(MetC.refID)")
+			metcLog += "\nSETTING refCNA: $(MetC.refCNA)\nrefID: $(MetC.refID)"
 		end
 		MetC.timeElapsed += 1
 
@@ -181,13 +173,13 @@ function getAcceptanceBoolean(MetC::HISTOMetC, oldCluster::Cluster, newCluster::
 		binOld = simOld == 1.0 ? trunc(Int64, 1/MetC.delta) : trunc(Int64, simOld/MetC.delta) + 1 # get bin of old Cluster
 		hOld   = MetC.hist[binOld]/histSum # get height (normalised) of bars
 		
-		put!(MetC.io[2], "\nsimOld=$(simOld)\nbinOld=$(binOld)\nhOld=$(hOld)")
+		metcLog += "\nsimOld=$(simOld)\nbinOld=$(binOld)\nhOld=$(hOld)"
 
 		simNew = getCNASimilarity(getCNA(newCluster), MetC.refCNA)
 		binNew = simNew == 1.0 ? trunc(Int64, 1/MetC.delta) : trunc(Int64, simNew/MetC.delta) + 1 # get bin of new Cluster
 		hNew   = MetC.hist[binNew]/histSum # get height (normalised) of bars
 
-		put!(MetC.io[2], "\nsimNew=$(simNew)\nbinNew=$(binNew)\nhNew=$(hNew)")
+		metcLog += "\nsimNew=$(simNew)\nbinNew=$(binNew)\nhNew=$(hNew)"
 
 		hScore = MetC.w * (hOld - hNew)
 		updateHist = true
@@ -195,19 +187,15 @@ function getAcceptanceBoolean(MetC::HISTOMetC, oldCluster::Cluster, newCluster::
 	
 	probability = exp((oldCluster.energy - newCluster.energy + hScore) / MetC.kT)	
 
-	# push a string to the channel then take the string in the channel and print it to the output file.
-	put!(MetC.io[2], "\nhScore = $(hScore)\nChance to accept = " * string(probability))
-	while isready(MetC.io[2])
-		print(MetC.io[1], take!(MetC.io[2]))
-	end
-	
+	metcLog +=  "\nhScore = $(hScore)\nChance to accept = $(string(probability))"
+
 	accept = probability > rand()
 
 	if accept && updateHist
 		MetC.hist[binNew] += 1
 	end
 
-	return accept
+	return accept, metcLog
 
 end
 
@@ -241,19 +229,19 @@ function HISTOAttMetC(kT::Float64, w::Float64, delta::Float64, resetPeriod::Floa
 end
 
 function getAcceptanceBoolean(MetC::HISTOAttMetC, oldCluster::Cluster, newCluster::Cluster)
-
+	metcLog = ""
 	if newCluster.energy < oldCluster.energy
-		return true
+		return true, metcLog
 	end
 
 	updateHist = false
 	binNew = nothing
-	put!(MetC.io[2], "\nlenRefCNA=$(length(MetC.refCNA)) timeElapsed=$(MetC.timeElapsed)")
+	metcLog += "\nlenRefCNA=$(length(MetC.refCNA)) timeElapsed=$(MetC.timeElapsed)"
 	if length(MetC.refCNA) == 0
 		if MetC.timeElapsed >= MetC.waitTime
 			MetC.refCNA = MetC.clusterVector.vec[1].CNA
 			MetC.refID = MetC.clusterVector.vec[1].ID
-			put!(MetC.io[2], "\nSETTING refCNA: $(MetC.refCNA)\nrefID: $(MetC.refID)")
+			metcLog += "\nSETTING refCNA: $(MetC.refCNA)\nrefID: $(MetC.refID)"
 		end
 		MetC.timeElapsed += 1
 
@@ -268,13 +256,13 @@ function getAcceptanceBoolean(MetC::HISTOAttMetC, oldCluster::Cluster, newCluste
 		binOld = simOld == 1.0 ? trunc(Int64, 1/MetC.delta) : trunc(Int64, simOld/MetC.delta) + 1 # get bin of old Cluster
 		hOld   = MetC.hist[binOld]/histSum # get height (normalised) of bars
 		
-		put!(MetC.io[2], "\nsimOld=$(simOld)\nbinOld=$(binOld)\nhOld=$(hOld)")
+		metcLog += "\nsimOld=$(simOld)\nbinOld=$(binOld)\nhOld=$(hOld)"
 
 		simNew = getCNASimilarity(getCNA(newCluster), MetC.refCNA)
 		binNew = simNew == 1.0 ? trunc(Int64, 1/MetC.delta) : trunc(Int64, simNew/MetC.delta) + 1 # get bin of new Cluster
 		hNew   = MetC.hist[binNew]/histSum # get height (normalised) of bars
 
-		put!(MetC.io[2], "\nsimNew=$(simNew)\nbinNew=$(binNew)\nhNew=$(hNew)")
+		metcLog += "\nsimNew=$(simNew)\nbinNew=$(binNew)\nhNew=$(hNew)"
 
 		hScore = MetC.w * (hOld - hNew)
 		updateHist = true
@@ -283,10 +271,8 @@ function getAcceptanceBoolean(MetC::HISTOAttMetC, oldCluster::Cluster, newCluste
 	probability = exp((oldCluster.energy - newCluster.energy + hScore) / MetC.kT)	
 
 	# push a string to the channel then take the string in the channel and print it to the output file.
-	put!(MetC.io[2], "\nhScore = $(hScore)\nChance to accept = " * string(probability))
-	while isready(MetC.io[2])
-		print(MetC.io[1], take!(MetC.io[2]))
-	end
+	metcLog += "\nhScore = $(hScore)\nChance to accept = $(string(probability))"
+
 	
 	accept = probability > rand()
 
@@ -296,7 +282,7 @@ function getAcceptanceBoolean(MetC::HISTOAttMetC, oldCluster::Cluster, newCluste
 		MetC.hist[binOld] += 1
 	end
 
-	return accept
+	return accept, metcLog
 
 end
 
@@ -328,19 +314,19 @@ function HISTOAbsMetC(kT::Float64, w::Float64, delta::Float64, resetPeriod::Floa
 end
 
 function getAcceptanceBoolean(MetC::HISTOAbsMetC, oldCluster::Cluster, newCluster::Cluster)
-
+	metcLog = ""
 	if newCluster.energy < oldCluster.energy
-		return true
+		return true, metcLog
 	end
 
 	updateHist = false
 	binNew = nothing
-	put!(MetC.io[2], "\nlenRefCNA=$(length(MetC.refCNA)) timeElapsed=$(MetC.timeElapsed)")
+	metcLog += "\nlenRefCNA=$(length(MetC.refCNA)) timeElapsed=$(MetC.timeElapsed)"
 	if length(MetC.refCNA) == 0
 		if MetC.timeElapsed >= MetC.waitTime
 			MetC.refCNA = MetC.clusterVector.vec[1].CNA
 			MetC.refID = MetC.clusterVector.vec[1].ID
-			put!(MetC.io[2], "\nSETTING refCNA: $(MetC.refCNA)\nrefID: $(MetC.refID)")
+			metcLog += "\nSETTING refCNA: $(MetC.refCNA)\nrefID: $(MetC.refID)"
 		end
 		MetC.timeElapsed += 1
 
@@ -355,13 +341,13 @@ function getAcceptanceBoolean(MetC::HISTOAbsMetC, oldCluster::Cluster, newCluste
 		binOld = simOld == 1.0 ? trunc(Int64, 1/MetC.delta) : trunc(Int64, simOld/MetC.delta) + 1 # get bin of old Cluster
 		hOld   = MetC.hist[binOld]/histSum # get height (normalised) of bars
 		
-		put!(MetC.io[2], "\nsimOld=$(simOld)\nbinOld=$(binOld)\nhOld=$(hOld)")
+		metcLog += "\nsimOld=$(simOld)\nbinOld=$(binOld)\nhOld=$(hOld)"
 
 		simNew = getCNASimilarity(getCNA(newCluster), MetC.refCNA)
 		binNew = simNew == 1.0 ? trunc(Int64, 1/MetC.delta) : trunc(Int64, simNew/MetC.delta) + 1 # get bin of new Cluster
 		hNew   = MetC.hist[binNew]/histSum # get height (normalised) of bars
 
-		put!(MetC.io[2], "\nsimNew=$(simNew)\nbinNew=$(binNew)\nhNew=$(hNew)")
+		metcLog += "\nsimNew=$(simNew)\nbinNew=$(binNew)\nhNew=$(hNew)"
 
 		hScore = MetC.w * (hOld - hNew)
 		updateHist = true
@@ -370,10 +356,7 @@ function getAcceptanceBoolean(MetC::HISTOAbsMetC, oldCluster::Cluster, newCluste
 	probability = (1 - MetC.w) * exp((oldCluster.energy - newCluster.energy) / MetC.kT) + hScore
 
 	# push a string to the channel then take the string in the channel and print it to the output file.
-	put!(MetC.io[2], "\nhScore = $(hScore)\nChance to accept = " * string(probability))
-	while isready(MetC.io[2])
-		print(MetC.io[1], take!(MetC.io[2]))
-	end
+	metcLog += "\nhScore = $(hScore)\nChance to accept = $(string(probability))"
 	
 	accept = probability > rand()
 
@@ -381,6 +364,19 @@ function getAcceptanceBoolean(MetC::HISTOAbsMetC, oldCluster::Cluster, newCluste
 		MetC.hist[binNew] += 1
 	end
 
-	return accept
+	return accept, metcLog
 
+end
+
+#=============================================================================#
+#==================================ITCMetC====================================#
+#=============================================================================#
+
+mutable struct ITCMetC <: MetC
+	kT::Float64
+	threshold::Float64
+	explorationVector::ClusterVector
+	useExplorationDataOnly::Bool
+	nThreads::Int64
+	io::Tuple{IO, Channel}
 end

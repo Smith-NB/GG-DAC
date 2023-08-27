@@ -75,6 +75,12 @@ function binarySearch(A::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}, n::In
     return -1
 end
 
+"""
+    sphericalToCartesian(ρ::Float64, θ::Float64, φ::Float64)
+
+Takes a radius `ρ` and two spherical coordinates, `φ` and `θ` and converts them
+into 3D Cartesian coordinates, returning a Vector of these coordinates.
+"""
 function sphericalToCartesian(ρ::Float64, θ::Float64, φ::Float64)
     φ *= π/180
     θ *= π/180

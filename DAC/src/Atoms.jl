@@ -688,11 +688,29 @@ function formulaDictToString(atoms::Cluster)
 	return formulaDictToString(atoms.formula)
 end
 
+"""
+	view(atoms::Cluster)
+
+Takes a Cluster type and calls ASE gui module for visualisation.
+"""
 function view(atoms::Cluster)
 	_view = pyimport("ase.visualize").view
 	_atoms = pyimport("ase").Atoms
 
 	atoms = _atoms(formulaDictToString(atoms.formula), positions = atoms.positions, cell = atoms.cell)
 	_view(atoms)
+end
+
+function view(coords::Matrix{Float64}, formula::Dict{String, Int64})
+	_view = pyimport("ase.visualize").view
+	_atoms = pyimport("ase").Atoms
+
+	atoms = _atoms(formulaDictToString(formula), positions = coords)
+	_view(atoms)
+end
+
+function view(atoms::ClusterCompressed, formula::Dict{String, Int64})
+	view(atoms.positions, formula)
+
 end
 
