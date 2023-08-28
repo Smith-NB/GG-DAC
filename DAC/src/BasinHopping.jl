@@ -216,6 +216,9 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 
 		# Check if the cluster is unique, add it to the vector of clusters, and update the CNA log.
 		# clusterID will be negative if is was already in the vector.
+		put!(clusterVectorChannel, newCluster)
+		clusterID = addToVector!(take!(clusterVectorChannel, bh.clusterVector, 2))
+		"""
 		begin
 			lock(clusterVectorLock)
 			try
@@ -225,7 +228,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 				unlock(clusterVectorLock)
 			end
 		end
-
+		"""
 		if clusterID > 0
 			logCNA(bh.CNAIO, clusterID, getCNA(newCluster), getEnergy(newCluster))
 			stepLog *= "\nGenerated new cluster:\n\tID = $clusterID\n\tE = $(getEnergy(newCluster))"
