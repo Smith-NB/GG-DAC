@@ -192,7 +192,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 
 		step += 1
 		stepLog = ""
-		stepLog += "\n================================\n")
+		stepLog += "\n================================\n"
 		stepLog += "Attempting step $step with Walker $(Threads.nthreads())"
 
 		#= Manual Garbage collection (gross). When using asap3 as the workhorse, something goes wrong such that the refcount
