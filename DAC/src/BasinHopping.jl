@@ -290,7 +290,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 
 			# All targets found, exit.
 			if allTargetsFound
-				stepLog += "\nAll targets have been located.\nRun ending.\n")
+				stepLog += "\nAll targets have been located.\nRun ending.\n"
 				break
 			end
 		end
@@ -298,7 +298,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 		# Check if time for reseed. Will not trigger if hopsToReseed is negative.
 		if timeToReseed!(bh.reseeder)
 			step += 1 #treat the reseed as an additional hop.
-			stepLog +=  "$(getReseedPeriod(bh.reseeder)) steps have occured since the last improvement. reseeding.\n")
+			stepLog +=  "$(getReseedPeriod(bh.reseeder)) steps have occured since the last improvement. reseeding.\n"
 			
 			# Generate a new seed (only update the positions of oldCluster).
 			setPositions!(bh.workhorse, bh.reseeder.getReseedStructure(bh.reseeder.args...))
@@ -311,9 +311,9 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 			clusterID = addToVector!(oldCluster, bh.clusterVector, 2)
 			if clusterID > 0
 				logCNA(bh.CNAIO, clusterID, getCNA(oldCluster), getEnergy(oldCluster))
-				stepLog += "\nGenerated new cluster:\n\tID = $clusterID\n\tE = $(getEnergy(oldCluster))")
+				stepLog += "\nGenerated new cluster:\n\tID = $clusterID\n\tE = $(getEnergy(oldCluster))"
 			else
-				stepLog += "\nRegenerated cluster:\n\tID = $clusterID\n\tE = $(getEnergy(oldCluster))")
+				stepLog += "\nRegenerated cluster:\n\tID = $clusterID\n\tE = $(getEnergy(oldCluster))"
 			end
 
 			# Log the step. 
