@@ -204,8 +204,9 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 		iterations += 1
 
 		# Perturb and optimize with the workhorse.
-		setPositions!(bh.workhorse, bh.perturber(getPositions(oldCluster)))
-		stepLog *= "\nOldEnergy = $(getEnergy(oldCluster))"
+		newPos, pertrubString = bh.perturber(getPositions(oldCluster))
+		setPositions!(bh.workhorse, newPos)
+		stepLog *= "\n$(pertrubString)\nOldEnergy = $(getEnergy(oldCluster))"
 		bh.workhorseOpt.run(fmax=bh.fmax)
 
 		# Update newCluster with optimized workhorse.
