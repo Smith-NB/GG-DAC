@@ -26,7 +26,7 @@ function getAcceptanceBoolean(MetC::EnergyMetC, oldCluster::Cluster, newCluster:
 	probability = exp((oldCluster.energy - newCluster.energy) / MetC.kT)
 	
 	
-	metcLog += "\nChance to accept = $(string(probability))"
+	metcLog *= "\nChance to accept = $(string(probability))"
 	
 	
 	accept = probability > rand()
@@ -59,7 +59,7 @@ function getAcceptanceBoolean(MetC::EnergyWithReferenceRestrictionMetC, oldClust
 
 	if s < MetC.sigmaCut
 
-		metcLog +=  "\nChance to accept = 0\nSimilarity to ref: $s"
+		metcLog *=  "\nChance to accept = 0\nSimilarity to ref: $s"
 		return false, metcLog
 	end
 
@@ -71,7 +71,7 @@ function getAcceptanceBoolean(MetC::EnergyWithReferenceRestrictionMetC, oldClust
 	
 	
 	# push a string to the channel then take the string in the channel and print it to the output file.
-	metcLog += "\nChance to accept = $(string(probability))"
+	metcLog *= "\nChance to accept = $(string(probability))"
 
 	
 	accept = probability > rand()
@@ -108,7 +108,7 @@ function getAcceptanceBoolean(MetC::EnergyAndStructureMetC, oldCluster::Cluster,
 	eScore = MetC.eFunction(getEnergy(oldCluster), getEnergy(newCluster)) * MetC.cE
 	simScore = MetC.simFunction(getCNASimilarity(getCNA(oldCluster), getCNA(newCluster))) * MetC.cSCM
 
-	metcLog += "\nChance to accept = $(string(eScore + simScore))"
+	metcLog *= "\nChance to accept = $(string(eScore + simScore))"
 
 
 	accept = (eScore + simScore) > rand()
@@ -153,12 +153,12 @@ function getAcceptanceBoolean(MetC::HISTOMetC, oldCluster::Cluster, newCluster::
 
 	updateHist = false
 	binNew = nothing
-	metcLog +=  "\nlenRefCNA=$(length(MetC.refCNA)) timeElapsed=$(MetC.timeElapsed)"
+	metcLog *=  "\nlenRefCNA=$(length(MetC.refCNA)) timeElapsed=$(MetC.timeElapsed)"
 	if length(MetC.refCNA) == 0
 		if MetC.timeElapsed >= MetC.waitTime
 			MetC.refCNA = MetC.clusterVector.vec[1].CNA
 			MetC.refID = MetC.clusterVector.vec[1].ID
-			metcLog += "\nSETTING refCNA: $(MetC.refCNA)\nrefID: $(MetC.refID)"
+			metcLog *= "\nSETTING refCNA: $(MetC.refCNA)\nrefID: $(MetC.refID)"
 		end
 		MetC.timeElapsed += 1
 
@@ -173,13 +173,13 @@ function getAcceptanceBoolean(MetC::HISTOMetC, oldCluster::Cluster, newCluster::
 		binOld = simOld == 1.0 ? trunc(Int64, 1/MetC.delta) : trunc(Int64, simOld/MetC.delta) + 1 # get bin of old Cluster
 		hOld   = MetC.hist[binOld]/histSum # get height (normalised) of bars
 		
-		metcLog += "\nsimOld=$(simOld)\nbinOld=$(binOld)\nhOld=$(hOld)"
+		metcLog *= "\nsimOld=$(simOld)\nbinOld=$(binOld)\nhOld=$(hOld)"
 
 		simNew = getCNASimilarity(getCNA(newCluster), MetC.refCNA)
 		binNew = simNew == 1.0 ? trunc(Int64, 1/MetC.delta) : trunc(Int64, simNew/MetC.delta) + 1 # get bin of new Cluster
 		hNew   = MetC.hist[binNew]/histSum # get height (normalised) of bars
 
-		metcLog += "\nsimNew=$(simNew)\nbinNew=$(binNew)\nhNew=$(hNew)"
+		metcLog *= "\nsimNew=$(simNew)\nbinNew=$(binNew)\nhNew=$(hNew)"
 
 		hScore = MetC.w * (hOld - hNew)
 		updateHist = true
@@ -187,7 +187,7 @@ function getAcceptanceBoolean(MetC::HISTOMetC, oldCluster::Cluster, newCluster::
 	
 	probability = exp((oldCluster.energy - newCluster.energy + hScore) / MetC.kT)	
 
-	metcLog +=  "\nhScore = $(hScore)\nChance to accept = $(string(probability))"
+	metcLog *=  "\nhScore = $(hScore)\nChance to accept = $(string(probability))"
 
 	accept = probability > rand()
 
@@ -236,12 +236,12 @@ function getAcceptanceBoolean(MetC::HISTOAttMetC, oldCluster::Cluster, newCluste
 
 	updateHist = false
 	binNew = nothing
-	metcLog += "\nlenRefCNA=$(length(MetC.refCNA)) timeElapsed=$(MetC.timeElapsed)"
+	metcLog *= "\nlenRefCNA=$(length(MetC.refCNA)) timeElapsed=$(MetC.timeElapsed)"
 	if length(MetC.refCNA) == 0
 		if MetC.timeElapsed >= MetC.waitTime
 			MetC.refCNA = MetC.clusterVector.vec[1].CNA
 			MetC.refID = MetC.clusterVector.vec[1].ID
-			metcLog += "\nSETTING refCNA: $(MetC.refCNA)\nrefID: $(MetC.refID)"
+			metcLog *= "\nSETTING refCNA: $(MetC.refCNA)\nrefID: $(MetC.refID)"
 		end
 		MetC.timeElapsed += 1
 
@@ -256,13 +256,13 @@ function getAcceptanceBoolean(MetC::HISTOAttMetC, oldCluster::Cluster, newCluste
 		binOld = simOld == 1.0 ? trunc(Int64, 1/MetC.delta) : trunc(Int64, simOld/MetC.delta) + 1 # get bin of old Cluster
 		hOld   = MetC.hist[binOld]/histSum # get height (normalised) of bars
 		
-		metcLog += "\nsimOld=$(simOld)\nbinOld=$(binOld)\nhOld=$(hOld)"
+		metcLog *= "\nsimOld=$(simOld)\nbinOld=$(binOld)\nhOld=$(hOld)"
 
 		simNew = getCNASimilarity(getCNA(newCluster), MetC.refCNA)
 		binNew = simNew == 1.0 ? trunc(Int64, 1/MetC.delta) : trunc(Int64, simNew/MetC.delta) + 1 # get bin of new Cluster
 		hNew   = MetC.hist[binNew]/histSum # get height (normalised) of bars
 
-		metcLog += "\nsimNew=$(simNew)\nbinNew=$(binNew)\nhNew=$(hNew)"
+		metcLog *= "\nsimNew=$(simNew)\nbinNew=$(binNew)\nhNew=$(hNew)"
 
 		hScore = MetC.w * (hOld - hNew)
 		updateHist = true
@@ -271,7 +271,7 @@ function getAcceptanceBoolean(MetC::HISTOAttMetC, oldCluster::Cluster, newCluste
 	probability = exp((oldCluster.energy - newCluster.energy + hScore) / MetC.kT)	
 
 	# push a string to the channel then take the string in the channel and print it to the output file.
-	metcLog += "\nhScore = $(hScore)\nChance to accept = $(string(probability))"
+	metcLog *= "\nhScore = $(hScore)\nChance to accept = $(string(probability))"
 
 	
 	accept = probability > rand()
@@ -321,12 +321,12 @@ function getAcceptanceBoolean(MetC::HISTOAbsMetC, oldCluster::Cluster, newCluste
 
 	updateHist = false
 	binNew = nothing
-	metcLog += "\nlenRefCNA=$(length(MetC.refCNA)) timeElapsed=$(MetC.timeElapsed)"
+	metcLog *= "\nlenRefCNA=$(length(MetC.refCNA)) timeElapsed=$(MetC.timeElapsed)"
 	if length(MetC.refCNA) == 0
 		if MetC.timeElapsed >= MetC.waitTime
 			MetC.refCNA = MetC.clusterVector.vec[1].CNA
 			MetC.refID = MetC.clusterVector.vec[1].ID
-			metcLog += "\nSETTING refCNA: $(MetC.refCNA)\nrefID: $(MetC.refID)"
+			metcLog *= "\nSETTING refCNA: $(MetC.refCNA)\nrefID: $(MetC.refID)"
 		end
 		MetC.timeElapsed += 1
 
@@ -341,13 +341,13 @@ function getAcceptanceBoolean(MetC::HISTOAbsMetC, oldCluster::Cluster, newCluste
 		binOld = simOld == 1.0 ? trunc(Int64, 1/MetC.delta) : trunc(Int64, simOld/MetC.delta) + 1 # get bin of old Cluster
 		hOld   = MetC.hist[binOld]/histSum # get height (normalised) of bars
 		
-		metcLog += "\nsimOld=$(simOld)\nbinOld=$(binOld)\nhOld=$(hOld)"
+		metcLog *= "\nsimOld=$(simOld)\nbinOld=$(binOld)\nhOld=$(hOld)"
 
 		simNew = getCNASimilarity(getCNA(newCluster), MetC.refCNA)
 		binNew = simNew == 1.0 ? trunc(Int64, 1/MetC.delta) : trunc(Int64, simNew/MetC.delta) + 1 # get bin of new Cluster
 		hNew   = MetC.hist[binNew]/histSum # get height (normalised) of bars
 
-		metcLog += "\nsimNew=$(simNew)\nbinNew=$(binNew)\nhNew=$(hNew)"
+		metcLog *= "\nsimNew=$(simNew)\nbinNew=$(binNew)\nhNew=$(hNew)"
 
 		hScore = MetC.w * (hOld - hNew)
 		updateHist = true
@@ -356,7 +356,7 @@ function getAcceptanceBoolean(MetC::HISTOAbsMetC, oldCluster::Cluster, newCluste
 	probability = (1 - MetC.w) * exp((oldCluster.energy - newCluster.energy) / MetC.kT) + hScore
 
 	# push a string to the channel then take the string in the channel and print it to the output file.
-	metcLog += "\nhScore = $(hScore)\nChance to accept = $(string(probability))"
+	metcLog *= "\nhScore = $(hScore)\nChance to accept = $(string(probability))"
 	
 	accept = probability > rand()
 

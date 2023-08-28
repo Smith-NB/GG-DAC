@@ -192,8 +192,8 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 
 		step += 1
 		stepLog = ""
-		stepLog += "\n================================\n"
-		stepLog += "Attempting step $step with Walker $(Threads.nthreads())"
+		stepLog *= "\n================================\n"
+		stepLog *= "Attempting step $step with Walker $(Threads.nthreads())"
 
 		#= Manual Garbage collection (gross). When using asap3 as the workhorse, something goes wrong such that the refcount
 		    of an object exceeds 100. This causes an assertion in C++ to fail. =#
@@ -205,7 +205,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 
 		# Perturb and optimize with the workhorse.
 		setPositions!(bh.workhorse, bh.perturber(getPositions(oldCluster)))
-		stepLog += "\nOldEnergy = $(getEnergy(oldCluster))"
+		stepLog *= "\nOldEnergy = $(getEnergy(oldCluster))"
 		bh.workhorseOpt.run(fmax=bh.fmax)
 
 		# Update newCluster with optimized workhorse.
@@ -227,17 +227,17 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 
 		if clusterID > 0
 			logCNA(bh.CNAIO, clusterID, getCNA(newCluster), getEnergy(newCluster))
-			stepLog += "\nGenerated new cluster:\n\tID = $clusterID\n\tE = $(getEnergy(newCluster))"
+			stepLog *= "\nGenerated new cluster:\n\tID = $clusterID\n\tE = $(getEnergy(newCluster))"
 		else
-			stepLog +=  "\nRegenerated cluster:\n\tID = $clusterID\n\tE = $(getEnergy(newCluster))"
+			stepLog *=  "\nRegenerated cluster:\n\tID = $clusterID\n\tE = $(getEnergy(newCluster))"
 		end
 
 		# Determine if hop to new structure is to be accepted.
 		acceptHop, MetCString = getAcceptanceBoolean(bh.metC, oldCluster, newCluster)
-		stepLog += MetCString
+		stepLog *= MetCString
 		acceptStr = acceptHop ? "accepted." : "rejected."
 
-		stepLog += "\nThe current step has been " * acceptStr
+		stepLog *= "\nThe current step has been " * acceptStr
 
 		# Decrease number of hops until next reseed.
 		updateHopsToReseed!(bh.reseeder)
@@ -277,7 +277,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 					end
 
 					if found
-						stepLog +=  "\nTarget $(targets[t]) has been located at step $step"
+						stepLog *=  "\nTarget $(targets[t]) has been located at step $step"
 						targetsFound[t] = true
 						targetsLocatedAt[t] = step
 					end
@@ -290,7 +290,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 
 			# All targets found, exit.
 			if allTargetsFound
-				stepLog += "\nAll targets have been located.\nRun ending.\n"
+				stepLog *= "\nAll targets have been located.\nRun ending.\n"
 				break
 			end
 		end
@@ -298,7 +298,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 		# Check if time for reseed. Will not trigger if hopsToReseed is negative.
 		if timeToReseed!(bh.reseeder)
 			step += 1 #treat the reseed as an additional hop.
-			stepLog +=  "$(getReseedPeriod(bh.reseeder)) steps have occured since the last improvement. reseeding.\n"
+			stepLog *=  "$(getReseedPeriod(bh.reseeder)) steps have occured since the last improvement. reseeding.\n"
 			
 			# Generate a new seed (only update the positions of oldCluster).
 			setPositions!(bh.workhorse, bh.reseeder.getReseedStructure(bh.reseeder.args...))
@@ -311,9 +311,9 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 			clusterID = addToVector!(oldCluster, bh.clusterVector, 2)
 			if clusterID > 0
 				logCNA(bh.CNAIO, clusterID, getCNA(oldCluster), getEnergy(oldCluster))
-				stepLog += "\nGenerated new cluster:\n\tID = $clusterID\n\tE = $(getEnergy(oldCluster))"
+				stepLog *= "\nGenerated new cluster:\n\tID = $clusterID\n\tE = $(getEnergy(oldCluster))"
 			else
-				stepLog += "\nRegenerated cluster:\n\tID = $clusterID\n\tE = $(getEnergy(oldCluster))"
+				stepLog *= "\nRegenerated cluster:\n\tID = $clusterID\n\tE = $(getEnergy(oldCluster))"
 			end
 
 			# Log the step. 
