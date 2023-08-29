@@ -10,8 +10,8 @@
 - `rc::Float64`: Cut-off distance.
 """
 struct LJ <: Calculator
-	epsilon::Number
-	sigma::Number
+	epsilon::Float64
+	sigma::Float64
 	rc::Number
 	distance_vectors::Matrix{Float64}
 	r2::Vector{Float64}
@@ -23,13 +23,13 @@ function LJ(epsilon::Number, sigma::Number, rc::Number, N::Int64)
 	LJ(epsilon, sigma, rc, zeros(Float64, 3, N), zeros(Float64, N))
 end
 
-function calculateForces!(atoms::Cluster, calc::LJ)
+function calculateForces!(atoms::Cluster, calc::LJ, workSpace::Matrix{Float64})
 	natoms = getNAtoms(atoms)
 	fill!(atoms.forces, 0)
 
 	for n in 1:natoms-1
-		fill!(calc.distance_vectors, 0)
-		fill!(calc.r2, 0)
+		#fill!(calc.distance_vectors, 0)
+		#fill!(calc.r2, 0)
 		for i in n+1:natoms
 			calc.distance_vectors[1, i] = atoms.positions[i, 1] - atoms.positions[n, 1]
 			calc.distance_vectors[2, i] = atoms.positions[i, 2] - atoms.positions[n, 2]
@@ -56,6 +56,49 @@ function calculateForces!(atoms::Cluster, calc::LJ)
 			atoms.forces[3, i] -= dVDist
 		end
 	end
+	atoms.validForces = true
+end
+
+function calculateForces!(atoms::Cluster, calc::LJ)
+	natoms = getNAtoms(atoms)
+	#fill!(atoms.forces, 0)
+	f = zeros(3, natoms)
+	#@time dVDist::Float64 = 0.0
+	#@time dV::Float64 = 0.0
+	
+	#  1.745 s (57281724 allocations: 882.92 MiB)
+	for n in 1:natoms-1
+		fill!(calc.distance_vectors, 0)
+		fill!(calc.r2, 0)
+		for i in n+1:natoms
+			calc.distance_vectors[1, i] = atoms.positions[i, 1] - atoms.positions[n, 1]
+			calc.distance_vectors[2, i] = atoms.positions[i, 2] - atoms.positions[n, 2]
+			calc.distance_vectors[3, i] = atoms.positions[i, 3] - atoms.positions[n, 3]
+
+			calc.r2[i] = calc.distance_vectors[1, i]*calc.distance_vectors[1, i] + calc.distance_vectors[2, i]*calc.distance_vectors[2, i] + calc.distance_vectors[3, i]*calc.distance_vectors[3, i]
+
+			dist4 = calc.r2[i]*calc.r2[i]
+			dist8 = dist4*dist4
+			dist14 = dist8*dist4*calc.r2[i]
+
+			dV::Float64 = -24 * calc.epsilon*(2*calc.sigma^12/dist14 - calc.sigma^6/dist8)
+
+			dVDist::Float64 = dV * calc.distance_vectors[1, i]
+			f[1, n] += dVDist
+			f[1, i] -= dVDist
+
+			dVDist = dV * calc.distance_vectors[2, i]
+			f[2, n] += dVDist
+			f[2, i] -= dVDist
+
+			dVDist = dV * calc.distance_vectors[3, i]
+			f[3, n] += dVDist
+			f[3, i] -= dVDist
+
+			#println()
+		end
+	end
+	atoms.forces = f
 	atoms.validForces = true
 end
 

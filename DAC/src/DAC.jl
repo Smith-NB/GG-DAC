@@ -6,6 +6,7 @@ using PyCall
 using HDF5
 using JLD2
 using Dates
+using BenchmarkTools
 
 include("MyLib.jl")
 
