@@ -149,6 +149,12 @@ function setPositions!(atoms::Cluster, positions::Matrix{Float64})
 	atoms.validForces = false
 	atoms.validStresses = false
 end
+function moveAtoms!(atoms::Cluster, dr::LinearAlgebra.Adjoint{Float64, Matrix{Float64}})
+	atoms.positions += dr
+end
+function moveAtoms!(atoms::Cluster, dr::Matrix{Float64})
+	atoms.positions += dr
+end
 setCell!(atoms::Cluster, cell::Matrix{Float64}) = atoms.cell = cell
 setCalculator!(atoms::Cluster, calculator::Calculator) = atoms.calculator = calculator
 function setEnergies!(atoms::Cluster, energies::Vector{Float64}) 
@@ -207,26 +213,22 @@ getNAtoms(atoms::Cluster) = getNAtoms(atoms.positions)
 Returns the distances between all atoms from a Maxtrix of atomic coordinates.
 """
 function getDistances(coordinates::Matrix{Float64})
-    natoms = trunc(Int, length(coordinates)/3)
+    natoms = getNAtoms(coordinates)
 
 
-    d2 = Array{Float64}(undef, natoms, natoms, 3)
-    r = Matrix{Float64}(undef, natoms, natoms)
+   r = Matrix{Float64}(undef, natoms, natoms)
+    for i in 1:natoms
+        r[i, i] = 0
+        for j in i+1:natoms
+        	d2_1 = (coordinates[i, 1] - coordinates[j, 1])^2
+        	d2_2 = (coordinates[i, 2] - coordinates[j, 2])^2
+        	d2_3 = (coordinates[i, 3] - coordinates[j, 3])^2
 
-    for k in 1:3
-        for i in 1:natoms
-            d2[i, i, k] = 0.0
-            for j in i+1:natoms
-                d2[j, i, k] = (coordinates[i, k] - coordinates[j, k])^2
-                d2[i, j, k] = d2[j, i, k]
-            end
+            r[j, i] = (d2_1 + d2_2 + d2_3)^0.5
+            r[i, j] = r[j, i]
         end
     end
-    for i in 1:natoms
-        r[:, i] = sum(d2[i, :, :], dims=2).^0.5
-    end
 
-    
     return r
 end
 
@@ -312,7 +314,25 @@ Returns the center coordinate of a coordinate Matrix by calculating the center o
 """
 function getCentreOfCluster(coordinates::Matrix{Float64})
 	N = getNAtoms(coordinates)
-	masses = fill(1.0, 1, N)
+	centre = zeros(3)
+	for i in 1:3
+		for j in 1:N
+			centre[i] += coordinates[j, i]
+		end
+		centre[i] /= N
+	end
+	
+	return centre
+end
+
+"""
+	getCentreOfCluster(coordinates::Matrix{Float64})
+
+Returns the center coordinate of a coordinate Matrix by calculating the center of mass,
+	with `masses` given in a 1xN matrix.
+"""
+function getCentreOfCluster(coordinates::Matrix{Float64}, masses::Matrix{Float64})
+	N = getNAtoms(coordinates)
 	centre = masses * coordinates ./ N
 	return centre
 end

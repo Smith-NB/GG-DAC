@@ -8,20 +8,20 @@ struct BasinHopper
 	metC::MetC
 	reseeder::Reseeder
 	formula::Dict{String, Int64}
-	boxLength::Number
-	vacuumAdd::Number
-	kT::Number
+	boxLength::Float64
+	vacuumAdd::Float64
+	kT::Float64
 	perturber::Function
-	fmax::Number
-	rcut::Number
-	walltime::Number
+	fmax::Float64
+	rcut::Float64
+	walltime::Float64
 	recordingMode::String
 	io::Tuple{IO, Channel}
 	logIO::Tuple{IO, Channel}
 	CNAIO::Tuple{IO, Channel}
 	clusterVector::ClusterVector
-	workhorse::Workhorse
-	workhorseOpt::PyObject
+	#workhorse::Workhorse
+	#workhorseOpt::PyObject
 	version::String
 end
 
@@ -142,27 +142,34 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 	end
 	
 	oldCluster = seed
+	setCalculator!(oldCluster, bh.calculator)
 
 	# Set the positions of the workhorse.
+	#=
 	setPositions!(bh.workhorse, getPositions(seed))
 	setCell!(bh.workhorse, getCell(seed))
 	bh.workhorseOpt.run(fmax=bh.fmax)
+
 
 	# Update oldCluster with the optimized positions.
 	setPositions!(oldCluster, getPositions(bh.workhorse))
 	setEnergy!(oldCluster, getEnergy!(bh.workhorse))
 	setCNAProfile!(oldCluster, bh.rcut)
+	=#
 
+	optimize!(bh.optimizer, oldCluster, bh.fmax)
+	calculateEnergy!(oldCluster, bh.calculator)
+	setCNAProfile!(oldCluster, bh.rcut)
 
 	# Specify variables from additionalInfo.
-	step  								= haskey(additionalInfo, "stepsCompleted")			? additionalInfo["stepsCompleted"] 			: 0
+	step::Int64							= haskey(additionalInfo, "stepsCompleted")			? additionalInfo["stepsCompleted"] 			: 0
 	setHopsToReseed!(bh.reseeder, 		  haskey(additionalInfo, "hopsToReseed")			? additionalInfo["hopsToReseed"] 			: getReseedPeriod(bh.reseeder))
 	setReseedEnergyToBeat!(bh.reseeder,   haskey(additionalInfo, "reseedEnergyToBeat")		? additionalInfo["reseedEnergyToBeat"] 		: Inf)
-	Emin  								= haskey(additionalInfo, "Emin") 					? additionalInfo["Emin"] 					: Inf
-	EminLocatedAt						= haskey(additionalInfo, "EminLocatedAt")			? additionalInfo["EminLocatedAt"] 			: 0
+	Emin::Float64						= haskey(additionalInfo, "Emin") 					? additionalInfo["Emin"] 					: Inf
+	EminLocatedAt::Int64				= haskey(additionalInfo, "EminLocatedAt")			? additionalInfo["EminLocatedAt"] 			: 0
 	targets								= haskey(additionalInfo, "targets") 				? additionalInfo["targets"] 				: Vector{Float64}()
 	targetCNAs							= haskey(additionalInfo, "targetCNAs") 				? additionalInfo["targetCNAs"] 				: Vector{CNAProfile}()
-	targetRounding 	 					= haskey(additionalInfo, "targetRounding") 			? additionalInfo["targetRounding"] 			: 2
+	targetRounding::Int64				= haskey(additionalInfo, "targetRounding") 			? additionalInfo["targetRounding"] 			: 2
 	targetsFound 						= haskey(additionalInfo, "targetsFound") 			? additionalInfo["targetsFound"] 			: falses(length(targets))
 	targetsLocatedAt					= haskey(additionalInfo, "targetsLocatedAt") 		? additionalInfo["targetsLocatedAt"] 		: zeros(Int64, length(targets))
 
@@ -174,8 +181,8 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 	exitOnLocatingTargets = length(targets) > 0 
 
 	newCluster = Cluster(bh.formula, getPositions(oldCluster), getCell(oldCluster))
-
-	clusterVectorChannel = Channel{Cluster}(0) # unbuffered channel. put! blocks until matching !take is called.
+	setCalculator!(newCluster, bh.calculator)
+	clusterVectorChannel = Channel{Cluster}(1) # unbuffered channel. put! blocks until matching !take is called.
 
 	# Used for determining when the Garbage collector should be run.
 	# Reseeds cause the `step` iteration to desync with the modulus.
@@ -184,7 +191,6 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 	clusterVectorLock = ReentrantLock()
 
 	while step < steps
-		
 		# Break loop if walltime exceeded.
 		if (now() - start) / Hour(1) > bh.walltime
 			break
@@ -197,28 +203,35 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 
 		#= Manual Garbage collection (gross). When using asap3 as the workhorse, something goes wrong such that the refcount
 		    of an object exceeds 100. This causes an assertion in C++ to fail. =#
-		if iterations % 30 == 0
-			GC.gc()
-		end
+		#if iterations % 30 == 0
+		#	GC.gc()
+		#end
 
 		iterations += 1
 
 		# Perturb and optimize with the workhorse.
 		newPos, pertrubString = bh.perturber(getPositions(oldCluster))
+		#=
 		setPositions!(bh.workhorse, newPos)
 		stepLog *= "\n$(pertrubString)\nOldEnergy = $(getEnergy(oldCluster))"
 		bh.workhorseOpt.run(fmax=bh.fmax)
-
+		
 		# Update newCluster with optimized workhorse.
 		setPositions!(newCluster, getPositions(bh.workhorse))
 		setEnergy!(newCluster, getEnergy!(bh.workhorse))
 		setCNAProfile!(newCluster, bh.rcut)
+		=#
 
+
+		setPositions!(newCluster, newPos)
+		optimize!(bh.optimizer, newCluster, bh.fmax)
+		calculateEnergy!(newCluster, bh.calculator)
+		setCNAProfile!(newCluster, bh.rcut)
 		# Check if the cluster is unique, add it to the vector of clusters, and update the CNA log.
 		# clusterID will be negative if is was already in the vector.
 		put!(clusterVectorChannel, newCluster)
-		clusterID = addToVector!(take!(clusterVectorChannel, bh.clusterVector, 2))
-		"""
+		clusterID = addToVector!(take!(clusterVectorChannel), bh.clusterVector, 2)
+		#=
 		begin
 			lock(clusterVectorLock)
 			try
@@ -228,7 +241,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 				unlock(clusterVectorLock)
 			end
 		end
-		"""
+		=#
 		if clusterID > 0
 			logCNA(bh.CNAIO, clusterID, getCNA(newCluster), getEnergy(newCluster))
 			stepLog *= "\nGenerated new cluster:\n\tID = $clusterID\n\tE = $(getEnergy(newCluster))"
@@ -305,10 +318,17 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 			stepLog *=  "$(getReseedPeriod(bh.reseeder)) steps have occured since the last improvement. reseeding.\n"
 			
 			# Generate a new seed (only update the positions of oldCluster).
+			#=
 			setPositions!(bh.workhorse, bh.reseeder.getReseedStructure(bh.reseeder.args...))
 			bh.workhorseOpt.run(fmax=bh.fmax)
 			setPositions!(oldCluster, getPositions(bh.workhorse))
 			setEnergy!(oldCluster, getEnergy!(bh.workhorse))
+			setCNAProfile!(oldCluster, bh.rcut)
+			=#
+
+			setPositions!(oldCluster, bh.reseeder.getReseedStructure(bh.reseeder.args...))
+			optimize!(bh.optimizer, oldCluster, bh.fmax)
+			calculateEnergy!(oldCluster, bh.calculator)
 			setCNAProfile!(oldCluster, bh.rcut)
 
 			# Check if the cluster is unique, add it to the vector of clusters, and update the CNA log.

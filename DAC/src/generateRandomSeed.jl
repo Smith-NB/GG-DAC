@@ -105,8 +105,17 @@ function perturbClusterSurface(coords::Matrix{Float64}, nAtomsToMove::Number, rC
 
 	# determine lowest coordination number atoms
 	r = getDistances(coords)
-	coordinationNumbers = [count(i->(0.0<i<=rCut), r[:, j]) for j in 1:DAC.getNAtoms(coords)]
-	minCoord = minimum(coordinationNumbers)
+	
+	coordinationNumbers  = zeros(Int64, N)
+	for i in 1:N
+		for j in i+1:N
+			if r[j, i] > 0 && r[j, i] <= rCut
+				coordinationNumbers[i] += 1
+				coordinationNumbers[j] += 1
+			end
+		end
+	end
+	minCoord::Int64 = minimum(coordinationNumbers)
 	minCoordAtoms = findall(i->i==minCoord, coordinationNumbers)
 
 	atomsToMove = nothing
@@ -128,7 +137,10 @@ function perturbClusterSurface(coords::Matrix{Float64}, nAtomsToMove::Number, rC
 	sphericalCoords = rand(nAtomsToMove, 2)*360
 	newCoords = copy(coords)
 	for i in 1:nAtomsToMove
-		newCoords[atomsToMove[i], :] = sphericalToCartesian(radius, sphericalCoords[i, 1], sphericalCoords[i, 2]) + centreOfMass[:]
+		newCoords[atomsToMove[i], :] = sphericalToCartesian(radius, sphericalCoords[i, 1], sphericalCoords[i, 2])
+		newCoords[atomsToMove[i], 1] += centreOfMass[1]
+		newCoords[atomsToMove[i], 2] += centreOfMass[2]
+		newCoords[atomsToMove[i], 3] += centreOfMass[3]
 	end
 
 	return newCoords
@@ -151,7 +163,14 @@ Returns positions of atoms after moving each atom in each coordinate direction b
 """
 function perturbCluster(coords::Matrix{Float64}, dr::Float64)
 	n = getNAtoms(coords)
-	return coords + rand(-1.0*dr:0.00001*dr:1.0*dr, n, 3)
+	#return coords + rand(-1.0*dr:0.00001*dr:1.0*dr, n, 3)
+	r = rand(n, 3)
+	for i in 1:n
+		r[n, 1] = 2*r[n, 1] + coords[n, 1] - 1
+		r[n, 2] = 2*r[n, 2] + coords[n, 2] - 1
+		r[n, 3] = 2*r[n, 3] + coords[n, 3] - 1
+	end
+	return r
 end
 
 """
