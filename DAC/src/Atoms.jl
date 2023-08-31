@@ -38,6 +38,7 @@ mutable struct Cluster <: Atoms
 	energies::Vector{Float64}
 	forces::Matrix{Float64}
 	stresses::Array{Float64}
+	distances::Matrix{Float64}
 	CNA::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}
 	validCNA::Bool
 	validEnergies::Bool
@@ -51,12 +52,13 @@ mutable struct Cluster <: Atoms
 	energies::Vector{Float64},
 	forces::Matrix{Float64},
 	stresses::Array{Float64},
+	distances::Matrix{Float64},
 	CNA::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}},
 	validCNA::Bool,
 	validEnergies::Bool,
 	validForces::Bool,
 	validStresses::Bool
-			) = new(formula, positions, cell, energy, energies, forces, stresses, CNA, validCNA, validEnergies, validForces, validStresses)
+			) = new(formula, positions, cell, energy, energies, forces, stresses, distances, CNA, validCNA, validEnergies, validForces, validStresses)
 	Cluster(formula::Dict{String, Int64},
 	positions::Matrix{Float64},
 	cell::Matrix{Float64},
@@ -64,13 +66,14 @@ mutable struct Cluster <: Atoms
 	energies::Vector{Float64},
 	forces::Matrix{Float64},
 	stresses::Array{Float64},
+	distances::Matrix{Float64},
 	CNA::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}},
 	validCNA::Bool,
 	validEnergies::Bool,
 	validForces::Bool,
 	validStresses::Bool,
 	calculator::Calculator
-			) = new(formula, positions, cell, energy, energies, forces, stresses, CNA, validCNA, validEnergies, validForces, validStresses, calculator)
+			) = new(formula, positions, cell, energy, energies, forces, stresses, distances, CNA, validCNA, validEnergies, validForces, validStresses, calculator)
 
 end
 
@@ -79,7 +82,7 @@ function Cluster(formula::Dict{String, Int64})
 	N = sum(get.([formula], keys(formula), nothing))
 	Cluster(
 		formula, zeros(Float64, N, 3), zeros(Float64, 3, 3), 
-		0.0, zeros(Float64, N), zeros(Float64, N, 3), zeros(Float64, N, 3, 3), 
+		0.0, zeros(Float64, N), zeros(Float64, N, 3), zeros(Float64, N, 3, 3), Matrix{Float64}(undef, natoms, natoms),
 		Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}(), 
 		false, false, false, false
 		)
@@ -88,7 +91,7 @@ end
 function Cluster(formula::Dict{String, Int64}, positions::Matrix{Float64})
 	N = sum(get.([formula], keys(formula), nothing))
 	Cluster(formula, positions, zeros(Float64, 3, 3), 
-		0.0, zeros(Float64, N), zeros(Float64, N, 3), zeros(Float64, N, 3, 3), 
+		0.0, zeros(Float64, N), zeros(Float64, N, 3), zeros(Float64, N, 3, 3), getDistances(positions),
 		Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}(),
 		false, false, false, false
 		)
@@ -96,9 +99,10 @@ end
 
 function Cluster(formula::Dict{String, Int64}, positions::Matrix{Float64}, cell::Matrix{Float64})
 	N = sum(get.([formula], keys(formula), nothing))
+
 	Cluster(formula, positions, cell, 
 		0.0, zeros(Float64, N), zeros(Float64, 3, N), 
-		zeros(Float64, 3, 3, N), 
+		zeros(Float64, 3, 3, N), getDistances(positions),
 		Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}(),
 		false, false, false, false
 		)
@@ -238,8 +242,34 @@ end
 Returns the distances between all atoms of a Cluster type.
 """
 function getDistances(atoms::Cluster)
-	return getDistances(atoms.positions)
+	return atoms.distances
+	#return getDistances(atoms.positions)
 end
+
+"""
+	getDistances!(Atoms::Cluster)
+
+sets the atoms.distances attribute to the distances between all atoms.
+"""
+function setDistances!(atoms::Cluster)
+    natoms = getNAtoms(atoms)
+
+    for i in 1:natoms
+        atoms.distances[i, i] = 0
+        for j in i+1:natoms
+        	d2_1 = (atoms.positions[i, 1] - atoms.positions[j, 1])^2
+        	d2_2 = (atoms.positions[i, 2] - atoms.positions[j, 2])^2
+        	d2_3 = (atoms.positions[i, 3] - atoms.positions[j, 3])^2
+
+            atoms.distances[j, i] = (d2_1 + d2_2 + d2_3)^0.5
+            atoms.distances[i, j] = atoms.distances[j, i]
+        end
+    end
+
+    return nothing
+end
+
+
 
 """
 	getNeighboursList(coordinates::Matrix{Float64}, maxBondingDistance::Number)
@@ -321,7 +351,7 @@ function getCentreOfCluster(coordinates::Matrix{Float64})
 		end
 		centre[i] /= N
 	end
-	
+
 	return centre
 end
 

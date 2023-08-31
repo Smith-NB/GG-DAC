@@ -26,37 +26,40 @@ struct BasinHopper
 end
 
 function logCNA(io::Tuple{IO, Channel}, ID::Int64, CNA::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}, energy::Float64)
-	# create the string to log from the given CNA and cluster ID
-	s = string(ID) * "="
+	# block the file
+	put!(io[2], "E$energy\n")
+
+	print(io[1], "$ID=")
 	for pair in CNA
-		s *= string(pair.first[1]) * "," * string(pair.first[2]) * "," * string(pair.first[3]) * ":" * string(pair.second) * ";"
+		print(io[1], "($(string(pair.first[1])),$(string(pair.first[2])),$(string(pair.first[3]))):$(string(pair.second));")
 	end
-	# create break line
-	s *= "E$energy\n"
-
-	# add the string to the file channel. this line will block if the channel is full, i.e. by another thread
-	put!(io[2], s)
-
-	# take the string in the channel and print it to the output file.
-	while isready(io[2])
-		print(io[1], take!(io[2]))
-	end
+	# unblock
+	print(io[1], take!(io[2]))
 
 	return nothing
 end
 
 
-function logStep(io::Tuple{IO, Channel}, step::Int64, clusterID::Int64, energy::Float64, accepted::String)
-	s = "Step " * string(step) * ", ID " * string(clusterID) * ", energy " * string(energy) * ", accepted " * string(accepted)  * "\n"
-
+function logStep(io::Tuple{IO, Channel}, walkerID::Int64, step::Int64, clusterID::Int64, energy::Float64, accepted::String)
 	# add the string to the file channel. this line will block if the channel is full, i.e. by another thread
-	put!(io[2], s)
+	put!(io[2], "WalkerID $(string(walkerID)), Step $(string(step)), ID $(string(clusterID)), energy $(string(energy)), accpeted $(string(accepted))\n")
 
 	# take the string in the channel and print it to the output file.
 	while isready(io[2])
 		print(io[1], take!(io[2]))
 	end
 end
+
+function logStep(io::Tuple{IO, Channel}, step::Int64, clusterID::Int64, energy::Float64, accepted::String)
+	# add the string to the file channel. this line will block if the channel is full, i.e. by another thread
+	put!(io[2], "Step $(string(step)), ID $(string(clusterID)), energy $(string(energy)), accpeted $(string(accepted))\n")
+
+	# take the string in the channel and print it to the output file.
+	while isready(io[2])
+		print(io[1], take!(io[2]))
+	end
+end
+
 
 function logStep(io::Tuple{IO, Channel}, step::Int64, clusterID::Int64, energy::Float64, accepted::String, sim::Float64)
 	s = "Step " * string(step) * ", ID " * string(clusterID) * ", energy " * string(energy) * ", accepted " * string(accepted) * ", similarity, " * string(sim) * "\n"
@@ -127,7 +130,6 @@ end
 
 
 function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additionalInfo::Dict{String, Any}, version::String)
-
 	if version != "v1.2.1" || bh.version != "v1.2.1"
 		println(bh.io[1], "The version number passed to the hop function or BasinHopper constructor does not match\nthe hard coded
 			version number. Double check you are using the correct run script. This program will now terminate.")
@@ -136,12 +138,15 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 
 	start = now()
 
+	threadID = Threads.threadid()
+
 	# If needed, generate a random seed.
 	if seed == "random"
 		seed = generateRandomSeed(bh.formula, bh.boxLength, bh.vacuumAdd)
 	end
 	
 	oldCluster = seed
+
 	setCalculator!(oldCluster, bh.calculator)
 
 	# Set the positions of the workhorse.
@@ -158,7 +163,6 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 	=#
 
 	optimize!(bh.optimizer, oldCluster, bh.fmax)
-	calculateEnergy!(oldCluster, bh.calculator)
 	setCNAProfile!(oldCluster, bh.rcut)
 
 	# Specify variables from additionalInfo.
@@ -199,7 +203,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 		step += 1
 		stepLog = ""
 		stepLog *= "\n================================\n"
-		stepLog *= "Attempting step $step with Walker $(Threads.nthreads())"
+		stepLog *= "Attempting step $step with Walker $(threadID)"
 
 		#= Manual Garbage collection (gross). When using asap3 as the workhorse, something goes wrong such that the refcount
 		    of an object exceeds 100. This causes an assertion in C++ to fail. =#
@@ -227,10 +231,13 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 		optimize!(bh.optimizer, newCluster, bh.fmax)
 		calculateEnergy!(newCluster, bh.calculator)
 		setCNAProfile!(newCluster, bh.rcut)
+		
+
 		# Check if the cluster is unique, add it to the vector of clusters, and update the CNA log.
 		# clusterID will be negative if is was already in the vector.
 		put!(clusterVectorChannel, newCluster)
 		clusterID = addToVector!(take!(clusterVectorChannel), bh.clusterVector, 2)
+
 		#=
 		begin
 			lock(clusterVectorLock)
@@ -258,7 +265,6 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 
 		# Decrease number of hops until next reseed.
 		updateHopsToReseed!(bh.reseeder)
-
 		# If accepted, update.
 		if acceptHop
 			# If new LES found, update Emin and reset hopsToReseed.
@@ -277,7 +283,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 		end
 
 		# Log the move.
-		logStep(bh.logIO, step, abs(clusterID), newCluster.energy, string(acceptHop))
+		logStep(bh.logIO, threadID, step, abs(clusterID), newCluster.energy, string(acceptHop))
 
 		# Check if the new cluster is a target. Exit if all targets found.
 		if acceptHop && exitOnLocatingTargets
@@ -341,7 +347,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 			end
 
 			# Log the step. 
-			logStep(bh.logIO, step, abs(clusterID), oldCluster.energy, "reseed")
+			logStep(bh.logIO, threadID, step, abs(clusterID), oldCluster.energy, "reseed")
 			
 			# Reset hopsToReseed.
 			hopsToReseed = getReseedPeriod(bh.reseeder)

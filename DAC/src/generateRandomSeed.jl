@@ -157,6 +157,63 @@ function perturbClusterSurface(atoms::Cluster, nAtomsToMove::Number, rCut::Float
 end
 
 """
+	perturbClusterSurface!(atoms::Cluster, nAtomsToMove::Number, rCut::Float64)
+
+Sends atom positions to perturbClusterSurface(coords::Matrix{Float64}, nAtomsToMove::Number, rCut::Float64)
+"""
+function perturbClusterSurface!(atoms::Cluster, nAtomsToMove::Number, rCut::Float64)
+	# get radius to place cluster on to.
+	radius = getInclusionRadiusOfCluster(atoms.positions)
+	centreOfMass = getCentreOfCluster(atoms.positions)
+	N = getNAtoms(atoms.positions)
+	if nAtomsToMove < 1
+		nAtomsToMove = trunc(Int64, round(nAtomsToMove*N, digits=2))
+	end
+
+	# determine lowest coordination number atoms
+	r = atoms.distances
+	
+	coordinationNumbers  = zeros(Int64, N)
+	for i in 1:N
+		for j in i+1:N
+			if r[j, i] > 0 && r[j, i] <= rCut
+				coordinationNumbers[i] += 1
+				coordinationNumbers[j] += 1
+			end
+		end
+	end
+	minCoord::Int64 = minimum(coordinationNumbers)
+	minCoordAtoms = findall(i->i==minCoord, coordinationNumbers)
+
+	atomsToMove = nothing
+	# if the number of low coord atoms is less than nAtomsToMove, only move the fewer amount
+	if length(minCoordAtoms) <= nAtomsToMove 
+		nAtomsToMove = length(minCoordAtoms)
+		atomsToMove = minCoordAtoms
+	else # otherwise randomly select which atoms to move
+		atomsToMove = Vector{Int64}(undef, nAtomsToMove)
+		for i in 1:nAtomsToMove
+			index = minCoordAtoms[rand(1:length(minCoordAtoms))]
+			while index in atomsToMove
+				index = minCoordAtoms[rand(1:length(minCoordAtoms))]
+			end
+			atomsToMove[i] = index
+		end
+	end
+
+	sphericalCoords = rand(nAtomsToMove, 2)*360
+	
+	for i in 1:nAtomsToMove
+		atoms.positions[atomsToMove[i], :] = sphericalToCartesian(radius, sphericalCoords[i, 1], sphericalCoords[i, 2])
+		atoms.positions[atomsToMove[i], 1] += centreOfMass[1]
+		atoms.positions[atomsToMove[i], 2] += centreOfMass[2]
+		atoms.positions[atomsToMove[i], 3] += centreOfMass[3]
+	end
+
+	return nothing
+end
+
+"""
 	perturbCluster(coords::Matrix{Float64}, dr::Float64)
 
 Returns positions of atoms after moving each atom in each coordinate direction by ±`dr`
@@ -180,6 +237,23 @@ Sends atom positions to perturbClusterSurface(coords::Matrix{Float64}, nAtomsToM
 """
 function perturbCluster(atoms::Cluster, dr::Float64)
 	return perturbCluster(atoms.positions, dr)
+end
+
+
+"""
+	perturbCluster!(coords::Matrix{Float64}, dr::Float64)
+
+Sends atom positions to perturbClusterSurface(coords::Matrix{Float64}, nAtomsToMove::Number, rCut::Float64)
+"""
+function perturbCluster!(atoms::Cluster, dr::Float64)
+	n = getNAtoms(atoms)
+	#return coords + rand(-1.0*dr:0.00001*dr:1.0*dr, n, 3)
+	for i in 1:n
+		atoms.positions[n, 1] += rand()*dr*2-1
+		atoms.positions[n, 2] += rand()*dr*2-1
+		atoms.positions[n, 3] += rand()*dr*2-1
+	end
+	return nothing
 end
 
 """	

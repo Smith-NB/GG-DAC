@@ -142,6 +142,8 @@ function optimize!(opt::FIRE, atoms::Atoms, fmax::Float64)
 
 	end
 	#reset_params!(opt)
+	setDistances!(atoms)
+	calculateEnergy!(atoms, atoms.calculator)
 	atoms.validCNA = false
 	atoms.validEnergies = false
 	atoms.validStresses = false

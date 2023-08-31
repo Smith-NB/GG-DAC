@@ -55,7 +55,7 @@ function binarySearch(A::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}, n::In
         end
     end
 
-    return -1
+    return -(L)
 end
 
 function binarySearch(A::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}, n::Int, T::Tuple{UInt8, UInt8, UInt8})
@@ -72,7 +72,7 @@ function binarySearch(A::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}, n::In
         end
     end
 
-    return -1
+    return -(L)
 end
 
 """

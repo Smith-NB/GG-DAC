@@ -8,7 +8,7 @@ using JLD2
 using Dates
 using BenchmarkTools
 
-include("MyLib.jl")
+
 
 include("Atoms.jl")
 include("Workhorse.jl")
@@ -20,5 +20,5 @@ include("MetC.jl")
 include("Reseed.jl")
 include("generateRandomSeed.jl")
 include("BasinHopping.jl")
-
+include("MyLib.jl")
 end # module DAC

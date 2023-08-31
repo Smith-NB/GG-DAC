@@ -17,11 +17,7 @@ function getNeighbourList(coordinates::Matrix{Float64}, rcut::Float64)
 
 	#create matrix of bonds between atoms	
 	graphbonds = falses(natoms, natoms)
-	"""
-	for i in 1:natoms
-		println(r[i, :])
-	end
-	"""
+
 	n1 = 0 
 	for i in 1:natoms
 		for j in i+1:natoms
@@ -47,7 +43,47 @@ function getNeighbourList(coordinates::Matrix{Float64}, rcut::Float64)
 	return bondlist, graphbonds
 end
 
-getNeighbourList(atoms::Cluster, rcut::Float64) = getNeighbourList(atoms.positions, rcut)
+#getNeighbourList(atoms::Cluster, rcut::Float64) = getNeighbourList(atoms.positions, rcut)
+
+"""
+	getNeighbourList(atoms::Cluster, rcut::Float64)
+
+Takes a Cluster type and a rcut value (defining bond distance) and returns a table
+of all bonds in a cluster.
+Return table starts with the number of bonds and then lists the indices of atoms the given
+atom is bonded too. After nbond+1 entries, row is padded with 0's.
+"""
+function getNeighbourList(atoms::Cluster, rcut::Float64)
+	r = atoms.distances
+	natoms = getNAtoms(atoms)
+
+	#create matrix of bonds between atoms	
+	graphbonds = falses(natoms, natoms)
+
+	n1 = 0 
+	for i in 1:natoms
+		for j in i+1:natoms
+			if r[i, j] < rcut
+				graphbonds[i, j] = true
+				graphbonds[j, i] = true
+				n1 += 1
+			end
+		end
+	end
+
+	#create list of bonds
+	bondlist = Array{Tuple{Int, Int}}(undef, n1)
+	n2 = 0
+	for i in 1:natoms
+		for j in i+1:natoms
+			if graphbonds[i, j]
+				n2 += 1
+				bondlist[n2] = (i, j)
+			end
+		end
+	end
+	return bondlist, graphbonds
+end
 
 
 """
@@ -163,7 +199,10 @@ function getCNAProfile(atoms::Cluster, rcut::Float64)
 	bondlist, graphbonds = getNeighbourList(atoms, rcut)
 	#println("bondlist ", bondlist)
 	nbonds = length(bondlist)
-	profile = Dict{Tuple{UInt8, UInt8, UInt8}, UInt16}()
+	#profile = Dict{Tuple{UInt8, UInt8, UInt8}, UInt16}()
+	storedCNA = Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}(undef, 0)
+	storedCNA_freq = Vector{UInt16}(undef, 0)
+	n_storedCNA = 0
 	commonNeighbours = zeros(Int64, natoms)
 	visited = trues(natoms, 2)
 	nsigs = 0
@@ -182,7 +221,13 @@ function getCNAProfile(atoms::Cluster, rcut::Float64)
 				#check if bonds exist between current and previosuly discovered common neighbours
 				for k in 1:ncn-1
 					if graphbonds[commonNeighbours[k], j] == true
-						nb += 1
+						try
+							nb += 1
+						catch e 
+							println("nb: $nb, ncn: $ncn, rcut: $rcut")
+							println("positions: $(atoms.positions)")
+							throw(e)
+						end
 					end
 				end
 			end
@@ -191,7 +236,17 @@ function getCNAProfile(atoms::Cluster, rcut::Float64)
 		nl::UInt8 = findLongestChain(graphbonds, commonNeighbours, ncn, visited)
 
 		#add signature to profile
-		sig = (ncn, nb, nl)
+		sig::Tuple{UInt8, UInt8, UInt8} = (ncn, nb, nl)
+		index::Int64 = binarySearch(storedCNA, n_storedCNA, sig)
+		if index < 0
+			insert!(storedCNA, -index, Pair(sig, 1))
+			insert!(storedCNA_freq, -index, 1)
+			n_storedCNA += 1
+		else
+			storedCNA_freq[index] += 1
+		end
+		
+		#=
 		if haskey(profile, sig)
 			profile[sig] += 1
 		else
@@ -203,15 +258,22 @@ function getCNAProfile(atoms::Cluster, rcut::Float64)
 		for j in 1:ncn
 			commonNeighbours[j] = 0
 		end
+		=#
 	end
 
+	#=
 	storedCNA = Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}(undef, length(profile))
 	CNAkeys = sort(collect(keys(profile)), rev=true)
 	for i in 1:length(CNAkeys)
 		storedCNA[i] = Pair(CNAkeys[i], profile[CNAkeys[i]])
 		#println(storedCNA[i])
 	end
-
+	=#
+	
+	for i in 1:length(storedCNA)
+		storedCNA[i] = Pair(storedCNA[i].first, storedCNA_freq[i])
+	end
+	
 	return storedCNA
 end
 
