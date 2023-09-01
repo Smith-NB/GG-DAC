@@ -20,8 +20,8 @@ struct BasinHopper
 	logIO::Tuple{IO, Channel}
 	CNAIO::Tuple{IO, Channel}
 	clusterVector::ClusterVector
-	#workhorse::Workhorse
-	#workhorseOpt::PyObject
+	logResumeFile::Bool
+	exitOnReseed::Bool
 	version::String
 end
 
@@ -40,9 +40,9 @@ function logCNA(io::Tuple{IO, Channel}, ID::Int64, CNA::Vector{Pair{Tuple{UInt8,
 end
 
 
-function logStep(io::Tuple{IO, Channel}, walkerID::Int64, step::Int64, clusterID::Int64, energy::Float64, accepted::String)
+function logStep(io::Tuple{IO, Channel}, walkID::Int64, step::Int64, clusterID::Int64, energy::Float64, accepted::String)
 	# add the string to the file channel. this line will block if the channel is full, i.e. by another thread
-	put!(io[2], "WalkerID $(string(walkerID)), Step $(string(step)), ID $(string(clusterID)), energy $(string(energy)), accpeted $(string(accepted))\n")
+	put!(io[2], "WalkID $(string(walkID)), Step $(string(step)), ID $(string(clusterID)), energy $(string(energy)), accpeted $(string(accepted))\n")
 
 	# take the string in the channel and print it to the output file.
 	while isready(io[2])
@@ -76,46 +76,59 @@ end
 function addToVector!(cluster::Union{Cluster, ClusterCompressed}, clusterVector::ClusterVector, dp::Int64)
 	#= binary search =#
 	energy = round(cluster.energy, digits=dp)
+	#println(clusterVector.N[])
 	presentClusterID = 0
 	L = 1
-	R = clusterVector.N+1
+	R = clusterVector.N[]+1
 	while L < R
+
 		m = trunc(Int, (R + L)/2)
-
-		if clusterVector.vec[m].energy == energy
-			R = m
-			startM = m
-			while m < clusterVector.N && clusterVector.vec[m].energy == energy
-				if clusterVector.vec[m].CNA == cluster.CNA
-					presentClusterID = -clusterVector.vec[m].ID # ClusterId will be negative if already present in Vector
-					break
+		try
+			if clusterVector.vec[m].energy == energy
+				R = m
+				startM = m
+				while m < clusterVector.N[]&& clusterVector.vec[m].energy == energy
+					if clusterVector.vec[m].CNA == cluster.CNA
+						presentClusterID = -clusterVector.vec[m].ID # ClusterId will be negative if already present in Vector
+						break
+					end
+					m += 1
 				end
-				m += 1
-			end
 
-			m = startM - 1
-			while m > 0 && clusterVector.vec[m].energy == energy
-				if clusterVector.vec[m].CNA == cluster.CNA
-					presentClusterID = -clusterVector.vec[m].ID # ClusterId will be negative if already present in Vector
-					break
+				m = startM - 1
+				while m > 0 && clusterVector.vec[m].energy == energy
+					if clusterVector.vec[m].CNA == cluster.CNA
+						presentClusterID = -clusterVector.vec[m].ID # ClusterId will be negative if already present in Vector
+						break
+					end
+					m -= 1
 				end
-				m -= 1
+
+				break
+
+			elseif clusterVector.vec[m].energy < energy
+				L = m + 1
+			else
+				R = m
 			end
-
-			break
-
-		elseif clusterVector.vec[m].energy < energy
-			L = m + 1
-		else
-			R = m
+		catch err
+			println("ADDTOVECTOR!   $(length(clusterVector.vec)) $m $R $L $((R+L)/2) $(Threads.threadid()) $err")
+			throw(err)
+			#vecprint = open("vecprint.txt", "w")
+			#println(vecprint, "ADDTOVECTOR!   $(length(clusterVector.vec)) $m $R $L $((R+L)/2) $(Threads.threadid()) $err")
+			#(vecprint, "ADDTOVECTOR2!  $(clusterVector.vec)")
+			#close(vecprint)
+			#exit()
+			#throw(err)
 		end
 	end	
+	
 	#println("$energy, $presentClusterID, $R")
 	# If cluster is new, add it to the vector.
 	if presentClusterID == 0
 		R = R == 0 ? 1 : R
-		clusterVector.N += 1
-		presentClusterID = clusterVector.N # Set cluster ID to be the new ID of the cluster
+		presentClusterID = Threads.atomic_add!(clusterVector.N, 1)
+		presentClusterID += 1
 		insert!(clusterVector.vec, R, ClusterCompressed(cluster.positions, round(cluster.energy, digits=dp), cluster.CNA, presentClusterID))
 	end
 
@@ -129,7 +142,7 @@ function optRun(_opt::PyObject, workhorse::Workhorse, fmax::Float64)
 end
 
 
-function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additionalInfo::Dict{String, Any}, version::String)
+function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, walkID::Int64, additionalInfo::Dict{String, Any}, version::String)
 	if version != "v1.2.1" || bh.version != "v1.2.1"
 		println(bh.io[1], "The version number passed to the hop function or BasinHopper constructor does not match\nthe hard coded
 			version number. Double check you are using the correct run script. This program will now terminate.")
@@ -145,25 +158,14 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 		seed = generateRandomSeed(bh.formula, bh.boxLength, bh.vacuumAdd)
 	end
 	
-	oldCluster = seed
+	oldCluster = deepcopy(seed)
+
 
 	setCalculator!(oldCluster, bh.calculator)
-
-	# Set the positions of the workhorse.
-	#=
-	setPositions!(bh.workhorse, getPositions(seed))
-	setCell!(bh.workhorse, getCell(seed))
-	bh.workhorseOpt.run(fmax=bh.fmax)
-
-
-	# Update oldCluster with the optimized positions.
-	setPositions!(oldCluster, getPositions(bh.workhorse))
-	setEnergy!(oldCluster, getEnergy!(bh.workhorse))
-	setCNAProfile!(oldCluster, bh.rcut)
-	=#
-
 	optimize!(bh.optimizer, oldCluster, bh.fmax)
 	setCNAProfile!(oldCluster, bh.rcut)
+
+
 
 	# Specify variables from additionalInfo.
 	step::Int64							= haskey(additionalInfo, "stepsCompleted")			? additionalInfo["stepsCompleted"] 			: 0
@@ -186,13 +188,11 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 
 	newCluster = Cluster(bh.formula, getPositions(oldCluster), getCell(oldCluster))
 	setCalculator!(newCluster, bh.calculator)
-	clusterVectorChannel = Channel{Cluster}(1) # unbuffered channel. put! blocks until matching !take is called.
 
 	# Used for determining when the Garbage collector should be run.
 	# Reseeds cause the `step` iteration to desync with the modulus.
 	iterations = 1
 
-	clusterVectorLock = ReentrantLock()
 
 	while step < steps
 		# Break loop if walltime exceeded.
@@ -203,52 +203,33 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 		step += 1
 		stepLog = ""
 		stepLog *= "\n================================\n"
-		stepLog *= "Attempting step $step with Walker $(threadID)"
+		stepLog *= "Attempting step $step in Walk $(walkID) with Walker $(threadID)"
 
-		#= Manual Garbage collection (gross). When using asap3 as the workhorse, something goes wrong such that the refcount
-		    of an object exceeds 100. This causes an assertion in C++ to fail. =#
-		#if iterations % 30 == 0
-		#	GC.gc()
-		#end
 
 		iterations += 1
 
-		# Perturb and optimize with the workhorse.
 		newPos, pertrubString = bh.perturber(getPositions(oldCluster))
-		#=
-		setPositions!(bh.workhorse, newPos)
-		stepLog *= "\n$(pertrubString)\nOldEnergy = $(getEnergy(oldCluster))"
-		bh.workhorseOpt.run(fmax=bh.fmax)
-		
-		# Update newCluster with optimized workhorse.
-		setPositions!(newCluster, getPositions(bh.workhorse))
-		setEnergy!(newCluster, getEnergy!(bh.workhorse))
-		setCNAProfile!(newCluster, bh.rcut)
-		=#
-
-
 		setPositions!(newCluster, newPos)
+		
+
+
 		optimize!(bh.optimizer, newCluster, bh.fmax)
+		while !isClusterCoherent(newCluster.positions, 2)
+			newPos, pertrubString = bh.perturber(getPositions(oldCluster))
+			setPositions!(newCluster, newPos)
+			optimize!(bh.optimizer, newCluster, bh.fmax)
+		end
 		calculateEnergy!(newCluster, bh.calculator)
 		setCNAProfile!(newCluster, bh.rcut)
 		
 
 		# Check if the cluster is unique, add it to the vector of clusters, and update the CNA log.
 		# clusterID will be negative if is was already in the vector.
-		put!(clusterVectorChannel, newCluster)
-		clusterID = addToVector!(take!(clusterVectorChannel), bh.clusterVector, 2)
-
-		#=
-		begin
-			lock(clusterVectorLock)
-			try
-				put!(clusterVectorChannel, newCluster)
-				clusterID = addToVector!(take!(clusterVectorChannel, bh.clusterVector, 2))
-			finally
-				unlock(clusterVectorLock)
-			end
+		Threads.lock(bh.clusterVector.lock) do 
+			clusterID = addToVector!(newCluster, bh.clusterVector, 2)
 		end
-		=#
+
+
 		if clusterID > 0
 			logCNA(bh.CNAIO, clusterID, getCNA(newCluster), getEnergy(newCluster))
 			stepLog *= "\nGenerated new cluster:\n\tID = $clusterID\n\tE = $(getEnergy(newCluster))"
@@ -283,7 +264,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 		end
 
 		# Log the move.
-		logStep(bh.logIO, threadID, step, abs(clusterID), newCluster.energy, string(acceptHop))
+		logStep(bh.logIO, walkID, step, abs(clusterID), newCluster.energy, string(acceptHop))
 
 		# Check if the new cluster is a target. Exit if all targets found.
 		if acceptHop && exitOnLocatingTargets
@@ -320,17 +301,16 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 
 		# Check if time for reseed. Will not trigger if hopsToReseed is negative.
 		if timeToReseed!(bh.reseeder)
+			# if this walk should exit upon a reseed:
+			if bh.exitOnReseed
+				put!(bh.io[2], stepLog)
+				print(bh.io[1], take!(bh.io[2]))
+				return step
+			end
 			step += 1 #treat the reseed as an additional hop.
 			stepLog *=  "$(getReseedPeriod(bh.reseeder)) steps have occured since the last improvement. reseeding.\n"
 			
 			# Generate a new seed (only update the positions of oldCluster).
-			#=
-			setPositions!(bh.workhorse, bh.reseeder.getReseedStructure(bh.reseeder.args...))
-			bh.workhorseOpt.run(fmax=bh.fmax)
-			setPositions!(oldCluster, getPositions(bh.workhorse))
-			setEnergy!(oldCluster, getEnergy!(bh.workhorse))
-			setCNAProfile!(oldCluster, bh.rcut)
-			=#
 
 			setPositions!(oldCluster, bh.reseeder.getReseedStructure(bh.reseeder.args...))
 			optimize!(bh.optimizer, oldCluster, bh.fmax)
@@ -347,7 +327,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 			end
 
 			# Log the step. 
-			logStep(bh.logIO, threadID, step, abs(clusterID), oldCluster.energy, "reseed")
+			logStep(bh.logIO, walkID, step, abs(clusterID), oldCluster.energy, "reseed")
 			
 			# Reset hopsToReseed.
 			hopsToReseed = getReseedPeriod(bh.reseeder)
@@ -360,16 +340,18 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, additi
 	end
 
 	# Log resumption information.
-	resumeFile = open("informationForResuming.txt", "w")
-	print(resumeFile, "stepsCompleted:$step\n")
-	print(resumeFile, "Emin:$Emin\n")
-	print(resumeFile, "EminLocatedAt:$EminLocatedAt\n")
-	print(resumeFile, "reseedEnergyToBeat:$(getReseedEnergyToBeat(bh.reseeder))\n")
-	print(resumeFile, "hopsToReseed:$(getHopsToReseed(bh.reseeder))\n")
-	print(resumeFile, "targets:$targets\n")
-	print(resumeFile, "targetsFound:$targetsFound\n")
-	print(resumeFile, "targetsLocatedAt:$targetsLocatedAt\n")
-	close(resumeFile)
+	if bh.logResumeFile
+		resumeFile = open("informationForResuming.txt", "w")
+		print(resumeFile, "stepsCompleted:$step\n")
+		print(resumeFile, "Emin:$Emin\n")
+		print(resumeFile, "EminLocatedAt:$EminLocatedAt\n")
+		print(resumeFile, "reseedEnergyToBeat:$(getReseedEnergyToBeat(bh.reseeder))\n")
+		print(resumeFile, "hopsToReseed:$(getHopsToReseed(bh.reseeder))\n")
+		print(resumeFile, "targets:$targets\n")
+		print(resumeFile, "targetsFound:$targetsFound\n")
+		print(resumeFile, "targetsLocatedAt:$targetsLocatedAt\n")
+		close(resumeFile)
+	end
 	
-	return nothing
+	return step
 end

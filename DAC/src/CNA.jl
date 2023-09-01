@@ -224,8 +224,8 @@ function getCNAProfile(atoms::Cluster, rcut::Float64)
 						try
 							nb += 1
 						catch e 
-							println("nb: $nb, ncn: $ncn, rcut: $rcut")
-							println("positions: $(atoms.positions)")
+							println("GETCNAPROFILE  nb: $nb, ncn: $ncn, rcut: $rcut $(Threads.threadid())")
+							println("GETCNAPROFILE  positions: $(atoms.positions)")
 							throw(e)
 						end
 					end

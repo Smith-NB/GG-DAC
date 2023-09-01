@@ -12,8 +12,8 @@ end
 
 mutable struct ClusterVector
 	vec::Vector{ClusterCompressed}
-	N::Int64
-	lock::Bool
+	N::Threads.Atomic{Int64}
+	lock::ReentrantLock
 end
 
 """
@@ -327,7 +327,23 @@ function getInclusionRadiusOfCluster(coords::Matrix{Float64})
             end
         end
     end
-
+    #=
+    if maxSize == -Inf || maxSize == Inf
+    	print("INFALERT______________")
+		for i in 1:N
+	        for j in i+1:N
+	            xDist = coords[i, 1] - coords[j, 1]
+	            yDist = coords[i, 2] - coords[j, 2]
+	            zDist = coords[i, 3] - coords[j, 3]
+	            dist = sqrt(xDist^2 + yDist^2 + zDist^2)
+	            println("MAXSIZE $i $j $dist $(coords[i, :]) $(coords[j, :]) $xDist $yDist $zDist")
+	            if dist > maxSize
+	                maxSize = dist
+	            end
+	        end
+	    end
+    end
+	=#
     return maxSize/2.0
 end	
 
@@ -344,7 +360,7 @@ Returns the center coordinate of a coordinate Matrix by calculating the center o
 """
 function getCentreOfCluster(coordinates::Matrix{Float64})
 	N = getNAtoms(coordinates)
-	centre = zeros(3)
+	centre = zeros(1, 3)
 	for i in 1:3
 		for j in 1:N
 			centre[i] += coordinates[j, i]

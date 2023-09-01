@@ -6,7 +6,7 @@ Returns true if a cluster is coherent, else false. Cohenerncy is that all atoms 
 """
 function isClusterCoherent(clusterCoords::Matrix{Float64}, maxDistance::Number)
 
-	N = trunc(Int, length(clusterCoords)/3)
+	N =	getNAtoms(clusterCoords)
 	neighboursList = getNeighboursList(clusterCoords, maxDistance)
 	atomsNotReached = [i for i in 1:N]
 	clusterPaths = [1]
@@ -26,6 +26,7 @@ function isClusterCoherent(clusterCoords::Matrix{Float64}, maxDistance::Number)
 
 	return length(atomsNotReached) == 0
 end
+
 
 """
 	generateRandomSeed(formula::Dict{String, Int64}, boxLength::Number, vacuumAdd::Number, returnCoordsOnly::Bool=false)
@@ -69,7 +70,7 @@ function generateRandomSeed(formula::Dict{String, Int64}, boxLength::Number, vac
 			break
 		else
 			clusterCoords = zeros(Float64, N, 3)
-			println("Cluster non-coherent. Trying again.")
+			println("Cluster non-coherent. Trying again. $(Threads.threadid())")
 		end
 	end
 	
@@ -95,9 +96,17 @@ Returns new postions of a cluster after moving `nAtomsToMove` atoms on the surfa
 """
 function perturbClusterSurface(coords::Matrix{Float64}, nAtomsToMove::Number, rCut::Float64)
 	
+	if coords[75, 1] > 100 || coords[75, 1] < -100 || coords[75, 2] > 100 || coords[75, 2] < -100 || coords[75, 3] > 100 || coords[75, 3] < -100
+		println("COORDALERT1")
+	end
+
 	# get radius to place cluster on to.
 	radius = getInclusionRadiusOfCluster(coords)
+	if radius == Inf || radius == -Inf
+		println("INFALERT_RADIUS")
+	end
 	centreOfMass = getCentreOfCluster(coords)
+
 	N = getNAtoms(coords)
 	if nAtomsToMove < 1
 		nAtomsToMove = trunc(Int64, round(nAtomsToMove*N, digits=2))
@@ -141,6 +150,12 @@ function perturbClusterSurface(coords::Matrix{Float64}, nAtomsToMove::Number, rC
 		newCoords[atomsToMove[i], 1] += centreOfMass[1]
 		newCoords[atomsToMove[i], 2] += centreOfMass[2]
 		newCoords[atomsToMove[i], 3] += centreOfMass[3]
+		if Inf in newCoords[atomsToMove[i], :] || -Inf in newCoords[atomsToMove[i], :]
+			println("INFALERT3")
+			println(centreOfMass)
+			println("$radius $sphericalCoords")
+			println(sphericalToCartesian(radius, sphericalCoords[i, 1], sphericalCoords[i, 2]))
+		end
 	end
 
 	return newCoords
@@ -222,10 +237,11 @@ function perturbCluster(coords::Matrix{Float64}, dr::Float64)
 	n = getNAtoms(coords)
 	#return coords + rand(-1.0*dr:0.00001*dr:1.0*dr, n, 3)
 	r = rand(n, 3)
+	rCopy = copy(r)
 	for i in 1:n
-		r[n, 1] = 2*r[n, 1] + coords[n, 1] - 1
-		r[n, 2] = 2*r[n, 2] + coords[n, 2] - 1
-		r[n, 3] = 2*r[n, 3] + coords[n, 3] - 1
+		r[i, 1] = 2*r[i, 1] + coords[i, 1] - 1
+		r[i, 2] = 2*r[i, 2] + coords[i, 2] - 1
+		r[i, 3] = 2*r[i, 3] + coords[i, 3] - 1
 	end
 	return r
 end
