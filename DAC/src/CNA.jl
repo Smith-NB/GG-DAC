@@ -1,8 +1,7 @@
+#struct CNAProfile <: Dict{Tuple{UInt8, UInt8, UInt8}, UInt16} end
 
 const CNAProfile = Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}
-const CNA = Tuple{UInt8, UInt8, UInt8}
-
-#struct CNAProfile <: Dict{Tuple{UInt8, UInt8, UInt8}, UInt16} end
+const CNASig = Tuple{UInt8, UInt8, UInt8}
 
 """
 	getNeighbourList(atoms::Cluster, rcut::Float64)
@@ -185,7 +184,7 @@ function getCNAProfileAsDict(atoms::Cluster, rcut::Float64)
 		return profile
 	end
 
-	storedCNA = Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}(undef, length(profile))
+	storedCNA = CNAProfile(undef, length(profile))
 	CNAkeys = sort(collect(keys(profile)), rev=true)
 	for i in 1:length(CNAkeys)
 		storedCNA[i] = Pair(CNAkeys[i], profile[CNAkeys[i]])
@@ -198,10 +197,9 @@ end
 function getCNAProfile(atoms::Cluster, rcut::Float64)
 	natoms = getNAtoms(atoms)
 	bondlist, graphbonds = getNeighbourList(atoms, rcut)
-	#println("bondlist ", bondlist)
 	nbonds = length(bondlist)
 	#profile = Dict{Tuple{UInt8, UInt8, UInt8}, UInt16}()
-	storedCNA = Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}(undef, 0)
+	storedCNA = CNAProfile(undef, 0)
 	storedCNA_freq = Vector{UInt16}(undef, 0)
 	n_storedCNA = 0
 	commonNeighbours = zeros(Int64, natoms)
@@ -222,13 +220,7 @@ function getCNAProfile(atoms::Cluster, rcut::Float64)
 				#check if bonds exist between current and previosuly discovered common neighbours
 				for k in 1:ncn-1
 					if graphbonds[commonNeighbours[k], j] == true
-						try
-							nb += 1
-						catch e 
-							println("GETCNAPROFILE  nb: $nb, ncn: $ncn, rcut: $rcut $(Threads.threadid())")
-							println("GETCNAPROFILE  positions: $(atoms.positions)")
-							throw(e)
-						end
+						nb += 1
 					end
 				end
 			end
@@ -247,29 +239,8 @@ function getCNAProfile(atoms::Cluster, rcut::Float64)
 			storedCNA_freq[index] += 1
 		end
 		
-		#=
-		if haskey(profile, sig)
-			profile[sig] += 1
-		else
-			nsigs += 1
-			profile[sig] = 1
-		end
-
-		#reset oommonNeighbours
-		for j in 1:ncn
-			commonNeighbours[j] = 0
-		end
-		=#
 	end
 
-	#=
-	storedCNA = Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}(undef, length(profile))
-	CNAkeys = sort(collect(keys(profile)), rev=true)
-	for i in 1:length(CNAkeys)
-		storedCNA[i] = Pair(CNAkeys[i], profile[CNAkeys[i]])
-		#println(storedCNA[i])
-	end
-	=#
 	
 	for i in 1:length(storedCNA)
 		storedCNA[i] = Pair(storedCNA[i].first, storedCNA_freq[i])
@@ -285,9 +256,17 @@ function getNormalCNAProfile(coordinates::Matrix{Float64}, rcut::Float64)
 	commonNeighbours = zeros(Int64, natoms)
 	visited = trues(natoms, 2)
 
-	normalCNA = Vector{Dict{Tuple{UInt8, UInt8, UInt8}, UInt16}}(undef, natoms)
+	#normalCNA1 = Vector{Dict{Tuple{UInt8, UInt8, UInt8}, UInt16}}(undef, natoms)
+
+	normalCNA2 = Vector{CNAProfile}(undef, natoms)
+	normalCNA2_freq = Vector{Vector{UInt16}}(undef, natoms)
+	n_normalCNA2 = zeros(Int64, natoms)
+
 	for i in 1:natoms
-		normalCNA[i] = Dict{Tuple{UInt8, UInt8, UInt8}, UInt16}() 
+		#normalCNA1[i] = Dict{Tuple{UInt8, UInt8, UInt8}, UInt16}() 
+
+		normalCNA2[i] = CNAProfile(undef, 0) 
+		normalCNA2_freq[i] = Vector{UInt16}(undef, 0) 
 	end
 
 	#for each bonding pair in cluster
@@ -314,17 +293,37 @@ function getNormalCNAProfile(coordinates::Matrix{Float64}, rcut::Float64)
 
 		#add signature to profile
 		sig = (ncn, nb, nl)
-		if haskey(normalCNA[bondlist[i][1]], sig)
-			normalCNA[bondlist[i][1]][sig] += 1
+		#=
+		if haskey(normalCNA1[bondlist[i][1]], sig)
+			normalCNA1[bondlist[i][1]][sig] += 1
 		else
-			normalCNA[bondlist[i][1]][sig] = 1
+			normalCNA1[bondlist[i][1]][sig] = 1
 		end
 
-		if haskey(normalCNA[bondlist[i][2]], sig)
-			normalCNA[bondlist[i][2]][sig] += 1
+		if haskey(normalCNA1[bondlist[i][2]], sig)
+			normalCNA1[bondlist[i][2]][sig] += 1
 		else
-			normalCNA[bondlist[i][2]][sig] = 1
+			normalCNA1[bondlist[i][2]][sig] = 1
 		end
+		=#
+		index1::Int64 = binarySearch(normalCNA2[bondlist[i][1]], n_normalCNA2[bondlist[i][1]], sig)
+		index2::Int64 = binarySearch(normalCNA2[bondlist[i][2]], n_normalCNA2[bondlist[i][2]], sig)
+		if index1 < 0
+			insert!(normalCNA2[bondlist[i][1]], -index1, Pair(sig, 1))
+			insert!(normalCNA2_freq[bondlist[i][1]], -index1, 1)
+			n_normalCNA2[bondlist[i][1]] += 1
+		else
+			normalCNA2_freq[bondlist[i][1]][index1] += 1
+		end
+
+		if index2 < 0
+			insert!(normalCNA2[bondlist[i][2]], -index2, Pair(sig, 1))
+			insert!(normalCNA2_freq[bondlist[i][2]], -index2, 1)
+			n_normalCNA2[bondlist[i][2]] += 1
+		else
+			normalCNA2_freq[bondlist[i][2]][index2] += 1
+		end
+
 
 		#reset oommonNeighbours
 		for j in 1:ncn
@@ -332,14 +331,16 @@ function getNormalCNAProfile(coordinates::Matrix{Float64}, rcut::Float64)
 		end
 	end
 
-	return normalCNA
+	#return normalCNA1
+	return normalCNA2
+
 
 end
 
 getNormalCNAProfile(atoms::Cluster, rcut::Float64) = getNormalCNAProfile(atoms.positions, rcut)
 
 
-function getCNASimilarity(x::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}, y::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}})
+function getCNASimilarity(x::CNAProfile, y::CNAProfile)
 	intersection = 0
 	union = 0
 	Nx = length(x)
@@ -438,7 +439,7 @@ function CNAToString(cna::Dict{Tuple{UInt8, UInt8, UInt8}, UInt16})
 	return s
 end
 
-function CNAToString(cna::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}})
+function CNAToString(cna::CNAProfile)
 	s = ""
 	for i in 1:length(cna)
 		s *= "($(cna[i].first[1]), $(cna[i].first[2]), $(cna[i].first[3])): $(cna[i].second) "
@@ -446,7 +447,7 @@ function CNAToString(cna::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}})
 	return s
 end
 
-function CNAToLogString(cna::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}})
+function CNAToLogString(cna::CNAProfile)
 	# create the string to log from the given CNA and cluster ID
 	s = ""
 	for pair in cna
@@ -459,7 +460,7 @@ end
 
 Takes a string formatted as: "ncn,nb,nl:freq;ncn,nb,nl:freq;...ncn,nb,nl:freq;"
 and converts it to a CNA profile of type 
-Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}} 
+CNAProfile 
 where:
 	ncn,nb,nl is the CNA signagure, e.g. (5, 5, 5) = "5,5,5"
 	freq is the frequency 
@@ -468,7 +469,7 @@ function stringToCNA(s::String)
 	
 	freqCNAPair = [split(x, ':') for x in split(s, ';')]
 	n = length(freqCNAPair[length(freqCNAPair)]) == 1 ? length(freqCNAPair) -1 : length(freqCNAPair)
-	CNA = Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}(undef, n)
+	CNA = CNAProfile(undef, n)
 	
 	# For all CNA signature & frequency pairs
 	for i in 1:n
