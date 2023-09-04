@@ -1,6 +1,7 @@
 module DAC
 
 using LinearAlgebra
+using GaussianMixtures
 using Random
 using PyCall
 using HDF5

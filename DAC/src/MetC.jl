@@ -375,8 +375,13 @@ end
 mutable struct ITCMetC <: MetC
 	kT::Float64
 	threshold::Float64
+	refCNA::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}
 	explorationVector::ClusterVector
 	useExplorationDataOnly::Bool
 	nThreads::Int64
 	io::Tuple{IO, Channel}
+end
+
+function getAcceptanceBoolean(MetC::ITCMetC, oldCluster::Cluster, newCluster::Cluster)
+
 end
