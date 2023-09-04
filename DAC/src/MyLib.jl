@@ -41,7 +41,7 @@ function printlnsep(sep, xs...)
     return nothing
 end
 
-function binarySearch(A::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}, n::Int, T::Tuple{Int, Int, Int})
+function binarySearch(A::CNAProfile, n::Int, T::Tuple{Int, Int, Int})
     L = 1
     R = n
     while L <= R
@@ -58,7 +58,7 @@ function binarySearch(A::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}, n::In
     return -(L)
 end
 
-function binarySearch(A::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}, n::Int, T::Tuple{UInt8, UInt8, UInt8})
+function binarySearch(A::CNAProfile, n::Int, T::Tuple{UInt8, UInt8, UInt8})
     L = 1
     R = n
     while L <= R

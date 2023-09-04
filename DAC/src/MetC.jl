@@ -128,7 +128,7 @@ mutable struct HISTOMetC <: MetC
 	w::Float64
 	delta::Float64
 	resetPeriod::Float64
-	refCNA::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}
+	refCNA::CNAProfile
 	refID::Int64
 	clusterVector::ClusterVector
 	waitTime::Int64
@@ -138,7 +138,7 @@ mutable struct HISTOMetC <: MetC
 end
 
 function HISTOMetC(kT::Float64, w::Float64, delta::Float64, resetPeriod::Float64, clusterVector::ClusterVector, waitTime::Int64, io::Tuple{IO, Channel})
-	refCNA = Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}()
+	refCNA = CNAProfile()
 	refID = -1
 	timeElapsed = 0
 	hist = zeros(Int64, trunc(Int64, 1/delta))
@@ -211,7 +211,7 @@ mutable struct HISTOAttMetC <: MetC
 	w::Float64
 	delta::Float64
 	resetPeriod::Float64
-	refCNA::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}
+	refCNA::CNAProfile
 	refID::Int64
 	clusterVector::ClusterVector
 	waitTime::Int64
@@ -221,7 +221,7 @@ mutable struct HISTOAttMetC <: MetC
 end
 
 function HISTOAttMetC(kT::Float64, w::Float64, delta::Float64, resetPeriod::Float64, clusterVector::ClusterVector, waitTime::Int64, io::Tuple{IO, Channel})
-	refCNA = Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}()
+	refCNA = CNAProfile()
 	refID = -1
 	timeElapsed = 0
 	hist = zeros(Int64, trunc(Int64, 1/delta))
@@ -296,7 +296,7 @@ mutable struct HISTOAbsMetC <: MetC
 	w::Float64
 	delta::Float64
 	resetPeriod::Float64
-	refCNA::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}
+	refCNA::CNAProfile
 	refID::Int64
 	clusterVector::ClusterVector
 	waitTime::Int64
@@ -306,7 +306,7 @@ mutable struct HISTOAbsMetC <: MetC
 end
 
 function HISTOAbsMetC(kT::Float64, w::Float64, delta::Float64, resetPeriod::Float64, clusterVector::ClusterVector, waitTime::Int64, io::Tuple{IO, Channel})
-	refCNA = Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}()
+	refCNA = CNAProfile()
 	refID = -1
 	timeElapsed = 0
 	hist = zeros(Int64, trunc(Int64, 1/delta))
@@ -375,7 +375,7 @@ end
 mutable struct ITCMetC <: MetC
 	kT::Float64
 	threshold::Float64
-	refCNA::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}
+	refCNA::CNAProfile
 	explorationVector::ClusterVector
 	useExplorationDataOnly::Bool
 	nThreads::Int64

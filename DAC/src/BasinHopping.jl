@@ -25,7 +25,7 @@ struct BasinHopper
 	version::String
 end
 
-function logCNA(io::Tuple{IO, Channel}, ID::Int64, CNA::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}, energy::Float64)
+function logCNA(io::Tuple{IO, Channel}, ID::Int64, CNA::CNAProfile, energy::Float64)
 	# block the file
 	put!(io[2], "E$energy\n")
 

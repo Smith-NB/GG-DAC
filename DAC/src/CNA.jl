@@ -1,7 +1,5 @@
 #struct CNAProfile <: Dict{Tuple{UInt8, UInt8, UInt8}, UInt16} end
 
-const CNAProfile = Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}
-const CNASig = Tuple{UInt8, UInt8, UInt8}
 
 """
 	getNeighbourList(atoms::Cluster, rcut::Float64)
@@ -131,6 +129,11 @@ function findLongestChain(graphbonds::BitMatrix, commonNeighbours::Array{Int64},
 	return nl
 end
 
+"""
+	getCNAProfileAsDict(atoms::Cluster, rcut::Float64)
+
+Calculates the total CNA profile of atoms and returns it as a Dict type (hash table).
+"""
 function getCNAProfileAsDict(atoms::Cluster, rcut::Float64)
 	returnDict = true
 
@@ -194,9 +197,16 @@ function getCNAProfileAsDict(atoms::Cluster, rcut::Float64)
 	return storedCNA
 end
 
-function getCNAProfile(atoms::Cluster, rcut::Float64)
-	natoms = getNAtoms(atoms)
-	bondlist, graphbonds = getNeighbourList(atoms, rcut)
+
+"""
+	getCNAProfile(coordinates::Matrix{Float64}, rcut::Float64)
+
+Calculates the total CNA profile for the cluster described by coordinates
+and returns it as a sorted Vector.
+"""
+function getCNAProfile(coordinates::Matrix{Float64}, rcut::Float64)
+	natoms = getNAtoms(coordinates)
+	bondlist, graphbonds = getNeighbourList(coordinates, rcut)
 	nbonds = length(bondlist)
 	#profile = Dict{Tuple{UInt8, UInt8, UInt8}, UInt16}()
 	storedCNA = CNAProfile(undef, 0)
@@ -249,7 +259,182 @@ function getCNAProfile(atoms::Cluster, rcut::Float64)
 	return storedCNA
 end
 
+
+"""
+	getCNAProfile(atoms::Cluster, rcut::Float64)
+
+Calculates the total CNA profile for the cluster described by coordinates
+and returns it as a sorted Vector.
+"""
+getCNAProfile(atoms::Cluster, rcut::Float64) = getCNAProfile(atoms.positions, rcut)
+
+"""
+	getCNAProfile(atoms::Cluster, rcut::Float64)
+
+Calculates the total and normal CNA profiles for the cluster described by `coordinates`
+and returns it as a sorted `Vector` and a `Vector` of `Dict`'s, respectively
+"""
+function getTotalAndNormalCNAProfile(coordinates::Matrix{Float64}, rcut::Float64)
+	natoms = getNAtoms(coordinates)
+	bondlist, graphbonds = getNeighbourList(coordinates, rcut)
+	nbonds = length(bondlist)
+	#profile = Dict{Tuple{UInt8, UInt8, UInt8}, UInt16}()
+	totalCNA = CNAProfile(undef, 0)
+	totalCNA_freq = Vector{UInt16}(undef, 0)
+	n_totalCNA = 0
+	commonNeighbours = zeros(Int64, natoms)
+	visited = trues(natoms, 2)
+	nsigs = 0
+
+	normalCNA = Vector{Dict{Tuple{UInt8, UInt8, UInt8}, UInt16}}(undef, natoms)
+
+
+	for i in 1:natoms
+		normalCNA[i] = Dict{Tuple{UInt8, UInt8, UInt8}, UInt16}() 
+	end
+
+	#for each bonding pair in cluster
+	for i in 1:nbonds
+		ncn::UInt8 = 0
+		nb::UInt8 = 0
+
+		#for each atom in cluster
+		for j in 1:natoms
+			#check if atom is bonded to both atoms of current pair
+			if graphbonds[j, bondlist[i][1]] == true && graphbonds[j, bondlist[i][2]] == true
+				ncn += 1
+				commonNeighbours[ncn] = j
+				#check if bonds exist between current and previosuly discovered common neighbours
+				for k in 1:ncn-1
+					if graphbonds[commonNeighbours[k], j] == true
+						nb += 1
+					end
+				end
+			end
+		end
+		#find the longest chain of bonds between common neighbours
+		nl::UInt8 = findLongestChain(graphbonds, commonNeighbours, ncn, visited)
+
+		#add signature to profile
+		sig::Tuple{UInt8, UInt8, UInt8} = (ncn, nb, nl)
+		index::Int64 = binarySearch(totalCNA, n_totalCNA, sig)
+		if index < 0
+			insert!(totalCNA, -index, Pair(sig, 1))
+			insert!(totalCNA_freq, -index, 1)
+			n_totalCNA += 1
+		else
+			totalCNA_freq[index] += 1
+		end
+
+		if haskey(normalCNA[bondlist[i][1]], sig)
+			normalCNA[bondlist[i][1]][sig] += 1
+		else
+			normalCNA[bondlist[i][1]][sig] = 1
+		end
+
+		if haskey(normalCNA[bondlist[i][2]], sig)
+			normalCNA[bondlist[i][2]][sig] += 1
+		else
+			normalCNA[bondlist[i][2]][sig] = 1
+		end
+		
+	end
+
+	
+	for i in 1:length(totalCNA)
+		totalCNA[i] = Pair(totalCNA[i].first, totalCNA_freq[i])
+	end
+	
+	return totalCNA, normalCNA
+end
+
+
+"""
+	getTotalAndNormalCNAProfile(atoms::Cluster, rcut::Float64)
+
+Calculates the total and normal CNA profiles for the cluster `atoms`
+and returns it as a sorted `Vector` and a `Vector` of `Dict`'s, respectively
+"""
+getTotalAndNormalCNAProfile(atoms::Cluster, rcut::Float64) = getTotalAndNormalCNAProfile(atoms.positions, rcut)
+
+"""
+	getNormalCNAProfile(coordinates::Matrix{Float64}, rcut::Float64)
+
+Calculates the normal CNA profiles for the cluster described by `coordinates`
+and returns it as a `Vector` of `Dict`'s, respectively.
+`normalCNA[1]` is the atom level CNA profile of the atom at `coordinates[1, :]`
+"""
 function getNormalCNAProfile(coordinates::Matrix{Float64}, rcut::Float64)
+	natoms = getNAtoms(coordinates)
+	bondlist, graphbonds = getNeighbourList(coordinates, rcut)
+	nbonds = length(bondlist)
+	commonNeighbours = zeros(Int64, natoms)
+	visited = trues(natoms, 2)
+
+	normalCNA = Vector{Dict{Tuple{UInt8, UInt8, UInt8}, UInt16}}(undef, natoms)
+
+	for i in 1:natoms
+		normalCNA[i] = Dict{Tuple{UInt8, UInt8, UInt8}, UInt16}() 
+	end
+
+	#for each bonding pair in cluster
+	for i in 1:nbonds
+		ncn::UInt8 = 0
+		nb::UInt8 = 0
+
+		#for each atom in cluster
+		for j in 1:natoms
+			#check if atom is bonded to both atoms of current pair
+			if graphbonds[j, bondlist[i][1]] == true && graphbonds[j, bondlist[i][2]] == true
+				ncn += 1
+				commonNeighbours[ncn] = j
+				#check if bonds exist between current and previosuly discovered common neighbours
+				for k in 1:ncn-1
+					if graphbonds[commonNeighbours[k], j] == true
+						nb += 1
+					end
+				end
+			end
+		end
+		#find the longest chain of bonds between common neighbours
+		nl::UInt8 = findLongestChain(graphbonds, commonNeighbours, ncn, visited)
+
+		#add signature to profile
+		sig = (ncn, nb, nl)
+		if haskey(normalCNA[bondlist[i][1]], sig)
+			normalCNA[bondlist[i][1]][sig] += 1
+		else
+			normalCNA[bondlist[i][1]][sig] = 1
+		end
+
+		if haskey(normalCNA[bondlist[i][2]], sig)
+			normalCNA[bondlist[i][2]][sig] += 1
+		else
+			normalCNA[bondlist[i][2]][sig] = 1
+		end
+
+
+		#reset oommonNeighbours
+		for j in 1:ncn
+			commonNeighbours[j] = 0
+		end
+	end
+
+	return normalCNA
+end
+
+"""
+	getNormalCNAProfile(atoms::Cluster, rcut::Float64)
+
+Calculates the normal CNA profiles for the cluster described by `coordinates`
+and returns it as a `Vector` of `Dict`'s, respectively.
+`normalCNA[1]` is the atom level CNA profile of the atom at 
+`atom.positions[1, :]`
+"""
+getNormalCNAProfile(atoms::Cluster, rcut::Float64) = getNormalCNAProfile(atoms.positions, rcut)
+
+
+function getNormalCNAProfileAsVector(coordinates::Matrix{Float64}, rcut::Float64)
 	natoms = getNAtoms(coordinates)
 	bondlist, graphbonds = getNeighbourList(coordinates, rcut)
 	nbonds = length(bondlist)
@@ -259,7 +444,7 @@ function getNormalCNAProfile(coordinates::Matrix{Float64}, rcut::Float64)
 	normalCNA = Vector{CNAProfile}(undef, natoms)
 	normalCNA_freq = Vector{Vector{UInt16}}(undef, natoms)
 	n_normalCNA = zeros(Int64, natoms)
-
+	
 	for i in 1:natoms
 		normalCNA[i] = CNAProfile(undef, 0) 
 		normalCNA_freq[i] = Vector{UInt16}(undef, 0) 
@@ -321,13 +506,16 @@ function getNormalCNAProfile(coordinates::Matrix{Float64}, rcut::Float64)
 	end
 
 	return normalCNA
-
-
 end
 
 getNormalCNAProfile(atoms::Cluster, rcut::Float64) = getNormalCNAProfile(atoms.positions, rcut)
 
+"""
+	getCNASimilarity(x::CNAProfile, y::CNAProfile)
 
+Returns as a Float (0.-1.) the similarity between two total CNA profiles, `x` and `y`
+according to the Jaccard similarity index.
+"""
 function getCNASimilarity(x::CNAProfile, y::CNAProfile)
 	intersection = 0
 	union = 0
@@ -419,6 +607,11 @@ function getCNASimilarity(x::Dict{Tuple{UInt8, UInt8, UInt8}, UInt16}, y::Dict{T
 	return intersection/union
 end
 
+"""
+	CNAToString(cna::Dict{Tuple{UInt8, UInt8, UInt8}, UInt16})
+
+Returns a human readable string of the given CNA profile (`Dict` type)
+"""
 function CNAToString(cna::Dict{Tuple{UInt8, UInt8, UInt8}, UInt16})
 	s = ""
 	for sig in keys(cna)
@@ -427,6 +620,11 @@ function CNAToString(cna::Dict{Tuple{UInt8, UInt8, UInt8}, UInt16})
 	return s
 end
 
+"""
+	CNAToString(cna::Dict{Tuple{UInt8, UInt8, UInt8}, UInt16})
+
+Returns a human readable string of the given CNA profile (`Vector` type)
+"""
 function CNAToString(cna::CNAProfile)
 	s = ""
 	for i in 1:length(cna)
@@ -435,6 +633,11 @@ function CNAToString(cna::CNAProfile)
 	return s
 end
 
+"""
+	CNAToString(cna::Dict{Tuple{UInt8, UInt8, UInt8}, UInt16})
+
+Returns a string describing `cna` for logging (probably into CNAlog.txt).
+"""
 function CNAToLogString(cna::CNAProfile)
 	# create the string to log from the given CNA and cluster ID
 	s = ""
@@ -443,12 +646,12 @@ function CNAToLogString(cna::CNAProfile)
 	end
 	return s
 end
+
 """
 	stringToCNA(s::String)
 
 Takes a string formatted as: "ncn,nb,nl:freq;ncn,nb,nl:freq;...ncn,nb,nl:freq;"
-and converts it to a CNA profile of type 
-CNAProfile 
+(i.e. from `CNAToString(cna::CNAProfile)`)and converts it to a CNA profile (type `Vector`)
 where:
 	ncn,nb,nl is the CNA signagure, e.g. (5, 5, 5) = "5,5,5"
 	freq is the frequency 
@@ -469,6 +672,12 @@ function stringToCNA(s::String)
 	return CNA
 end
 
+"""
+	stringToCNA(s::String)
+
+Returns the CNA profile (logged as in `CNAToString(cna::CNAprofile)`) of the cluster
+described by `name`.
+"""
 function getCNA(name::String)
 	if name == "LJ38_GM"
 		return "4,2,1:60;3,1,1:48;2,1,1:24;2,0,0:12;"

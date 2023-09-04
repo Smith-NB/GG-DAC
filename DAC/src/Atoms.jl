@@ -2,11 +2,13 @@ abstract type Atoms end
 abstract type Calculator end
 abstract type _py_Calculator <: Calculator end
 
+const CNAProfile = Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}
+const CNASig = Tuple{UInt8, UInt8, UInt8}
 
 struct ClusterCompressed
 	positions::Array{Float64}
 	energy::Float64
-	CNA::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}
+	CNA::CNAProfile
 	ID::Int64
 end
 
@@ -39,7 +41,7 @@ mutable struct Cluster <: Atoms
 	forces::Matrix{Float64}
 	stresses::Array{Float64}
 	distances::Matrix{Float64}
-	CNA::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}
+	CNA::CNAProfile
 	validCNA::Bool
 	validEnergies::Bool
 	validForces::Bool
@@ -53,7 +55,7 @@ mutable struct Cluster <: Atoms
 	forces::Matrix{Float64},
 	stresses::Array{Float64},
 	distances::Matrix{Float64},
-	CNA::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}},
+	CNA::CNAProfile,
 	validCNA::Bool,
 	validEnergies::Bool,
 	validForces::Bool,
@@ -67,7 +69,7 @@ mutable struct Cluster <: Atoms
 	forces::Matrix{Float64},
 	stresses::Array{Float64},
 	distances::Matrix{Float64},
-	CNA::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}},
+	CNA::CNAProfile,
 	validCNA::Bool,
 	validEnergies::Bool,
 	validForces::Bool,
@@ -83,7 +85,7 @@ function Cluster(formula::Dict{String, Int64})
 	Cluster(
 		formula, zeros(Float64, N, 3), zeros(Float64, 3, 3), 
 		0.0, zeros(Float64, N), zeros(Float64, N, 3), zeros(Float64, N, 3, 3), Matrix{Float64}(undef, natoms, natoms),
-		Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}(), 
+		CNAProfile(), 
 		false, false, false, false
 		)
 end 
@@ -92,7 +94,7 @@ function Cluster(formula::Dict{String, Int64}, positions::Matrix{Float64})
 	N = sum(get.([formula], keys(formula), nothing))
 	Cluster(formula, positions, zeros(Float64, 3, 3), 
 		0.0, zeros(Float64, N), zeros(Float64, N, 3), zeros(Float64, N, 3, 3), getDistances(positions),
-		Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}(),
+		CNAProfile(),
 		false, false, false, false
 		)
 end
@@ -103,14 +105,14 @@ function Cluster(formula::Dict{String, Int64}, positions::Matrix{Float64}, cell:
 	Cluster(formula, positions, cell, 
 		0.0, zeros(Float64, N), zeros(Float64, 3, N), 
 		zeros(Float64, 3, 3, N), getDistances(positions),
-		Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}(),
+		CNAProfile(),
 		false, false, false, false
 		)
 	
 	#=
 	Cluster(formula, positions, cell, 
 		0.0, zeros(Float64, N), zeros(Float64, N, 3), zeros(Float64, N, 3, 3), 
-		Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}(),
+		CNAProfile(),
 		false, false
 		)
 	=#
@@ -176,7 +178,7 @@ function setCNAProfile!(atoms::Cluster, rcut::Float64)
 	atoms.CNA = getCNAProfile(atoms, rcut)
 	atoms.validCNA = true
 end
-setCNAProfile!(atoms::Cluster, cna::Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}) = atoms.CNA, atoms.validCNA = cna, true
+setCNAProfile!(atoms::Cluster, cna::CNAProfile) = atoms.CNA, atoms.validCNA = cna, true
 
 
 """
