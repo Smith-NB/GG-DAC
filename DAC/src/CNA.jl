@@ -256,17 +256,13 @@ function getNormalCNAProfile(coordinates::Matrix{Float64}, rcut::Float64)
 	commonNeighbours = zeros(Int64, natoms)
 	visited = trues(natoms, 2)
 
-	#normalCNA1 = Vector{Dict{Tuple{UInt8, UInt8, UInt8}, UInt16}}(undef, natoms)
-
-	normalCNA2 = Vector{CNAProfile}(undef, natoms)
-	normalCNA2_freq = Vector{Vector{UInt16}}(undef, natoms)
-	n_normalCNA2 = zeros(Int64, natoms)
+	normalCNA = Vector{CNAProfile}(undef, natoms)
+	normalCNA_freq = Vector{Vector{UInt16}}(undef, natoms)
+	n_normalCNA = zeros(Int64, natoms)
 
 	for i in 1:natoms
-		#normalCNA1[i] = Dict{Tuple{UInt8, UInt8, UInt8}, UInt16}() 
-
-		normalCNA2[i] = CNAProfile(undef, 0) 
-		normalCNA2_freq[i] = Vector{UInt16}(undef, 0) 
+		normalCNA[i] = CNAProfile(undef, 0) 
+		normalCNA_freq[i] = Vector{UInt16}(undef, 0) 
 	end
 
 	#for each bonding pair in cluster
@@ -293,35 +289,22 @@ function getNormalCNAProfile(coordinates::Matrix{Float64}, rcut::Float64)
 
 		#add signature to profile
 		sig = (ncn, nb, nl)
-		#=
-		if haskey(normalCNA1[bondlist[i][1]], sig)
-			normalCNA1[bondlist[i][1]][sig] += 1
-		else
-			normalCNA1[bondlist[i][1]][sig] = 1
-		end
-
-		if haskey(normalCNA1[bondlist[i][2]], sig)
-			normalCNA1[bondlist[i][2]][sig] += 1
-		else
-			normalCNA1[bondlist[i][2]][sig] = 1
-		end
-		=#
-		index1::Int64 = binarySearch(normalCNA2[bondlist[i][1]], n_normalCNA2[bondlist[i][1]], sig)
-		index2::Int64 = binarySearch(normalCNA2[bondlist[i][2]], n_normalCNA2[bondlist[i][2]], sig)
+		index1::Int64 = binarySearch(normalCNA[bondlist[i][1]], n_normalCNA[bondlist[i][1]], sig)
+		index2::Int64 = binarySearch(normalCNA[bondlist[i][2]], n_normalCNA[bondlist[i][2]], sig)
 		if index1 < 0
-			insert!(normalCNA2[bondlist[i][1]], -index1, Pair(sig, 1))
-			insert!(normalCNA2_freq[bondlist[i][1]], -index1, 1)
-			n_normalCNA2[bondlist[i][1]] += 1
+			insert!(normalCNA[bondlist[i][1]], -index1, Pair(sig, 1))
+			insert!(normalCNA_freq[bondlist[i][1]], -index1, 1)
+			n_normalCNA[bondlist[i][1]] += 1
 		else
-			normalCNA2_freq[bondlist[i][1]][index1] += 1
+			normalCNA_freq[bondlist[i][1]][index1] += 1
 		end
 
 		if index2 < 0
-			insert!(normalCNA2[bondlist[i][2]], -index2, Pair(sig, 1))
-			insert!(normalCNA2_freq[bondlist[i][2]], -index2, 1)
-			n_normalCNA2[bondlist[i][2]] += 1
+			insert!(normalCNA[bondlist[i][2]], -index2, Pair(sig, 1))
+			insert!(normalCNA_freq[bondlist[i][2]], -index2, 1)
+			n_normalCNA[bondlist[i][2]] += 1
 		else
-			normalCNA2_freq[bondlist[i][2]][index2] += 1
+			normalCNA_freq[bondlist[i][2]][index2] += 1
 		end
 
 
@@ -331,8 +314,13 @@ function getNormalCNAProfile(coordinates::Matrix{Float64}, rcut::Float64)
 		end
 	end
 
-	#return normalCNA1
-	return normalCNA2
+	for i in 1:natoms
+		for j in 1:length(normalCNA_freq[i])
+			normalCNA[i][j] = Pair(normalCNA[i][j].first, normalCNA_freq[i][j]) # line causes no additional allocs.
+		end
+	end
+
+	return normalCNA
 
 
 end
