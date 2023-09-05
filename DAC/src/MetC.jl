@@ -385,3 +385,21 @@ end
 function getAcceptanceBoolean(MetC::ITCMetC, oldCluster::Cluster, newCluster::Cluster)
 
 end
+
+#=============================================================================#
+#==================================GMMMetC====================================#
+#=============================================================================#
+
+mutable struct GMMMetC <: MetC
+	kT::Float64
+	threshold::Float64
+	Gaussian::Gaussian
+	GaussianCluster::Int64
+	useExplorationDataOnly::Bool
+	nThreads::Int64
+	io::Tuple{IO, Channel}
+end
+
+function getAcceptanceBoolean(MetC::GMMMetC, oldCluster::Cluster, newCluster::Cluster)
+
+end

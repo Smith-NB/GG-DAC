@@ -513,7 +513,7 @@ getNormalCNAProfile(atoms::Cluster, rcut::Float64) = getNormalCNAProfile(atoms.p
 """
 	getCNASimilarity(x::CNAProfile, y::CNAProfile)
 
-Returns as a Float (0.-1.) the similarity between two total CNA profiles, `x` and `y`
+Returns as a Float (0-1) the similarity between two total CNA profiles, `x` and `y`
 according to the Jaccard similarity index.
 """
 function getCNASimilarity(x::CNAProfile, y::CNAProfile)
@@ -542,40 +542,6 @@ function getCNASimilarity(x::CNAProfile, y::CNAProfile)
 
 	return intersection / union
 
-
-
-	# The following is left for inspiration, and involved a queue implementation of the above.
-	# This way, only unchecked sigs in y needed to be iterated through, those sigs being the
-	# ones remaining in the queue. However this requried memory allocations, which were not cost effective.
-	#=
-	
-	sigIndexChecked_x = collect(1:Nx)
-	sigIndexChecked_y = collect(1:Ny)
-
-	# parse through all signatures of cluster x
-	while length(sigIndexChecked_x) != 0
-		i = pop!(sigIndexChecked_x) 	# get index of signature in x
-		sig = x[i].first				# get signature
-
-		y_index = binarySearch(y, Ny, sig) 		# look for selected signature in other cluster.
-		removeall!(sigIndexChecked_y, y_index)	# mark signature as checked.
-
-		a = x[i].second								# get frequency of sig in cluster x
-		b = y_index < 0 ? 0 : y[y_index].second		# get frequency of sig in cluster y, or 0 if sig is not present.
-		intersection += a < b ? a : b 				# add the smaller of a or b to the intersection.
-		union += a > b ? a : b 						# add the larger of a or b to the union.
-	end
-
-	# parse through remaining, unchecked signatues of cluster y.
-	# only need to add sig frequencies to union, as these signatures can't be present in cluster x,
-	# i.e. intersection of all remaining signatures in cluster y is 0.
-	while length(sigIndexChecked_y) != 0
-		i = pop!(sigIndexChecked_y)
-		union += y[i].second
-	end
-
-	return intersection / union
-	=#
 end
 
 
@@ -605,6 +571,137 @@ function getCNASimilarity(x::Dict{Tuple{UInt8, UInt8, UInt8}, UInt16}, y::Dict{T
 		union += a > b ? a : b
 	end
 	return intersection/union
+end
+
+
+"""
+	getClasses(s::String)
+
+Returns a `Vector` of `Dict`'s of atom level CNA profiles to define `n` classes,
+where `n` is the number of lines in the input `String` `s`.
+Format example: '421 421 421\n555 555 555' is two classes each consisting of three occurences of
+two signatures, (4, 2, 1) and (5, 5, 5), respectively.
+"""
+function getClasses(s::String)
+	lines = split(s, '\n')
+    # vector to hold class defining sets of CNA signatures
+    classes = Vector{Dict{Tuple{UInt8, UInt8, UInt8}, UInt16}}(undef, length(lines))
+    for n in 1:length(lines)
+        sigs = split(lines[n])
+        uSigs = unique(sigs) # get set of all unique signatures for class
+        cSigs = [count(x->x==u, sigs) for u in uSigs] # get corresponding frequency of each signature
+        classes[n] = Dict{Tuple{UInt8, UInt8, UInt8}, UInt16}() # instantiate entry in classes
+        for i in 1:length(uSigs)
+            # set dictionary keys and values for each unique signature (parse converts String/chars to given number datatype).
+            classes[n][(parse(UInt8, uSigs[i][1]), parse(UInt8, uSigs[i][2]), parse(UInt8, uSigs[i][3]))] = cSigs[i]
+        end
+    end
+
+    return classes
+end
+
+
+"""
+	getClasses()
+
+Returns a `Vector` of `Dict`'s of atom level CNA profiles to define the 63 classes
+used by Roncaglia & Ferrando.
+"""
+function getClasses()
+
+    # specify classes
+    s = """
+    444 444 444 444 444 444 666 666 666 666 666 666 666 666
+    433 433 433 433 433 433 555 555 555 555 555 555 666 666
+    444 444 444 444 444 544 544 544 544 666 666 666 666
+    433 433 433 433 433 433 555 555 555 555 555 555 666
+    421 421 421 421 421 421 421 421 421 421 421 421
+    421 421 421 421 421 421 422 422 422 422 422 422
+    555 555 555 555 555 555 555 555 555 555 555 555
+    422 422 422 422 422 422 422 422 422 422 555 555
+    422 422 422 422 422 422 433 433 544 544 555 555
+    421 421 421 421 422 422 422 422 433 433 544 544
+    421 421 422 422 422 422 433 433 544 544 555 555
+    300 300 311 311 422 422 433 433 544 544 555 555
+    311 311 311 311 421 421 421 421 421 421 421
+    311 311 311 311 421 421 421 422 422 422 422
+    300 300 300 300 300 422 422 422 422 422 555
+    300 311 311 322 421 421 421 421 422 422 422
+    311 311 311 311 421 421 421 421 421 422 422
+    211 300 300 311 311 421 421 422 422 422 422
+    200 300 300 300 300 322 422 422 422 422 555
+    433 433 433 433 433 555 555 555 555 555 555
+    211 311 311 311 311 421 421 421 421 421
+    211 311 311 311 311 421 421 421 422 422
+    322 322 433 433 433 433 444 444 666 666
+    300 300 311 311 311 311 421 421 422 422
+    311 311 311 311 422 422 422 422 433 433
+    311 311 311 311 433 433 433 433 544 544
+    200 200 300 300 322 422 422 422 422 555
+    200 300 300 311 422 422 422 433 433 555
+    200 300 300 300 322 322 422 422 422 555
+    311 311 311 311 311 311 421 421 421
+    211 311 311 322 322 421 421 422 422
+    211 211 211 211 444 544 544 544 544
+    311 311 311 311 322 421 433 433 544
+    311 311 322 322 433 433 433 544 555
+    322 322 322 433 433 433 555 555 555
+    200 200 200 200 200 200 211 211 211
+    211 211 211 211 421 421 421 421
+    200 200 211 311 311 421 422 422
+    311 311 311 311 322 322 422 422
+    200 200 322 322 322 422 422 555
+    311 311 311 311 322 322 422 422
+    322 322 322 322 433 433 444 666
+    211 211 211 433 433 444 544 544
+    322 322 322 322 433 433 555 555
+    200 200 311 311 311 311 421
+    211 211 211 311 311 421 421
+    200 211 211 311 322 421 422
+    200 211 211 311 322 421 422
+    200 200 300 311 311 322 422
+    200 200 211 211 422 422 433
+    200 200 300 311 311 322 422
+    322 322 322 322 322 322 666
+    211 211 322 433 433 444 544
+    211 211 311 311 311 311
+    100 100 211 211 422 422
+    200 211 211 311 311 421
+    322 322 322 322 322 555
+    322 322 322 322 444
+    100 211 211 322 422
+    200 200 211 311 311
+    200 200 200 200
+    211 211 322 322
+    211 211 211
+    """
+
+    return getClasses(s)
+end
+
+"""
+	getAtomClasses(nCNA::Vector{Dict{Tuple{UInt8, UInt8, UInt8}, UInt16}}, classes::Vector{Dict{Tuple{UInt8, UInt8, UInt8}, UInt16}}, N::Int64)
+
+returns a `Vector` of `Int64`s giving the class index of each atom
+"""
+function getAtomClasses(nCNA::Vector{Dict{Tuple{UInt8, UInt8, UInt8}, UInt16}}, classes::Vector{Dict{Tuple{UInt8, UInt8, UInt8}, UInt16}})
+    natoms = length(nCNA)
+    nclasses = length(classes)
+
+    # fill vector of size natoms with value <number-of-classes>+1 (should be 64, i.e. default class is "unclassified"i
+    c = fill(nclasses, natoms)
+
+    # determine and set class of each atom. If a class cannot be determined,
+    # its default value is already "unclassified" (64 or nclasses+1).
+    for i in 1:natoms
+        for j in 1:nclasses
+            if nCNA[i] == classes[j]
+                c[i] = j
+                break
+            end
+        end
+    end
+    return c
 end
 
 """

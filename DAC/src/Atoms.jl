@@ -3,6 +3,7 @@ abstract type Calculator end
 abstract type _py_Calculator <: Calculator end
 
 const CNAProfile = Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}
+const normalCNAProfile = Vector{Dict{Tuple{UInt8, UInt8, UInt8}, UInt16}}
 const CNASig = Tuple{UInt8, UInt8, UInt8}
 
 struct ClusterCompressed
@@ -43,6 +44,7 @@ mutable struct Cluster <: Atoms
 	distances::Matrix{Float64}
 	CNA::CNAProfile
 	validCNA::Bool
+	validnCNA::Bool
 	validEnergies::Bool
 	validForces::Bool
 	validStresses::Bool
@@ -56,7 +58,9 @@ mutable struct Cluster <: Atoms
 	stresses::Array{Float64},
 	distances::Matrix{Float64},
 	CNA::CNAProfile,
+	nCNA::normalCNAProfile,
 	validCNA::Bool,
+	validnCNA::Bool,
 	validEnergies::Bool,
 	validForces::Bool,
 	validStresses::Bool
@@ -70,7 +74,9 @@ mutable struct Cluster <: Atoms
 	stresses::Array{Float64},
 	distances::Matrix{Float64},
 	CNA::CNAProfile,
+	nCNA::normalCNAProfile,
 	validCNA::Bool,
+	validnCNA::Bool,
 	validEnergies::Bool,
 	validForces::Bool,
 	validStresses::Bool,
@@ -85,8 +91,8 @@ function Cluster(formula::Dict{String, Int64})
 	Cluster(
 		formula, zeros(Float64, N, 3), zeros(Float64, 3, 3), 
 		0.0, zeros(Float64, N), zeros(Float64, N, 3), zeros(Float64, N, 3, 3), Matrix{Float64}(undef, natoms, natoms),
-		CNAProfile(), 
-		false, false, false, false
+		CNAProfile(), normalCNAProfile(),
+		false, false, false, false, false
 		)
 end 
 
@@ -94,8 +100,8 @@ function Cluster(formula::Dict{String, Int64}, positions::Matrix{Float64})
 	N = sum(get.([formula], keys(formula), nothing))
 	Cluster(formula, positions, zeros(Float64, 3, 3), 
 		0.0, zeros(Float64, N), zeros(Float64, N, 3), zeros(Float64, N, 3, 3), getDistances(positions),
-		CNAProfile(),
-		false, false, false, false
+		CNAProfile(), normalCNAProfile(),
+		false, false, false, false, false
 		)
 end
 
@@ -105,17 +111,9 @@ function Cluster(formula::Dict{String, Int64}, positions::Matrix{Float64}, cell:
 	Cluster(formula, positions, cell, 
 		0.0, zeros(Float64, N), zeros(Float64, 3, N), 
 		zeros(Float64, 3, 3, N), getDistances(positions),
-		CNAProfile(),
-		false, false, false, false
+		CNAProfile(), normalCNAProfile(),
+		false, false, false, false, false
 		)
-	
-	#=
-	Cluster(formula, positions, cell, 
-		0.0, zeros(Float64, N), zeros(Float64, N, 3), zeros(Float64, N, 3, 3), 
-		CNAProfile(),
-		false, false
-		)
-	=#
 end
 
 
@@ -134,7 +132,9 @@ end
 getForces(atoms::Cluster) = atoms.forces
 getStresses(atoms::Cluster) = atoms.stresses
 getCNA(atoms::Cluster) = atoms.CNA
+getNormalCNA(atoms::Cluster) = atoms.nCNA
 getValidCNA(atoms::Cluster) = atoms.validCNA
+getValidnCNA(atoms::Cluster) = atoms.validnCNA
 getValidEnergies(atoms::Cluster) = atoms.validEnergies
 getValidForces(atoms::Cluster) = atoms.validForces
 getValidStresses(atoms::Cluster) = atoms.validStresses
@@ -154,12 +154,15 @@ function setPositions!(atoms::Cluster, positions::Matrix{Float64})
 	atoms.validEnergies = false
 	atoms.validForces = false
 	atoms.validStresses = false
+	return nothing
 end
 function moveAtoms!(atoms::Cluster, dr::LinearAlgebra.Adjoint{Float64, Matrix{Float64}})
 	atoms.positions += dr
+	return nothing
 end
 function moveAtoms!(atoms::Cluster, dr::Matrix{Float64})
 	atoms.positions += dr
+	return nothing
 end
 setCell!(atoms::Cluster, cell::Matrix{Float64}) = atoms.cell = cell
 setCalculator!(atoms::Cluster, calculator::Calculator) = atoms.calculator = calculator
@@ -167,16 +170,30 @@ function setEnergies!(atoms::Cluster, energies::Vector{Float64})
 	atoms.energies = energies
 	atoms.energy = sum(energies)
 	validEnergies = true
+	return nothing
 end
 setEnergy!(atoms::Cluster, energy::Float64) = atoms.energy = energy
 setValidCNA!(atoms::Cluster, valid::Bool) = atoms.validCNA = valid
+setValidnCNA!(atoms::Cluster, valid::Bool) = atoms.validnCNA = valid
 setValidEnergies!(atoms::Cluster, valid::Bool) = atoms.validEnergies = valid
 setValidForces!(atoms::Cluster, valid::Bool) = atoms.validForces = valid
 setValidStresses!(atoms::Cluster, valid::Bool) = atoms.validStresses = valid
 setCalculator!(atoms::Cluster, calc::Calculator) = atoms.calculator = calc
 function setCNAProfile!(atoms::Cluster, rcut::Float64)
-	atoms.CNA = getCNAProfile(atoms, rcut)
+	atoms.CNA = getCNAProfile(atoms.positions, rcut)
 	atoms.validCNA = true
+	return nothing
+end
+setTotalCNAProfile!(atoms::Cluster, rcut::Float64) = setCNAProfile!(atoms, rcut)
+function setNormalCNAProfile!(atoms::Cluster, rcut::Float64)
+	atoms.nCNA = getNormalCNAProfile(atoms.positions, rcut)
+	atoms.validnCNA = true
+end
+function setCNAProfiles!(atoms::Cluster, rcut::Float64)
+	atoms.CNA, atoms.nCNA = getTotalAndNormalCNAProfile(atoms.positions, rcut)
+	atoms.validCNA = true
+	atoms.validnCNA = true
+	return nothing
 end
 setCNAProfile!(atoms::Cluster, cna::CNAProfile) = atoms.CNA, atoms.validCNA = cna, true
 

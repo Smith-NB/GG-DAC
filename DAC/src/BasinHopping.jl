@@ -22,6 +22,7 @@ struct BasinHopper
 	clusterVector::ClusterVector
 	logResumeFile::Bool
 	exitOnReseed::Bool
+	calculateNormalCNA::Bool
 	version::String
 end
 
@@ -163,7 +164,11 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, walkID
 
 	setCalculator!(oldCluster, bh.calculator)
 	optimize!(bh.optimizer, oldCluster, bh.fmax)
-	setCNAProfile!(oldCluster, bh.rcut)
+	if bh.calculateNormalCNA
+		setCNAProfiles!(oldCluster, bh.rcut)
+	else
+		setCNAProfile!(oldCluster, bh.rcut)
+	end
 
 
 
@@ -220,8 +225,12 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, walkID
 			optimize!(bh.optimizer, newCluster, bh.fmax)
 		end
 		calculateEnergy!(newCluster, bh.calculator)
-		setCNAProfile!(newCluster, bh.rcut)
-		
+		if bh.calculateNormalCNA
+			setCNAProfiles!(newCluster, bh.rcut)
+		else
+			setCNAProfile!(newCluster, bh.rcut)
+		end
+			
 
 		# Check if the cluster is unique, add it to the vector of clusters, and update the CNA log.
 		# clusterID will be negative if is was already in the vector.
@@ -259,8 +268,12 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, walkID
 			# Update oldCluster to newCluster.
 			setPositions!(oldCluster, getPositions(newCluster))
 			setEnergy!(oldCluster, getEnergy(newCluster))
-			setCNAProfile!(oldCluster, getCNA(newCluster))
-			
+			if bh.calculateNormalCNA
+				setCNAProfiles!(oldCluster, bh.rcut)
+			else
+				setCNAProfile!(oldCluster, bh.rcut)
+			end
+				
 		end
 
 		# Log the move.
@@ -315,7 +328,11 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, walkID
 			setPositions!(oldCluster, bh.reseeder.getReseedStructure(bh.reseeder.args...))
 			optimize!(bh.optimizer, oldCluster, bh.fmax)
 			calculateEnergy!(oldCluster, bh.calculator)
-			setCNAProfile!(oldCluster, bh.rcut)
+			if bh.calculateNormalCNA
+				setCNAProfiles!(oldCluster, bh.rcut)
+			else
+				setCNAProfile!(oldCluster, bh.rcut)
+			end
 
 			# Check if the cluster is unique, add it to the vector of clusters, and update the CNA log.
 			clusterID = addToVector!(oldCluster, bh.clusterVector, 2)
