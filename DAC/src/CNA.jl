@@ -704,6 +704,16 @@ function getAtomClasses(nCNA::Vector{Dict{Tuple{UInt8, UInt8, UInt8}, UInt16}}, 
     return c
 end
 
+function getFractionalClassVector(classes::Vector{Int64}, nClasses::Int64)
+	frac = Vector{Float64}(undef, nClasses)
+	nAtoms = length(c)
+	for i in 1:nClasses
+		frac[i] = count(x->x==i, c)/nAtoms
+	end
+
+	return frac
+end
+
 """
 	CNAToString(cna::Dict{Tuple{UInt8, UInt8, UInt8}, UInt16})
 

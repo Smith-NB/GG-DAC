@@ -393,7 +393,7 @@ end
 mutable struct GMMMetC <: MetC
 	kT::Float64
 	threshold::Float64
-	Gaussian::Gaussian
+	#Gaussian::Gaussian
 	GaussianCluster::Int64
 	useExplorationDataOnly::Bool
 	nThreads::Int64
