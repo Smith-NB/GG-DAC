@@ -19,6 +19,15 @@ mutable struct ClusterVector
 	lock::ReentrantLock
 end
 
+# old, non-thread-safe version for backwards compatability
+#=
+mutable struct ClusterVector
+	vec::Vector{ClusterCompressed}
+	N::Int64
+	lock::Bool
+end
+=#
+
 """
     Cluster
 

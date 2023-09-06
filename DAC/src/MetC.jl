@@ -378,7 +378,6 @@ mutable struct ITCMetC <: MetC
 	refCNA::CNAProfile
 	explorationVector::ClusterVector
 	useExplorationDataOnly::Bool
-	nThreads::Int64
 	io::Tuple{IO, Channel}
 end
 
@@ -391,15 +390,65 @@ end
 #=============================================================================#
 
 mutable struct GMMMetC <: MetC
-	kT::Float64
-	threshold::Float64
-	#Gaussian::Gaussian
-	GaussianCluster::Int64
+	gaussian::GMM
+	gaussianCluster::Int64
+	pca::PCA
+	mode::Symbol
 	useExplorationDataOnly::Bool
-	nThreads::Int64
+	kT::Float64
+	classes::normalCNAProfile
+	nClasses::Int64
+	workspace::Matrix{Float64}
 	io::Tuple{IO, Channel}
 end
 
+function GMMMetC(gaussian::GMM, gaussianCluster::Int64, pca::PCA, mode::Symbol, useExplorationDataOnly::Bool, kT::Float64, io::Tuple{IO, Channel})
+	# sets workspace as a 1x{PCA_out_dims} Matrix.
+	classes = getClasses()
+	GMMMetC(gaussian, gaussianCluster, pca, mode, useExplorationDataOnly, kT, classes, length(classes), Matrix{Float64}(undef, 1, size(PCA)[2]), io)
+end
+"""
+	getAcceptanceBoolean(MetC::EnergyMetC, oldCluster::Cluster, newCluster::Cluster)
+
+Returns true or false for accepting the move from the oldCluster to the newCluster
+	based on the EnergyMetC.
+"""
 function getAcceptanceBoolean(MetC::GMMMetC, oldCluster::Cluster, newCluster::Cluster)
+	metcLog = ""
+	if newCluster.energy < oldCluster.energy
+		return true, metcLog
+	end
+
+	probability = exp((oldCluster.energy - newCluster.energy) / MetC.kT)
+	
+	metcLog *= "\nChance to accept = $(string(probability))"
+	
+	accept = probability > rand()
+
+	# if the hop is rejected before any GMM checks are made, stop here
+	if !accept
+		return accept, metcLog
+	end
+
+	# get the class vector for atom classes (Roncaglia scheme)
+	fractionalClassVector = getFractionalClassVector(getAtomClasses(newCluster.nCNA, GMMMetC.classes), nClasses)
+
+	# transform the class vector into PCA space
+	GMMMetC.workspace[1, :] = predict(GMMMetC.pca, fractionalClassVector)'[:, :]
+
+	# get the probabilities that this datapoint belongs to each of the n Gaussian clusters.
+	posteriorProbs = gmmposterior(GMMMetC.gaussian, GMMMetC.workspace)[1]
+
+	# this mode only accepts a hop if the target Gaussian cluster is the most likely Gaussian for this datapoint
+	if GMMMetC.mode == :maxProbOnly
+		# `findmax` returns (maxvalue, indexOf), where indexOf is of type CartesianIndex{2} (as the arg is a 1xn Matrix).
+		if findmax(posteriorProbs)[2][2] == GMMMetC.gaussianCluster
+			return accept, metcLog
+		end
+	# this accepts a hop depending on how likely it is this datapoint belongs to the target Gaussian.
+	elseif GMMMetC.mode == :clusterProb
+		accept = posteriorProbs[1, GMMMetC.gaussianCluster] > rand()
+		return accept, metcLog
+	end
 
 end

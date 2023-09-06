@@ -2,6 +2,7 @@ module DAC
 
 using LinearAlgebra
 using GaussianMixtures
+using MultivariateStats
 using Random
 using PyCall
 using HDF5
