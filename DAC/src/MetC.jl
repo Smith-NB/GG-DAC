@@ -431,7 +431,7 @@ function getAcceptanceBoolean(MetC::GMMMetC, oldCluster::Cluster, newCluster::Cl
 	end
 
 	# get the class vector for atom classes (Roncaglia scheme)
-	fractionalClassVector = getFractionalClassVector(getAtomClasses(newCluster.nCNA, MetC.classes), nClasses)
+	fractionalClassVector = getFractionalClassVector(getAtomClasses(newCluster.nCNA, MetC.classes), MetC.nClasses)
 
 	# transform the class vector into PCA space
 	MetC.workspace[1, :] = predict(MetC.pca, fractionalClassVector)'[:, :]
