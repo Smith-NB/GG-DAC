@@ -451,4 +451,6 @@ function getAcceptanceBoolean(MetC::GMMMetC, oldCluster::Cluster, newCluster::Cl
 		return accept, metcLog
 	end
 
+	return accept, metcLog * "__badReturn"
+
 end
