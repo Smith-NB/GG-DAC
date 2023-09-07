@@ -443,8 +443,7 @@ function getAcceptanceBoolean(MetC::GMMMetC, oldCluster::Cluster, newCluster::Cl
 	if MetC.mode == :maxProbOnly
 		# `findmax` returns (maxvalue, indexOf), where indexOf is of type CartesianIndex{2} (as the arg is a 1xn Matrix).
 		accept = findmax(posteriorProbs)[2][2] == MetC.gaussianCluster
-			return accept, metcLog
-		end
+		return accept, metcLog
 	# this accepts a hop depending on how likely it is this datapoint belongs to the target Gaussian.
 	elseif MetC.mode == :clusterProb
 		accept = posteriorProbs[1, MetC.gaussianCluster] > rand()
