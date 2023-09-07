@@ -52,6 +52,7 @@ mutable struct Cluster <: Atoms
 	stresses::Array{Float64}
 	distances::Matrix{Float64}
 	CNA::CNAProfile
+	nCNA::normalCNAProfile
 	validCNA::Bool
 	validnCNA::Bool
 	validEnergies::Bool
