@@ -402,10 +402,10 @@ mutable struct GMMMetC <: MetC
 	io::Tuple{IO, Channel}
 end
 
-function GMMMetC(gaussian::GMM, gaussianCluster::Int64, pca::PCA, mode::Symbol, useExplorationDataOnly::Bool, kT::Float64, io::Tuple{IO, Channel})
+function GMMMetC(gaussian::GMM, gaussianCluster::Int64, pca::PCA, mode::Symbol, useExplorationDataOnly::Bool, kT::Float64, outdims::Int64, io::Tuple{IO, Channel})
 	# sets workspace as a 1x{PCA_out_dims} Matrix.
 	classes = getClasses()
-	GMMMetC(gaussian, gaussianCluster, pca, mode, useExplorationDataOnly, kT, classes, length(classes), Matrix{Float64}(undef, 1, size(PCA)[2]), io)
+	GMMMetC(gaussian, gaussianCluster, pca, mode, useExplorationDataOnly, kT, classes, length(classes), Matrix{Float64}(undef, 1, size(pca)[2]), io)
 end
 """
 	getAcceptanceBoolean(MetC::EnergyMetC, oldCluster::Cluster, newCluster::Cluster)
