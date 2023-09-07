@@ -135,9 +135,9 @@ function perturbClusterSurface(coords::Matrix{Float64}, nAtomsToMove::Number, rC
 	else # otherwise randomly select which atoms to move
 		atomsToMove = Vector{Int64}(undef, nAtomsToMove)
 		for i in 1:nAtomsToMove
-			index = minCoordAtoms[rand(0x0d:length(minCoordAtoms))]
+			index = minCoordAtoms[rand(1:length(minCoordAtoms))]
 			while index in atomsToMove
-				index = minCoordAtoms[rand(0x0d:length(minCoordAtoms))]
+				index = minCoordAtoms[rand(1:length(minCoordAtoms))]
 			end
 			atomsToMove[i] = index
 		end
