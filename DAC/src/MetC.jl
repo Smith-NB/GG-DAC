@@ -431,23 +431,23 @@ function getAcceptanceBoolean(MetC::GMMMetC, oldCluster::Cluster, newCluster::Cl
 	end
 
 	# get the class vector for atom classes (Roncaglia scheme)
-	fractionalClassVector = getFractionalClassVector(getAtomClasses(newCluster.nCNA, GMMMetC.classes), nClasses)
+	fractionalClassVector = getFractionalClassVector(getAtomClasses(newCluster.nCNA, MetC.classes), nClasses)
 
 	# transform the class vector into PCA space
-	GMMMetC.workspace[1, :] = predict(GMMMetC.pca, fractionalClassVector)'[:, :]
+	MetC.workspace[1, :] = predict(MetC.pca, fractionalClassVector)'[:, :]
 
 	# get the probabilities that this datapoint belongs to each of the n Gaussian clusters.
-	posteriorProbs = gmmposterior(GMMMetC.gaussian, GMMMetC.workspace)[1]
+	posteriorProbs = gmmposterior(MetC.gaussian, MetC.workspace)[1]
 
 	# this mode only accepts a hop if the target Gaussian cluster is the most likely Gaussian for this datapoint
-	if GMMMetC.mode == :maxProbOnly
+	if MetC.mode == :maxProbOnly
 		# `findmax` returns (maxvalue, indexOf), where indexOf is of type CartesianIndex{2} (as the arg is a 1xn Matrix).
-		if findmax(posteriorProbs)[2][2] == GMMMetC.gaussianCluster
+		if findmax(posteriorProbs)[2][2] == MetC.gaussianCluster
 			return accept, metcLog
 		end
 	# this accepts a hop depending on how likely it is this datapoint belongs to the target Gaussian.
-	elseif GMMMetC.mode == :clusterProb
-		accept = posteriorProbs[1, GMMMetC.gaussianCluster] > rand()
+	elseif MetC.mode == :clusterProb
+		accept = posteriorProbs[1, MetC.gaussianCluster] > rand()
 		return accept, metcLog
 	end
 
