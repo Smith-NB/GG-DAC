@@ -442,7 +442,7 @@ function getAcceptanceBoolean(MetC::GMMMetC, oldCluster::Cluster, newCluster::Cl
 	# this mode only accepts a hop if the target Gaussian cluster is the most likely Gaussian for this datapoint
 	if MetC.mode == :maxProbOnly
 		# `findmax` returns (maxvalue, indexOf), where indexOf is of type CartesianIndex{2} (as the arg is a 1xn Matrix).
-		if findmax(posteriorProbs)[2][2] == MetC.gaussianCluster
+		accept = findmax(posteriorProbs)[2][2] == MetC.gaussianCluster
 			return accept, metcLog
 		end
 	# this accepts a hop depending on how likely it is this datapoint belongs to the target Gaussian.
