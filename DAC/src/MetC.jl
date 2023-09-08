@@ -382,7 +382,30 @@ mutable struct ITCMetC <: MetC
 end
 
 function getAcceptanceBoolean(MetC::ITCMetC, oldCluster::Cluster, newCluster::Cluster)
+	metcLog = ""
+	if newCluster.energy < oldCluster.energy
+		return true, metcLog
+	end
 
+	probability = exp((oldCluster.energy - newCluster.energy) / MetC.kT)
+	
+	metcLog *= "\nChance to accept = $(string(probability))"
+	
+	accept = probability > rand()
+
+	# if the hop is rejected before any GMM checks are made, stop here
+	if !accept
+		return accept, metcLog
+	end
+
+
+	sim::Float64 = getCNASimilarity(MetC.refCNA, newCluster.CNA)
+	metcLog *= "\nnewCluster is $sim similar to reference."
+	if sim < MetC.threshold
+		return false, metcLog
+	end
+
+	return accept, metcLog
 end
 
 #=============================================================================#
@@ -443,10 +466,12 @@ function getAcceptanceBoolean(MetC::GMMMetC, oldCluster::Cluster, newCluster::Cl
 	if MetC.mode == :maxProbOnly
 		# `findmax` returns (maxvalue, indexOf), where indexOf is of type CartesianIndex{2} (as the arg is a 1xn Matrix).
 		accept = findmax(posteriorProbs)[2][2] == MetC.gaussianCluster
+		metcLog *= "\nnewCluster belongs to cluster $(MetC.gaussianCluster)."
 		return accept, metcLog
 	# this accepts a hop depending on how likely it is this datapoint belongs to the target Gaussian.
 	elseif MetC.mode == :clusterProb
 		accept = posteriorProbs[1, MetC.gaussianCluster] > rand()
+		metcLog *= "\nnewCluster belongs to cluster $(MetC.gaussianCluster)\n\twith probability $(posteriorProbs[1, MetC.gaussianCluster])"
 		return accept, metcLog
 	end
 
