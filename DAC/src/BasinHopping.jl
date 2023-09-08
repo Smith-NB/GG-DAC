@@ -202,8 +202,9 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, walkID
 	while step < steps
 		# Break loop if walltime exceeded.
 		if (now() - start) / Hour(1) > bh.walltime
-			put!(bh.io[2], "\nwallTime exceeded. Ending walk.")
+			put!(bh.io[2], "\nwallTime exceeded. Ending Walk $(walkID).")
 			print(bh.io[1], take!(bh.io[2]))
+			flush(bh.io[1])
 			break
 		end
 
@@ -321,6 +322,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, walkID
 				stepLog *=  "$(getReseedPeriod(bh.reseeder)) steps have occured since the last improvement. endning walk $(walkID).\n"
 				put!(bh.io[2], stepLog)
 				print(bh.io[1], take!(bh.io[2]))
+				flush(bh.io[1])
 				return step
 			end
 			step += 1 #treat the reseed as an additional hop.
@@ -356,6 +358,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, walkID
 		# log the step
 		put!(bh.io[2], stepLog)
 		print(bh.io[1], take!(bh.io[2]))
+		flush(bh.io[1])
 
 	end
 
