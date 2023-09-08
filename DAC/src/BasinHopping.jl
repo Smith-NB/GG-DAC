@@ -143,14 +143,14 @@ function optRun(_opt::PyObject, workhorse::Workhorse, fmax::Float64)
 end
 
 
-function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, walkID::Int64, additionalInfo::Dict{String, Any}, version::String)
+function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, walkID::Int64, additionalInfo::Dict{String, Any}, start::DateTime, version::String)
 	if version != "v1.2.1" || bh.version != "v1.2.1"
 		println(bh.io[1], "The version number passed to the hop function or BasinHopper constructor does not match\nthe hard coded
 			version number. Double check you are using the correct run script. This program will now terminate.")
 		return nothing
 	end
 
-	start = now()
+	#start = now()
 
 	threadID = Threads.threadid()
 
