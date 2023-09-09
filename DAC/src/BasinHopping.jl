@@ -147,12 +147,10 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, walkID
 	if version != "v1.2.1" || bh.version != "v1.2.1"
 		println(bh.io[1], "The version number passed to the hop function or BasinHopper constructor does not match\nthe hard coded
 			version number. Double check you are using the correct run script. This program will now terminate.")
-		return nothing
+		return 0
 	end
 
 	#start = now()
-
-	threadID = Threads.threadid()
 
 	# If needed, generate a random seed.
 	if seed == "random"
@@ -212,7 +210,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, walkID
 		step += 1
 		stepLog = ""
 		stepLog *= "\n================================\n"
-		stepLog *= "Attempting step $step in Walk $(walkID) with Walker $(threadID)"
+		stepLog *= "Attempting step $step in Walk $(walkID) with Walker $(Threads.threadid())"
 
 
 		iterations += 1
