@@ -28,50 +28,31 @@ end
 
 function logCNA(io::Tuple{IO, Channel}, ID::Int64, CNA::CNAProfile, energy::Float64)
 	# block the file
-	put!(io[2], "E$energy\n")
 
-	print(io[1], "$ID=")
+	s = "$ID="
 	for pair in CNA
-		print(io[1], "($(string(pair.first[1])),$(string(pair.first[2])),$(string(pair.first[3]))):$(string(pair.second));")
+		s *= "($(string(pair.first[1])),$(string(pair.first[2])),$(string(pair.first[3]))):$(string(pair.second));"
 	end
 	# unblock
-	print(io[1], take!(io[2]))
+	s *= "E$energy\n"
+
+	print(io[1], s)
 
 	return nothing
 end
 
 
 function logStep(io::Tuple{IO, Channel}, walkID::Int64, step::Int64, clusterID::Int64, energy::Float64, accepted::String)
-	# add the string to the file channel. this line will block if the channel is full, i.e. by another thread
-	put!(io[2], "WalkID $(string(walkID)), Step $(string(step)), ID $(string(clusterID)), energy $(string(energy)), accpeted $(string(accepted))\n")
-
-	# take the string in the channel and print it to the output file.
-	while isready(io[2])
-		print(io[1], take!(io[2]))
-	end
+	print(io[1], "WalkID $(string(walkID)), Step $(string(step)), ID $(string(clusterID)), energy $(string(energy)), accpeted $(string(accepted))\n")
 end
 
 function logStep(io::Tuple{IO, Channel}, step::Int64, clusterID::Int64, energy::Float64, accepted::String)
-	# add the string to the file channel. this line will block if the channel is full, i.e. by another thread
-	put!(io[2], "Step $(string(step)), ID $(string(clusterID)), energy $(string(energy)), accpeted $(string(accepted))\n")
-
-	# take the string in the channel and print it to the output file.
-	while isready(io[2])
-		print(io[1], take!(io[2]))
-	end
+	print(io[1], "Step $(string(step)), ID $(string(clusterID)), energy $(string(energy)), accpeted $(string(accepted))\n")
 end
 
 
 function logStep(io::Tuple{IO, Channel}, step::Int64, clusterID::Int64, energy::Float64, accepted::String, sim::Float64)
-	s = "Step " * string(step) * ", ID " * string(clusterID) * ", energy " * string(energy) * ", accepted " * string(accepted) * ", similarity, " * string(sim) * "\n"
-
-	# add the string to the file channel. this line will block if the channel is full, i.e. by another thread
-	put!(io[2], s)
-
-	# take the string in the channel and print it to the output file.
-	while isready(io[2])
-		print(io[1], take!(io[2]))
-	end
+	print(io[1], "Step " * string(step) * ", ID " * string(clusterID) * ", energy " * string(energy) * ", accepted " * string(accepted) * ", similarity, " * string(sim) * "\n")
 end
 
 function addToVector!(cluster::Union{Cluster, ClusterCompressed}, clusterVector::ClusterVector, dp::Int64)
@@ -143,7 +124,7 @@ function optRun(_opt::PyObject, workhorse::Workhorse, fmax::Float64)
 end
 
 
-function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, walkID::Int64, additionalInfo::Dict{String, Any}, start::DateTime, version::String)
+function hop(bh::BasinHopper, steps::Int64, stepsAtomic::Threads.Atomic{Int64}, seed::Union{String, Cluster}, walkID::Int64, additionalInfo::Dict{String, Any}, start::DateTime, version::String)
 	if version != "v1.2.1" || bh.version != "v1.2.1"
 		println(bh.io[1], "The version number passed to the hop function or BasinHopper constructor does not match\nthe hard coded
 			version number. Double check you are using the correct run script. This program will now terminate.")
@@ -201,12 +182,17 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, walkID
 		println("$walkID start of step $step"); flush(stdout)
 		# Break loop if walltime exceeded.
 		if (now() - start) / Hour(1) > bh.walltime
-			put!(bh.io[2], "\nwallTime exceeded. Ending Walk $(walkID).")
-			print(bh.io[1], take!(bh.io[2]))
+			print(bh.io[1], "\nwallTime exceeded. Ending Walk $(walkID).")
+			flush(bh.io[1])
+			break
+		elseif stepsAtomic[] >= steps
+			print(bh.io[1], "\n steps completed. Ending Walk $(walkID).")
 			flush(bh.io[1])
 			break
 		end
 
+		Threads.atomic_add!(stepsAtomic, 1)
+		
 		step += 1
 		stepLog = ""
 		stepLog *= "\n================================\n"
@@ -329,8 +315,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, walkID
 			# if this walk should exit upon a reseed:
 			if bh.exitOnReseed
 				stepLog *=  "$(getReseedPeriod(bh.reseeder)) steps have occured since the last improvement. endning walk $(walkID).\n"
-				put!(bh.io[2], stepLog)
-				print(bh.io[1], take!(bh.io[2]))
+				print(bh.io[1], stepLog)
 				flush(bh.io[1])
 				return step
 			end
@@ -367,8 +352,7 @@ function hop(bh::BasinHopper, steps::Int64, seed::Union{String, Cluster}, walkID
 		println("$walkID H of step $step"); flush(stdout)
 
 		# log the step
-		put!(bh.io[2], stepLog)
-		print(bh.io[1], take!(bh.io[2]))
+		print(bh.io[1], stepLog)
 		flush(bh.io[1])
 
 	end
