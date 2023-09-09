@@ -185,10 +185,6 @@ function hop(bh::BasinHopper, steps::Int64, stepsAtomic::Threads.Atomic{Int64}, 
 			print(bh.io[1], "\nwallTime exceeded. Ending Walk $(walkID).")
 			flush(bh.io[1])
 			break
-		elseif stepsAtomic[] >= steps
-			print(bh.io[1], "\n steps completed. Ending Walk $(walkID).")
-			flush(bh.io[1])
-			break
 		end
 
 		Threads.atomic_add!(stepsAtomic, 1)
