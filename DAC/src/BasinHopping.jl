@@ -366,6 +366,8 @@ function hop(bh::BasinHopper, steps::Int64, stepsAtomic::Threads.Atomic{Int64}, 
 		print(resumeFile, "targetsLocatedAt:$targetsLocatedAt\n")
 		close(resumeFile)
 	end
+
+	GC.gc()
 	
 	return step
 end
