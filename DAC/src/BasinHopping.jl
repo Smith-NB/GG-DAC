@@ -179,7 +179,7 @@ function hop(bh::BasinHopper, steps::Int64, stepsAtomic::Threads.Atomic{Int64}, 
 
 
 	while step < steps
-		println("$walkID start of step $step"); flush(stdout)
+		println("$walkID start of step $step")
 		# Break loop if walltime exceeded.
 		if (now() - start) / Hour(1) > bh.walltime
 			print(bh.io[1], "\nwallTime exceeded. Ending Walk $(walkID).")
@@ -201,7 +201,6 @@ function hop(bh::BasinHopper, steps::Int64, stepsAtomic::Threads.Atomic{Int64}, 
 		setPositions!(newCluster, newPos)
 		
 
-		println("$walkID A of step $step"); flush(stdout)
 		optimize!(bh.optimizer, newCluster, bh.fmax)
 		while !isClusterCoherent(newCluster.positions, 2)
 			newPos, pertrubString = bh.perturber(getPositions(oldCluster))
@@ -215,7 +214,6 @@ function hop(bh::BasinHopper, steps::Int64, stepsAtomic::Threads.Atomic{Int64}, 
 			setCNAProfile!(newCluster, bh.rcut)
 		end
 			
-		println("$walkID B of step $step"); flush(stdout)
 
 		# Check if the cluster is unique, add it to the vector of clusters, and update the CNA log.
 		# clusterID will be negative if is was already in the vector.
@@ -223,7 +221,6 @@ function hop(bh::BasinHopper, steps::Int64, stepsAtomic::Threads.Atomic{Int64}, 
 			clusterID = addToVector!(newCluster, bh.clusterVector, 2)
 		end
 
-		println("$walkID C of step $step"); flush(stdout)
 
 		if clusterID > 0
 			logCNA(bh.CNAIO, clusterID, getCNA(newCluster), getEnergy(newCluster))
@@ -232,16 +229,12 @@ function hop(bh::BasinHopper, steps::Int64, stepsAtomic::Threads.Atomic{Int64}, 
 			stepLog *=  "\nRegenerated cluster:\n\tID = $clusterID\n\tE = $(getEnergy(newCluster))"
 		end
 
-		println("$walkID D of step $step"); flush(stdout)
-
 		# Determine if hop to new structure is to be accepted.
 		acceptHop, MetCString = getAcceptanceBoolean(bh.metC, oldCluster, newCluster)
 		stepLog *= MetCString
 		acceptStr = acceptHop ? "accepted." : "rejected."
 
 		stepLog *= "\nThe current step has been " * acceptStr
-
-		println("$walkID E of step $step"); flush(stdout)
 
 		# Decrease number of hops until next reseed.
 		updateHopsToReseed!(bh.reseeder)
@@ -265,8 +258,6 @@ function hop(bh::BasinHopper, steps::Int64, stepsAtomic::Threads.Atomic{Int64}, 
 			end
 				
 		end
-
-		println("$walkID F of step $step"); flush(stdout)
 
 		# Log the move.
 		logStep(bh.logIO, walkID, step, abs(clusterID), newCluster.energy, string(acceptHop))
@@ -303,8 +294,6 @@ function hop(bh::BasinHopper, steps::Int64, stepsAtomic::Threads.Atomic{Int64}, 
 				break
 			end
 		end
-
-		println("$walkID G of step $step"); flush(stdout)
 
 		# Check if time for reseed. Will not trigger if hopsToReseed is negative.
 		if timeToReseed!(bh.reseeder)
@@ -344,8 +333,6 @@ function hop(bh::BasinHopper, steps::Int64, stepsAtomic::Threads.Atomic{Int64}, 
 			# Reset hopsToReseed.
 			hopsToReseed = getReseedPeriod(bh.reseeder)
 		end
-
-		println("$walkID H of step $step"); flush(stdout)
 
 		# log the step
 		print(bh.io[1], stepLog)
