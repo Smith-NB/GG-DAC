@@ -376,7 +376,6 @@ mutable struct ITCMetC <: MetC
 	kT::Float64
 	threshold::Float64
 	refCNA::CNAProfile
-	explorationVector::ClusterVector
 	useExplorationDataOnly::Bool
 	io::Tuple{IO, Channel}
 end
@@ -384,14 +383,14 @@ end
 function getAcceptanceBoolean(MetC::ITCMetC, oldCluster::Cluster, newCluster::Cluster)
 	metcLog = ""
 	if newCluster.energy < oldCluster.energy
-		return true, metcLog
+		accept = true
+	else
+		probability = exp((oldCluster.energy - newCluster.energy) / MetC.kT)
+		
+		metcLog *= "\nChance to accept = $(string(probability))"
+		
+		accept = probability > rand()
 	end
-
-	probability = exp((oldCluster.energy - newCluster.energy) / MetC.kT)
-	
-	metcLog *= "\nChance to accept = $(string(probability))"
-	
-	accept = probability > rand()
 
 	# if the hop is rejected before any GMM checks are made, stop here
 	if !accept
