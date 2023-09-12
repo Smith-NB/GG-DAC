@@ -179,7 +179,6 @@ function hop(bh::BasinHopper, steps::Int64, stepsAtomic::Threads.Atomic{Int64}, 
 
 
 	while step < steps
-		println("$walkID start of step $step")
 		# Break loop if walltime exceeded.
 		if (now() - start) / Hour(1) > bh.walltime
 			print(bh.io[1], "\nwallTime exceeded. Ending Walk $(walkID).")
