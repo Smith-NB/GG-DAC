@@ -438,14 +438,15 @@ Returns true or false for accepting the move from the oldCluster to the newClust
 function getAcceptanceBoolean(MetC::GMMMetC, oldCluster::Cluster, newCluster::Cluster)
 	metcLog = ""
 	if newCluster.energy < oldCluster.energy
-		return true, metcLog
-	end
+		accept = true
+	else
 
-	probability = exp((oldCluster.energy - newCluster.energy) / MetC.kT)
-	
-	metcLog *= "\nChance to accept = $(string(probability))"
-	
-	accept = probability > rand()
+		probability = exp((oldCluster.energy - newCluster.energy) / MetC.kT)
+		
+		metcLog *= "\nChance to accept = $(string(probability))"
+		
+		accept = probability > rand()
+	end
 
 	# if the hop is rejected before any GMM checks are made, stop here
 	if !accept
