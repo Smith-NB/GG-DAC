@@ -55,7 +55,7 @@ function logStep(io::Tuple{IO, Channel}, step::Int64, clusterID::Int64, energy::
 	print(io[1], "Step " * string(step) * ", ID " * string(clusterID) * ", energy " * string(energy) * ", accepted " * string(accepted) * ", similarity, " * string(sim) * "\n")
 end
 
-function addToVector!(cluster::Union{Cluster, ClusterCompressedWithML}, clusterVector::ClusterVectorWithML, dp::Int64)
+function addToVector!(cluster::Union{Cluster, ClusterCompressed}, clusterVector::ClusterVectorWithML, dp::Int64)
 	#= binary search =#
 	energy = round(cluster.energy, digits=dp)
 	#println(clusterVector.N[])
