@@ -78,7 +78,7 @@ mutable struct Cluster <: Atoms
 	distances::Matrix{Float64},
 	CNA::CNAProfile,
 	nCNA::normalCNAProfile,
-	atomClassCount::Vector{UInt8}
+	atomClassCount::Vector{UInt8},
 	validCNA::Bool,
 	validnCNA::Bool,
 	validEnergies::Bool,
@@ -95,7 +95,7 @@ mutable struct Cluster <: Atoms
 	distances::Matrix{Float64},
 	CNA::CNAProfile,
 	nCNA::normalCNAProfile,
-	atomClassCount::Vector{UInt8}
+	atomClassCount::Vector{UInt8},
 	validCNA::Bool,
 	validnCNA::Bool,
 	validEnergies::Bool,
