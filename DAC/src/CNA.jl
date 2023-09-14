@@ -711,6 +711,7 @@ function getFrequencyClassVector(atomClasses::Vector{Int64}, nClasses::Int64, re
 		freq[i] = count(x->x==i, atomClasses)
 	end
 
+	return freq
 end
 
 function getFractionalClassVector(atomClasses::Vector{Int64}, nClasses::Int64)
