@@ -13,8 +13,16 @@ struct ClusterCompressed
 	ID::Int64
 end
 
+
 mutable struct ClusterVector
 	vec::Vector{ClusterCompressed}
+	N::Threads.Atomic{Int64}
+	lock::ReentrantLock
+end
+
+mutable struct ClusterVectorWithML
+	vec::Vector{ClusterCompressed}
+	MLData::Matrix{Float64}
 	N::Threads.Atomic{Int64}
 	lock::ReentrantLock
 end
@@ -53,6 +61,7 @@ mutable struct Cluster <: Atoms
 	distances::Matrix{Float64}
 	CNA::CNAProfile
 	nCNA::normalCNAProfile
+	atomClassCount::Vector{UInt8}
 	validCNA::Bool
 	validnCNA::Bool
 	validEnergies::Bool
@@ -69,6 +78,7 @@ mutable struct Cluster <: Atoms
 	distances::Matrix{Float64},
 	CNA::CNAProfile,
 	nCNA::normalCNAProfile,
+	atomClassCount::Vector{UInt8}
 	validCNA::Bool,
 	validnCNA::Bool,
 	validEnergies::Bool,
@@ -85,6 +95,7 @@ mutable struct Cluster <: Atoms
 	distances::Matrix{Float64},
 	CNA::CNAProfile,
 	nCNA::normalCNAProfile,
+	atomClassCount::Vector{UInt8}
 	validCNA::Bool,
 	validnCNA::Bool,
 	validEnergies::Bool,
@@ -101,7 +112,7 @@ function Cluster(formula::Dict{String, Int64})
 	Cluster(
 		formula, zeros(Float64, N, 3), zeros(Float64, 3, 3), 
 		0.0, zeros(Float64, N), zeros(Float64, N, 3), zeros(Float64, N, 3, 3), Matrix{Float64}(undef, natoms, natoms),
-		CNAProfile(), normalCNAProfile(),
+		CNAProfile(), normalCNAProfile(), Vector{UInt8}(),
 		false, false, false, false, false
 		)
 end 
@@ -110,7 +121,7 @@ function Cluster(formula::Dict{String, Int64}, positions::Matrix{Float64})
 	N = sum(get.([formula], keys(formula), nothing))
 	Cluster(formula, positions, zeros(Float64, 3, 3), 
 		0.0, zeros(Float64, N), zeros(Float64, N, 3), zeros(Float64, N, 3, 3), getDistances(positions),
-		CNAProfile(), normalCNAProfile(),
+		CNAProfile(), normalCNAProfile(), Vector{UInt8}(),
 		false, false, false, false, false
 		)
 end
@@ -121,7 +132,7 @@ function Cluster(formula::Dict{String, Int64}, positions::Matrix{Float64}, cell:
 	Cluster(formula, positions, cell, 
 		0.0, zeros(Float64, N), zeros(Float64, 3, N), 
 		zeros(Float64, 3, 3, N), getDistances(positions),
-		CNAProfile(), normalCNAProfile(),
+		CNAProfile(), normalCNAProfile(), Vector{UInt8}(),
 		false, false, false, false, false
 		)
 end

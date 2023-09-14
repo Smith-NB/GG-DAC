@@ -704,6 +704,15 @@ function getAtomClasses(nCNA::Vector{Dict{Tuple{UInt8, UInt8, UInt8}, UInt16}}, 
     return c
 end
 
+function getFrequencyClassVector(atomClasses::Vector{Int64}, nClasses::Int64, returnType::DataType)
+	freq = Vector{returnType}(undef, nClasses)
+	nAtoms = length(atomClasses)
+	for i in 1:nClasses
+		freq[i] = count(x->x==i, atomClasses)
+	end
+
+end
+
 function getFractionalClassVector(atomClasses::Vector{Int64}, nClasses::Int64)
 	frac = Vector{Float64}(undef, nClasses)
 	nAtoms = length(atomClasses)

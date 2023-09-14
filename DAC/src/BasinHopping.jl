@@ -55,6 +55,59 @@ function logStep(io::Tuple{IO, Channel}, step::Int64, clusterID::Int64, energy::
 	print(io[1], "Step " * string(step) * ", ID " * string(clusterID) * ", energy " * string(energy) * ", accepted " * string(accepted) * ", similarity, " * string(sim) * "\n")
 end
 
+function addToVector!(cluster::Union{Cluster, ClusterCompressedWithML}, clusterVector::ClusterVectorWithML, dp::Int64)
+	#= binary search =#
+	energy = round(cluster.energy, digits=dp)
+	#println(clusterVector.N[])
+	presentClusterID = 0
+	L = 1
+	R = clusterVector.N[]+1
+	while L < R
+
+		m = trunc(Int, (R + L)/2)
+		if clusterVector.vec[m].energy == energy
+			R = m
+			startM = m
+			while m < clusterVector.N[]&& clusterVector.vec[m].energy == energy
+				if clusterVector.vec[m].CNA == cluster.CNA
+					presentClusterID = -clusterVector.vec[m].ID # ClusterId will be negative if already present in Vector
+					break
+				end
+				m += 1
+			end
+
+			m = startM - 1
+			while m > 0 && clusterVector.vec[m].energy == energy
+				if clusterVector.vec[m].CNA == cluster.CNA
+					presentClusterID = -clusterVector.vec[m].ID # ClusterId will be negative if already present in Vector
+					break
+				end
+				m -= 1
+			end
+
+			break
+
+		elseif clusterVector.vec[m].energy < energy
+			L = m + 1
+		else
+			R = m
+		end
+	end	
+	
+	#println("$energy, $presentClusterID, $R")
+	# If cluster is new, add it to the vector.
+	if presentClusterID == 0
+		R = R == 0 ? 1 : R
+		presentClusterID = Threads.atomic_add!(clusterVector.N, 1)
+		presentClusterID += 1
+		insert!(clusterVector.vec, R, ClusterCompressed(cluster.positions, round(cluster.energy, digits=dp), cluster.CNA, presentClusterID))
+		push!(clusterVector.MLData, )
+	end
+
+	# return 0 if the cluster was added, otherwise return the index in the vector the cluster was found at.
+	return presentClusterID
+end
+
 function addToVector!(cluster::Union{Cluster, ClusterCompressed}, clusterVector::ClusterVector, dp::Int64)
 	#= binary search =#
 	energy = round(cluster.energy, digits=dp)
@@ -65,43 +118,32 @@ function addToVector!(cluster::Union{Cluster, ClusterCompressed}, clusterVector:
 	while L < R
 
 		m = trunc(Int, (R + L)/2)
-		try
-			if clusterVector.vec[m].energy == energy
-				R = m
-				startM = m
-				while m < clusterVector.N[]&& clusterVector.vec[m].energy == energy
-					if clusterVector.vec[m].CNA == cluster.CNA
-						presentClusterID = -clusterVector.vec[m].ID # ClusterId will be negative if already present in Vector
-						break
-					end
-					m += 1
+		if clusterVector.vec[m].energy == energy
+			R = m
+			startM = m
+			while m < clusterVector.N[]&& clusterVector.vec[m].energy == energy
+				if clusterVector.vec[m].CNA == cluster.CNA
+					presentClusterID = -clusterVector.vec[m].ID # ClusterId will be negative if already present in Vector
+					break
 				end
-
-				m = startM - 1
-				while m > 0 && clusterVector.vec[m].energy == energy
-					if clusterVector.vec[m].CNA == cluster.CNA
-						presentClusterID = -clusterVector.vec[m].ID # ClusterId will be negative if already present in Vector
-						break
-					end
-					m -= 1
-				end
-
-				break
-
-			elseif clusterVector.vec[m].energy < energy
-				L = m + 1
-			else
-				R = m
+				m += 1
 			end
-		catch err
-			println("ADDTOVECTOR!   $(length(clusterVector.vec)) $m $R $L $((R+L)/2) $(Threads.threadid()) $err")
-			throw(err)
-			#vecprint = open("vecprint.txt", "w")
-			#println(vecprint, "ADDTOVECTOR!   $(length(clusterVector.vec)) $m $R $L $((R+L)/2) $(Threads.threadid()) $err")
-			#(vecprint, "ADDTOVECTOR2!  $(clusterVector.vec)")
-			#close(vecprint)
-			#exit()
-			#throw(err)
+
+			m = startM - 1
+			while m > 0 && clusterVector.vec[m].energy == energy
+				if clusterVector.vec[m].CNA == cluster.CNA
+					presentClusterID = -clusterVector.vec[m].ID # ClusterId will be negative if already present in Vector
+					break
+				end
+				m -= 1
+			end
+
+			break
+
+		elseif clusterVector.vec[m].energy < energy
+			L = m + 1
+		else
+			R = m
 		end
 	end	
 	
