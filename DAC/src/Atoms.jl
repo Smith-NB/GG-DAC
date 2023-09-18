@@ -27,7 +27,7 @@ mutable struct ClusterVectorWithML
 	lock::ReentrantLock
 end
 
-function pushMatrix!(m::Matrix, x::Vector, N::Threads.Atomic{Int64})
+function pushMatrix!(m::Matrix, x::Vector, N::Int64)
 	nDims, nSamples = size(m)
 	
 	if N >= nSamples
