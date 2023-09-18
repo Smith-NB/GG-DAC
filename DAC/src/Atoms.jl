@@ -238,6 +238,7 @@ end
 
 function pushMatrix!(m::Matrix, x::Vector, N::Int64)
 	nDims, nSamples = size(m)
+	println("$nDims $nSamples $N $(N >= nSamples)")
 	if N >= nSamples
 		m2 = Matrix{typeof(m[1])}(undef, nDims, nSamples)
 		m = hcat(m, m2)	
