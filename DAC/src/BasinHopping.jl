@@ -68,7 +68,7 @@ function addToVector!(cluster::Union{Cluster, ClusterCompressed}, clusterVector:
 		if clusterVector.vec[m].energy == energy
 			R = m
 			startM = m
-			while m < clusterVector.N[]&& clusterVector.vec[m].energy == energy
+			while m < clusterVector.N[] && clusterVector.vec[m].energy == energy
 				if clusterVector.vec[m].CNA == cluster.CNA
 					presentClusterID = -clusterVector.vec[m].ID # ClusterId will be negative if already present in Vector
 					break
@@ -101,7 +101,7 @@ function addToVector!(cluster::Union{Cluster, ClusterCompressed}, clusterVector:
 		presentClusterID = Threads.atomic_add!(clusterVector.N, 1)
 		presentClusterID += 1
 		insert!(clusterVector.vec, R, ClusterCompressed(cluster.positions, round(cluster.energy, digits=dp), cluster.CNA, presentClusterID))
-		push!(clusterVector.MLData, )
+		push!(clusterVector.MLData, cluster.atomClassCount)
 	end
 
 	# return 0 if the cluster was added, otherwise return the index in the vector the cluster was found at.

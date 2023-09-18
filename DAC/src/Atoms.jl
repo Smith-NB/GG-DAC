@@ -27,6 +27,21 @@ mutable struct ClusterVectorWithML
 	lock::ReentrantLock
 end
 
+function pushMatrix!(m::Matrix, x::Vector, N::Threads.Atomic{Int64})
+	nDims, nSamples = size(m)
+	
+	if N >= nSamples
+		m2 = Matrix{typeof(m[1])}(undef, nDims, nSamples*2)
+		for i in 1:nDims
+			m2[:, i] = m[:, i]
+		end
+		m2[:, N+1] = x
+		m = m2
+	else 
+		m[:, N+1] = x
+	end
+end
+
 # old, non-thread-safe version for backwards compatability
 #=
 mutable struct ClusterVector
