@@ -238,20 +238,12 @@ end
 
 function pushMatrix!(m::Matrix, x::Vector, N::Int64)
 	nDims, nSamples = size(m)
-	println(N, N >= nSamples)
 	if N >= nSamples
-		m = [m; x']
-		#=
-		m2 = Matrix{typeof(m[1])}(undef, nDims, nSamples*2)
-		for i in 1:nDims
-			m2[:, i] = m[:, i]
-		end
-		m2[:, N+1] = x
-		m = m2
-		=#
-	else 
-		m[:, N+1] = x
+		m2 = Matrix{typeof(m[1])}(undef, nDims, nSamples)
+		m = hcat(m, m2)	
 	end
+	m[:, N+1] = x
+	
 end
 
 """
