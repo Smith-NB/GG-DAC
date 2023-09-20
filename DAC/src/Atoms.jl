@@ -24,8 +24,8 @@ mutable struct ClusterVectorWithML
 	vec::Vector{ClusterCompressed}
 	MLData::Matrix{UInt8}
 	nMLData::Int64
-	idsOfMLLabels::Vector{Vector{Int64}}
-	idToIndex::Vector{Int64}
+	idsOfMLLabels::Vector{Vector{Int32}}
+	idToIndex::Vector{Int32}
 	N::Threads.Atomic{Int64}
 	lock::ReentrantLock
 end
@@ -222,7 +222,7 @@ function setCNAProfiles!(atoms::Cluster, rcut::Float64)
 end
 
 setCNAProfile!(atoms::Cluster, cna::CNAProfile) = atoms.CNA, atoms.validCNA = cna, true
-setCNAProfiles!(atoms::Cluster, cna::CNAProfile, ncna::normalCNAProfile) = atoms.CNA, atoms.nCNA atoms.validCNA = cna, ncna, true
+setCNAProfiles!(atoms::Cluster, cna::CNAProfile, ncna::normalCNAProfile) = atoms.CNA, atoms.nCNA, atoms.validCNA = cna, ncna, true
 
 
 setAtomClassCount(atoms::Cluster, classes::normalCNAProfile, nClasses::Int64, returnType::DataType) = atoms.atomClassCount = getFrequencyClassVector(getAtomClasses(atoms.nCNA, classes), nClasses, returnType)
