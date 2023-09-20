@@ -22,7 +22,10 @@ end
 
 mutable struct ClusterVectorWithML
 	vec::Vector{ClusterCompressed}
-	MLData::Matrix{Float64}
+	MLData::Matrix{UInt8}
+	nMLData::Int64
+	idsOfMLLabels::Vector{Vector{Int64}}
+	idToIndex::Vector{Int64}
 	N::Threads.Atomic{Int64}
 	lock::ReentrantLock
 end
@@ -62,6 +65,7 @@ mutable struct Cluster <: Atoms
 	CNA::CNAProfile
 	nCNA::normalCNAProfile
 	atomClassCount::Vector{UInt8}
+	mlLabel::Int64
 	validCNA::Bool
 	validnCNA::Bool
 	validEnergies::Bool
@@ -216,8 +220,12 @@ function setCNAProfiles!(atoms::Cluster, rcut::Float64)
 	atoms.validnCNA = true
 	return nothing
 end
-setCNAProfile!(atoms::Cluster, cna::CNAProfile) = atoms.CNA, atoms.validCNA = cna, true
 
+setCNAProfile!(atoms::Cluster, cna::CNAProfile) = atoms.CNA, atoms.validCNA = cna, true
+setCNAProfiles!(atoms::Cluster, cna::CNAProfile, ncna::normalCNAProfile) = atoms.CNA, atoms.nCNA atoms.validCNA = cna, ncna, true
+
+
+setAtomClassCount(atoms::Cluster, classes::normalCNAProfile, nClasses::Int64, returnType::DataType) = atoms.atomClassCount = getFrequencyClassVector(getAtomClasses(atoms.nCNA, classes), nClasses, returnType)
 
 """
 	hasCNAProfile(atoms::Cluster)
@@ -234,17 +242,6 @@ function hasCNAProfile(atoms::Cluster)
 	catch UndefRefError
 		return false
 	end
-end
-
-function pushMatrix!(m::Matrix, x::Vector, N::Int64)
-	nDims, nSamples = size(m)
-	println("$nDims $nSamples $N $(N >= nSamples)")
-	if N >= nSamples
-		m2 = Matrix{typeof(m[1])}(undef, nDims, nSamples)
-		m = hcat(m, m2)	
-	end
-	m[:, N+1] = x
-	
 end
 
 """

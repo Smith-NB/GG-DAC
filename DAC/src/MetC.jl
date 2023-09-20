@@ -429,6 +429,13 @@ function GMMMetC(gaussian::GMM, gaussianCluster::Int64, pca::PCA, mode::Symbol, 
 	classes = getClasses()
 	GMMMetC(gaussian, gaussianCluster, pca, mode, useExplorationDataOnly, kT, classes, length(classes), Matrix{Float64}(undef, 1, size(pca)[2]), io)
 end
+
+function setMLClusterIndex!(MetC::GMMMetC, cluster::Cluster)
+	fractionalClassVector = getFrequencyClassVector(getAtomClasses(cluster.nCNA, MetC.classes), MetC.nClasses)
+	bh.metC.workspace[1, :] = predict(MetC.pca, fractionalClassVector)'[:, :]
+	mlClusterIndex = findmax(gmmposterior(MetC.gaussian, MetC.workspace)[1])[2][2]
+end
+
 """
 	getAcceptanceBoolean(MetC::EnergyMetC, oldCluster::Cluster, newCluster::Cluster)
 

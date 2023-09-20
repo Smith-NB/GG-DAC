@@ -684,7 +684,7 @@ end
 
 returns a `Vector` of `Int64`s giving the class index of each atom
 """
-function getAtomClasses(nCNA::Vector{Dict{Tuple{UInt8, UInt8, UInt8}, UInt16}}, classes::Vector{Dict{Tuple{UInt8, UInt8, UInt8}, UInt16}})
+function getAtomClasses(nCNA::normalCNAProfile, classes::normalCNAProfile)
     natoms = length(nCNA)
     nclasses = length(classes)
 
@@ -704,6 +704,13 @@ function getAtomClasses(nCNA::Vector{Dict{Tuple{UInt8, UInt8, UInt8}, UInt16}}, 
     return c
 end
 
+"""
+	getFrequencyClassVector(atomClasses::Vector{Int64}, nClasses::Int64, returnType::DataType)
+
+returns a `Vector`of type `returnType` giving the frequency of occurence for each class.
+`returnType` should be UInt8 if the structure is 255 atoms or less, UInt16 if 65536 atoms or less, and so on.
+`atomClasses` should be taken from `getAtomClasses()`.
+"""
 function getFrequencyClassVector(atomClasses::Vector{Int64}, nClasses::Int64, returnType::DataType)
 	freq = Vector{returnType}(undef, nClasses)
 	nAtoms = length(atomClasses)
@@ -714,6 +721,12 @@ function getFrequencyClassVector(atomClasses::Vector{Int64}, nClasses::Int64, re
 	return freq
 end
 
+"""
+	getFractionalClassVector(atomClasses::Vector{Int64}, nClasses::Int64)
+
+returns a `Vector`of type `Float64` giving the fractional occurence of occurence for each class.
+`atomClasses` should be taken from `getAtomClasses()`.
+"""
 function getFractionalClassVector(atomClasses::Vector{Int64}, nClasses::Int64)
 	frac = Vector{Float64}(undef, nClasses)
 	nAtoms = length(atomClasses)

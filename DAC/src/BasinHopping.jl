@@ -12,6 +12,7 @@ struct BasinHopper
 	vacuumAdd::Float64
 	kT::Float64
 	perturber::Function
+	postOptimisationTasks::Function
 	fmax::Float64
 	rcut::Float64
 	walltime::Float64
@@ -22,7 +23,6 @@ struct BasinHopper
 	clusterVector::ClusterVector
 	logResumeFile::Bool
 	exitOnReseed::Bool
-	calculateNormalCNA::Bool
 	version::String
 end
 
@@ -54,6 +54,17 @@ end
 function logStep(io::Tuple{IO, Channel}, step::Int64, clusterID::Int64, energy::Float64, accepted::String, sim::Float64)
 	print(io[1], "Step " * string(step) * ", ID " * string(clusterID) * ", energy " * string(energy) * ", accepted " * string(accepted) * ", similarity, " * string(sim) * "\n")
 end
+
+
+"""
+	incrementIfGorE(a::Int64, b::Int64)
+
+Takes two values of `Int64`, `a` and `b`. If a >= b, increment a.
+Cannot use simple `if` statement as in the `else` case, `nothing` is returned.
+Ternary operator is quicker.
+This function is specifically designed for broadcasting in the addToVector!() function below.
+"""
+incrementIfGorE(a::Int64, b::Int64) = a >= b ? a+1 : a
 
 function addToVector!(cluster::Union{Cluster, ClusterCompressed}, clusterVector::ClusterVectorWithML, dp::Int64)
 	#= binary search =#
@@ -98,10 +109,19 @@ function addToVector!(cluster::Union{Cluster, ClusterCompressed}, clusterVector:
 	# If cluster is new, add it to the vector.
 	if presentClusterID == 0
 		R = R == 0 ? 1 : R
-		presentClusterID = Threads.atomic_add!(clusterVector.N, 1)
-		presentClusterID += 1
-		insert!(clusterVector.vec, R, ClusterCompressed(cluster.positions, round(cluster.energy, digits=dp), cluster.CNA, presentClusterID))
-		push!(clusterVector.MLData, cluster.atomClassCount)
+		presentClusterID = Threads.atomic_add!(clusterVector.N, 1) # `atomic_add!` returns the old value prior to addition.
+		presentClusterID += 1 #increment to get ID of this cluster
+		insert!(clusterVector.vec, R, ClusterCompressed(cluster.positions, round(cluster.energy, digits=dp), cluster.CNA, presentClusterID)) # add cluster to vec at index R.
+		broadcast!(incrementIfGorE, clusterVector.idToIndex, clusterVector.idToIndex, R) # increment indicies of all elements >= R in the ID to Index mapping vector.
+		push!(clusterVector.idToIndex, R) # add R to the ID to Index mapping vector.
+		push!(clusterVector.idsOfMLLabels[cluster.mlLabel], presentClusterID) # add cluster ID to approriate Label's Vector of IDs.
+		# expand the size of the ML data matrix if nessecary
+		if clusterVector.nMLData <= clusterVector.N[]
+			doubling = Matrix{typeof(clusterVector.MLData[1])}(undef, size(clusterVector.MLData))
+			clusterVector.MLData = hcat(clusterVector.MLData, doubling)
+			clusterVector.nMLData *= 2
+		end
+		clusterVector.MLData[:, presentClusterID] = cluster.atomClassCount # add the ML data to the MLData matrix.
 	end
 
 	# return 0 if the cluster was added, otherwise return the index in the vector the cluster was found at.
@@ -165,9 +185,30 @@ function optRun(_opt::PyObject, workhorse::Workhorse, fmax::Float64)
 	opt.run(fmax=fmax)
 end
 
+function standardPostOptimisationTasks!(cluster::Cluster, bh::BasinHopper)
+	setCNAProfile!(cluster, bh.rcut) # total CNA profile
+
+end
+
+function standardPostOptimisationTasks!(cluster::Cluster, bh::BasinHopper, clusterToGetValuesFrom::Cluster)
+	setCNAProfile!(cluster, clusterToGetValuesFrom.CNA) # total CNA profile
+end
+
+function extendedPostOptimisationTasks!(cluster::Cluster, bh::BasinHopper)
+	setCNAProfiles!(cluster, bh.rcut) # normal and total CNA profiles
+	cluster.atomClassCount = getFrequencyClassVector(getAtomClasses(cluster.nCNA, bh.metC.classes), bh.metC.nClasses, UInt8)
+	bh.metC.workspace[1, :] = predict(bh.metC.pca, fractionalClassVector)'[:, :]
+	cluster.mlLabel = findmax(gmmposterior(bh.metC.gaussian, bh.metC.workspace)[1])[2][2]
+end
+
+function extendedPostOptimisationTasks!(cluster::Cluster, bh::BasinHopper, clusterToGetValuesFrom::Cluster)
+	setCNAProfiles!(cluster, clusterToGetValuesFrom.CNA, clusterToGetValuesFrom.nCNA) # total CNA profile
+	cluster.atomClassCount = clusterToGetValuesFrom.atomClassCount
+	cluster.mlLabel = clusterToGetValuesFrom.mlLabel
+end
 
 function hop(bh::BasinHopper, steps::Int64, stepsAtomic::Threads.Atomic{Int64}, seed::Union{String, Cluster}, walkID::Int64, additionalInfo::Dict{String, Any}, start::DateTime, version::String)
-	if version != "v1.2.1" || bh.version != "v1.2.1"
+	if version != "v1.2.2" || bh.version != "v1.2.2"
 		println(bh.io[1], "The version number passed to the hop function or BasinHopper constructor does not match\nthe hard coded
 			version number. Double check you are using the correct run script. This program will now terminate.")
 		return 0
@@ -185,13 +226,7 @@ function hop(bh::BasinHopper, steps::Int64, stepsAtomic::Threads.Atomic{Int64}, 
 
 	setCalculator!(oldCluster, bh.calculator)
 	optimize!(bh.optimizer, oldCluster, bh.fmax)
-	if bh.calculateNormalCNA
-		setCNAProfiles!(oldCluster, bh.rcut)
-	else
-		setCNAProfile!(oldCluster, bh.rcut)
-	end
-
-
+	bh.postOptimisationTasks(oldCluster, bh)
 
 	# Specify variables from additionalInfo.
 	step::Int64							= haskey(additionalInfo, "stepsCompleted")			? additionalInfo["stepsCompleted"] 			: 0
@@ -249,11 +284,7 @@ function hop(bh::BasinHopper, steps::Int64, stepsAtomic::Threads.Atomic{Int64}, 
 			optimize!(bh.optimizer, newCluster, bh.fmax)
 		end
 		calculateEnergy!(newCluster, bh.calculator)
-		if bh.calculateNormalCNA
-			setCNAProfiles!(newCluster, bh.rcut)
-		else
-			setCNAProfile!(newCluster, bh.rcut)
-		end
+		bh.postOptimisationTasks(newCluster, bh)
 			
 
 		# Check if the cluster is unique, add it to the vector of clusters, and update the CNA log.
@@ -292,11 +323,7 @@ function hop(bh::BasinHopper, steps::Int64, stepsAtomic::Threads.Atomic{Int64}, 
 			# Update oldCluster to newCluster.
 			setPositions!(oldCluster, getPositions(newCluster))
 			setEnergy!(oldCluster, getEnergy(newCluster))
-			if bh.calculateNormalCNA
-				setCNAProfiles!(oldCluster, bh.rcut)
-			else
-				setCNAProfile!(oldCluster, bh.rcut)
-			end
+			bh.postOptimisationTasks(newCluster, bh, false)
 				
 		end
 
@@ -353,11 +380,7 @@ function hop(bh::BasinHopper, steps::Int64, stepsAtomic::Threads.Atomic{Int64}, 
 			setPositions!(oldCluster, bh.reseeder.getReseedStructure(bh.reseeder.args...))
 			optimize!(bh.optimizer, oldCluster, bh.fmax)
 			calculateEnergy!(oldCluster, bh.calculator)
-			if bh.calculateNormalCNA
-				setCNAProfiles!(oldCluster, bh.rcut)
-			else
-				setCNAProfile!(oldCluster, bh.rcut)
-			end
+			bh.postOptimisationTasks(oldCluster, bh)
 
 			# Check if the cluster is unique, add it to the vector of clusters, and update the CNA log.
 			clusterID = addToVector!(oldCluster, bh.clusterVector, 2)
