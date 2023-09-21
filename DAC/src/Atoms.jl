@@ -22,6 +22,8 @@ end
 
 mutable struct ClusterVectorWithML
 	vec::Vector{ClusterCompressed}
+	highEVec::Vector{ClusterCompressed}
+	eLim::Float64
 	MLData::Matrix{UInt8}
 	nMLData::Int64
 	idsOfMLLabels::Vector{Vector{Int32}}
