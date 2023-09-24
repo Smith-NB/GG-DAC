@@ -20,7 +20,7 @@ struct BasinHopper
 	io::Tuple{IO, Channel}
 	logIO::Tuple{IO, Channel}
 	CNAIO::Tuple{IO, Channel}
-	clusterVector::ClusterVector
+	clusterVector::Union{ClusterVector, Main.DAC.ClusterVectorWithML}
 	logResumeFile::Bool
 	exitOnReseed::Bool
 	version::String
