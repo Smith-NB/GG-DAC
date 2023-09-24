@@ -203,7 +203,7 @@ end
 function extendedPostOptimisationTasks!(cluster::Cluster, bh::BasinHopper)
 	setCNAProfiles!(cluster, bh.rcut) # normal and total CNA profiles
 	cluster.atomClassCount = getFrequencyClassVector(getAtomClasses(cluster.nCNA, bh.metC.classes), bh.metC.nClasses, UInt8)
-	bh.metC.workspace[1, :] = predict(bh.metC.pca, fractionalClassVector)'[:, :]
+	bh.metC.workspace[1, :] = predict(bh.metC.pca, cluster.atomClassCount)'[:, :]
 	cluster.mlLabel = findmax(gmmposterior(bh.metC.gaussian, bh.metC.workspace)[1])[2][2]
 end
 
