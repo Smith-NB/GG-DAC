@@ -90,7 +90,7 @@ mutable struct Cluster <: Atoms
 	validEnergies::Bool,
 	validForces::Bool,
 	validStresses::Bool
-			) = new(formula, positions, cell, energy, energies, forces, stresses, distances, CNA, nCNA, validCNA, validEnergies, validForces, validStresses)
+			) = new(formula, positions, cell, energy, energies, forces, stresses, distances, CNA, nCNA, atomClassCount, validCNA, validEnergies, validForces, validStresses)
 	Cluster(formula::Dict{String, Int64},
 	positions::Matrix{Float64},
 	cell::Matrix{Float64},
@@ -108,7 +108,7 @@ mutable struct Cluster <: Atoms
 	validForces::Bool,
 	validStresses::Bool,
 	calculator::Calculator
-			) = new(formula, positions, cell, energy, energies, forces, stresses, distances, CNA, nCNA, validCNA, validEnergies, validForces, validStresses, calculator)
+			) = new(formula, positions, cell, energy, energies, forces, stresses, distances, CNA, nCNA, atomClassCount, validCNA, validEnergies, validForces, validStresses, calculator)
 
 end
 
