@@ -64,7 +64,7 @@ Cannot use simple `if` statement as in the `else` case, `nothing` is returned.
 Ternary operator is quicker.
 This function is specifically designed for broadcasting in the addToVector!() function below.
 """
-incrementIfGorE(a::Int64, b::Int64) = a >= b ? a+1 : a
+incrementIfGorE(a::Int32, b::Int64) = a >= b ? a+1 : a
 
 function addToVector!(cluster::Union{Cluster, ClusterCompressed}, clusterVector::ClusterVectorWithML, dp::Int64)
 	#= binary search =#
