@@ -329,7 +329,7 @@ function hop(bh::BasinHopper, steps::Int64, stepsAtomic::Threads.Atomic{Int64}, 
 			# Update oldCluster to newCluster.
 			setPositions!(oldCluster, getPositions(newCluster))
 			setEnergy!(oldCluster, getEnergy(newCluster))
-			bh.postOptimisationTasks(newCluster, bh, false)
+			bh.postOptimisationTasks(newCluster, bh)
 				
 		end
 
