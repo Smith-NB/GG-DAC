@@ -461,7 +461,7 @@ function getAcceptanceBoolean(MetC::GMMMetC, oldCluster::Cluster, newCluster::Cl
 	end
 
 	# get the class vector for atom classes (Roncaglia scheme)
-	fractionalClassVector = getFractionalClassVector(getAtomClasses(newCluster.nCNA, MetC.classes), MetC.nClasses)
+	fractionalClassVector = newCluster.atomClassCount
 
 	# transform the class vector into PCA space
 	MetC.workspace[1, :] = predict(MetC.pca, fractionalClassVector)'[:, :]
@@ -472,8 +472,9 @@ function getAcceptanceBoolean(MetC::GMMMetC, oldCluster::Cluster, newCluster::Cl
 	# this mode only accepts a hop if the target Gaussian cluster is the most likely Gaussian for this datapoint
 	if MetC.mode == :maxProbOnly
 		# `findmax` returns (maxvalue, indexOf), where indexOf is of type CartesianIndex{2} (as the arg is a 1xn Matrix).
-		accept = findmax(posteriorProbs)[2][2] == MetC.gaussianCluster
-		metcLog *= "\nnewCluster belongs to cluster $(MetC.gaussianCluster)."
+		mlClusterIndex = findmax(posteriorProbs)[2][2]
+		accept = mlClusterIndex == MetC.gaussianCluster
+		metcLog *= "\nnewCluster belongs to cluster $(mlClusterIndex)."
 		return accept, metcLog
 	# this accepts a hop depending on how likely it is this datapoint belongs to the target Gaussian.
 	elseif MetC.mode == :clusterProb
