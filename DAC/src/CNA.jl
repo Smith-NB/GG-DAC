@@ -531,14 +531,12 @@ function getCNASimilarity(x::CNAProfile, y::CNAProfile)
 		b = y_index < 0 ? 0 : y[y_index].second		# get frequency of sig in cluster y, or 0 if sig is not present.
 		intersection += a < b ? a : b 				# add the smaller of a or b to the intersection.
 		union += a > b ? a : b 						# add the larger of a or b to the union.
-		printlnsep(" ", sig, y_index, a, b, intersection, union)
 	end
 
 	for i in 1:Ny
 		sig = y[i].first
 		x_index = binarySearch(x, Nx, sig)
 		union += x_index < 0 ? y[i].second : 0		# if this sig is in x, do nothing. else account for it in the union
-		printlnsep(" ", sig, x_index, union)
 
 	end
 
