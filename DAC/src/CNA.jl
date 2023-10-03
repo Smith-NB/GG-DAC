@@ -522,7 +522,7 @@ function getCNASimilarity(x::CNAProfile, y::CNAProfile)
 	Nx = length(x)
 	Ny = length(y)
 
-	if Nx > Ny
+	if Nx < Ny
 		temp = x
 		x = y
 		y = temp
