@@ -522,14 +522,6 @@ function getCNASimilarity(x::CNAProfile, y::CNAProfile)
 	Nx = length(x)
 	Ny = length(y)
 
-	if Nx < Ny
-		temp = x
-		x = y
-		y = temp
-		Nx = length(x)
-		Ny = length(y)
-	end
-
 	for i in 1:Nx
 		sig = x[i].first
 		y_index = binarySearch(y, Ny, sig)
@@ -544,7 +536,7 @@ function getCNASimilarity(x::CNAProfile, y::CNAProfile)
 	for i in 1:Ny
 		sig = y[i].first
 		x_index = binarySearch(x, Nx, sig)
-		union += x_index == -1 ? y[i].second : 0
+		union += x_index == -1 ? 0 : y[i].second
 	end
 
 	return intersection / union
