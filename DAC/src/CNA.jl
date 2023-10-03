@@ -522,6 +522,13 @@ function getCNASimilarity(x::CNAProfile, y::CNAProfile)
 	Nx = length(x)
 	Ny = length(y)
 
+	if Nx > Ny
+		temp = x
+		x = y
+		y = temp
+		Nx = length(x)
+		Ny = length(y)
+	end
 
 	for i in 1:Nx
 		sig = x[i].first
