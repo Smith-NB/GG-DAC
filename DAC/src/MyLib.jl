@@ -41,7 +41,7 @@ function printlnsep(sep, xs...)
     return nothing
 end
 
-function binarySearch(A::CNAProfile, n::Int, T::Tuple{Int, Int, Int})
+function binarySearch(A::CNAProfile, n::Int64, T::Tuple{Int, Int, Int})
     L = 1
     R = n
     while L <= R
@@ -58,7 +58,7 @@ function binarySearch(A::CNAProfile, n::Int, T::Tuple{Int, Int, Int})
     return -(L)
 end
 
-function binarySearch(A::CNAProfile, n::Int, T::Tuple{UInt8, UInt8, UInt8})
+function binarySearch(A::CNAProfile, n::Int64, T::Tuple{UInt8, UInt8, UInt8})
     L = 1
     R = n
     while L <= R
@@ -66,6 +66,41 @@ function binarySearch(A::CNAProfile, n::Int, T::Tuple{UInt8, UInt8, UInt8})
         if A[m].first > T
             L = m+1
         elseif A[m].first < T
+            R = m -1
+        else
+            return m
+        end
+    end
+
+    return -(L)
+end
+
+function binarySearch(A::Vector{Int64}, n::Int64, T::Int64)
+    L = 1
+    R = n
+    while L <= R
+        m = trunc(Int, L + (R - L) / 2)
+        if A[m] > T
+            L = m+1
+        elseif A[m] < T
+            R = m -1
+        else
+            return m
+        end
+    end
+
+    return -(L)
+end
+
+
+function binarySearch(A::Vector{Float64}, n::Int64, T::Float64)
+    L = 1
+    R = n
+    while L <= R
+        m = trunc(Int, L + (R - L) / 2)
+        if A[m] > T
+            L = m+1
+        elseif A[m] < T
             R = m -1
         else
             return m
