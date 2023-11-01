@@ -513,7 +513,7 @@ classifyAtomsSchebarchov(cluster::Cluster, rcut::Float64) = classifyAtoms(cluste
 
 function classifyCluster(coordinates::Matrix{Float64}, rcut::Float64)
 
-	tag = classifyAtoms(coordinates, rcut)
+	tag = classifyAtomsSchebarchov(coordinates, rcut)
 
 	icoAtoms = Vector{Int64}()
 	icoBonds = Vector{Int64}()
