@@ -291,8 +291,8 @@ function geometricCentreDisplacement!(atoms::Cluster, alphaMin::Float64, alphaMa
 		rho[i] = alphaDiff * (R[i]/Rmax)^w + alphaMin
 	end
 
-	polar = rand(N) * π/180		# θ
-	azimuth = rand(N) * π/180	# φ
+	polar = rand(N) * 2*π		# θ
+	azimuth = rand(N) * 2*π 	# φ
 	
 	for i in 1:N
 		println(atoms.positions[i, :])
