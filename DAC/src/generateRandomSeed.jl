@@ -303,7 +303,7 @@ function geometricCentreDisplacement!(atoms::Cluster, alphaMin::Float64, alphaMa
 		#println()
 	end
 
-	println("$(R[1]), $(polar[1]), $(azimuth[1])")
+	println("$(rho[1]), $(polar[1]), $(azimuth[1])")
 	println("$(rho[1] * sin(polar[1]) * cos(azimuth[1])), $(rho[1] * sin(polar[1]) * sin(azimuth[1])), $(rho[1] * cos(polar[1]))")
 	println("$(atoms.positions[1, :])")
 
