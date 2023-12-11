@@ -272,6 +272,36 @@ function perturbCluster!(atoms::Cluster, dr::Float64)
 	return nothing
 end
 
+function geometricCentreDisplacement!(atoms::Cluster, alphaMin::Float64, alphaMax::Float64, w::Float64)
+	CoM = getCentreOfCluster(atoms)
+	N = getNAtoms(atoms)
+	R = Vector{Float64}(undef, N)
+	rho = Vector{Float64}(undef, N)
+	alphaDiff = alphaMax - alphaMin
+
+	for i in 1:N
+		d = atoms.positions[i, 1] - CoM[1]
+		d += atoms.positions[i, 2] - CoM[2]
+		d += atoms.positions[i, 3] - CoM[3]
+		R[i] = d
+	end
+	
+	Rmax = maximum(R)
+	for i in 1:N
+		rho[i] = alphaDiff * (R[i]/Rmax)^w + alphaMin
+	end
+
+	polar = rand(N) * π/180		# θ
+	azimuth = rand(N) * π/180	# φ
+	
+	for i in 1:N
+		atoms.positions[i, 1] += rho[i] * sin(polar[i]) * cos(azimuth)
+		atoms.positions[i, 2] += rho[i] * sin(polar[i]) * sin(azimuth)
+		atoms.positions[i, 3] += rho[i] * cos(polar[i])
+	end
+
+end
+
 """	
 	getSeedFromPool(pool::Vector{Matrix{Float64}}, n::Int64) 
 	

@@ -80,9 +80,9 @@ function binarySearch(A::Vector{Int64}, n::Int64, T::Int64)
     R = n
     while L <= R
         m = trunc(Int, L + (R - L) / 2)
-        if A[m] > T
+        if A[m] < T
             L = m+1
-        elseif A[m] < T
+        elseif A[m] > T
             R = m -1
         else
             return m
@@ -98,9 +98,9 @@ function binarySearch(A::Vector{Float64}, n::Int64, T::Float64)
     R = n
     while L <= R
         m = trunc(Int, L + (R - L) / 2)
-        if A[m] > T
+        if A[m] < T
             L = m+1
-        elseif A[m] < T
+        elseif A[m] > T
             R = m -1
         else
             return m
