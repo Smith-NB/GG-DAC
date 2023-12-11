@@ -295,12 +295,12 @@ function geometricCentreDisplacement!(atoms::Cluster, alphaMin::Float64, alphaMa
 	azimuth = rand(N) * 2*π 	# φ
 	
 	for i in 1:N
-		println(atoms.positions[i, :])
+		#println(atoms.positions[i, :])
 		atoms.positions[i, 1] += rho[i] * sin(polar[i]) * cos(azimuth[i])
 		atoms.positions[i, 2] += rho[i] * sin(polar[i]) * sin(azimuth[i])
 		atoms.positions[i, 3] += rho[i] * cos(polar[i])
-		println(atoms.positions[i, :])
-		println()
+		#println(atoms.positions[i, :])
+		#println()
 	end
 
 end
