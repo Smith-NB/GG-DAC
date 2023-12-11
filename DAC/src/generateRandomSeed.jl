@@ -296,7 +296,7 @@ function geometricCentreDisplacement!(atoms::Cluster, alphaMin::Float64, alphaMa
 	
 	for i in 1:N
 		atoms.positions[i, 1] += rho[i] * sin(polar[i]) * cos(azimuth[i])
-		atoms.positions[i, 2] += rho[i] * sin(polar[i]) * sin(azimuth[i]∂)
+		atoms.positions[i, 2] += rho[i] * sin(polar[i]) * sin(azimuth[i])
 		atoms.positions[i, 3] += rho[i] * cos(polar[i])
 	end
 
