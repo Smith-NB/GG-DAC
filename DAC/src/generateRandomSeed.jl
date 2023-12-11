@@ -239,9 +239,9 @@ function perturbCluster(coords::Matrix{Float64}, dr::Float64)
 	r = rand(n, 3)
 	rCopy = copy(r)
 	for i in 1:n
-		r[i, 1] = 2*r[i, 1] + coords[i, 1] - 1
-		r[i, 2] = 2*r[i, 2] + coords[i, 2] - 1
-		r[i, 3] = 2*r[i, 3] + coords[i, 3] - 1
+		r[i, 1] = (2*r[i, 1] - 1)*dr + coords[i, 1]
+		r[i, 2] = (2*r[i, 2] - 1)*dr + coords[i, 2]
+		r[i, 3] = (2*r[i, 3] - 1)*dr + coords[i, 3]
 	end
 	return r
 end
