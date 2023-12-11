@@ -293,19 +293,11 @@ function geometricCentreDisplacement!(atoms::Cluster, alphaMin::Float64, alphaMa
 
 	polar = rand(N) * 2*π		# θ
 	azimuth = rand(N) * 2*π 	# φ
-	println("$(atoms.positions[1, :])")
 	for i in 1:N
-		#println(atoms.positions[i, :])
 		atoms.positions[i, 1] += rho[i] * sin(polar[i]) * cos(azimuth[i])
 		atoms.positions[i, 2] += rho[i] * sin(polar[i]) * sin(azimuth[i])
 		atoms.positions[i, 3] += rho[i] * cos(polar[i])
-		#println(atoms.positions[i, :])
-		#println()
 	end
-
-	println("$(rho[1]), $(polar[1]), $(azimuth[1])")
-	println("$(rho[1] * sin(polar[1]) * cos(azimuth[1])), $(rho[1] * sin(polar[1]) * sin(azimuth[1])), $(rho[1] * cos(polar[1]))")
-	println("$(atoms.positions[1, :])")
 
 end
 
