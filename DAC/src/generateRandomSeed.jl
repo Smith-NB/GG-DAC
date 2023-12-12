@@ -301,17 +301,17 @@ function geometricCentreDisplacement!(atoms::Cluster, alphaMin::Float64, alphaMa
 
 end
 
-function geometricCentreDisplacement(atoms::Cluster, alphaMin::Float64, alphaMax::Float64, w::Float64)
-	CoM = getCentreOfCluster(atoms)
-	N = getNAtoms(atoms)
+function geometricCentreDisplacement(coords::Matrix{Float64}, alphaMin::Float64, alphaMax::Float64, w::Float64)
+	CoM = getCentreOfCluster(coords)
+	N = getNAtoms(coords)
 	R = Vector{Float64}(undef, N)
 	rho = Vector{Float64}(undef, N)
 	alphaDiff = alphaMax - alphaMin
 
 	for i in 1:N
-		d = atoms.positions[i, 1] - CoM[1]
-		d += atoms.positions[i, 2] - CoM[2]
-		d += atoms.positions[i, 3] - CoM[3]
+		d = coords[i, 1] - CoM[1]
+		d += coords[i, 2] - CoM[2]
+		d += coords[i, 3] - CoM[3]
 		R[i] = d
 	end
 	
@@ -322,15 +322,18 @@ function geometricCentreDisplacement(atoms::Cluster, alphaMin::Float64, alphaMax
 
 	polar = rand(N) * 2*π		# θ
 	azimuth = rand(N) * 2*π 	# φ
-	newPositions = 
+	newPositions = Matrix{Float64}(undef, N,  3)
 	for i in 1:N
-		newPositions[i, 1] = atoms.positions[i, 3] + rho[i] * sin(polar[i]) * cos(azimuth[i])
-		newPositions[i, 2] = atoms.positions[i, 3] + rho[i] * sin(polar[i]) * sin(azimuth[i])
-		newPositions[i, 3] = atoms.positions[i, 3] + rho[i] * cos(polar[i])
+		newPositions[i, 1] = coords[i, 3] + rho[i] * sin(polar[i]) * cos(azimuth[i])
+		newPositions[i, 2] = coords[i, 3] + rho[i] * sin(polar[i]) * sin(azimuth[i])
+		newPositions[i, 3] = coords[i, 3] + rho[i] * cos(polar[i])
 	end
 
 	return newPositions
 end
+
+geometricCentreDisplacement(atoms::Cluster, alphaMin::Float64, alphaMax::Float64, w::Float64) = geometricCentreDisplacement(atoms.positions, alphaMin, alphaMax, w)
+
 
 """	
 	getSeedFromPool(pool::Vector{Matrix{Float64}}, n::Int64) 
