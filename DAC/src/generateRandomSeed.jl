@@ -322,10 +322,10 @@ function geometricCentreDisplacement(coords::Matrix{Float64}, alphaMin::Float64,
 
 	polar = rand(N) * 2*π		# θ
 	azimuth = rand(N) * 2*π 	# φ
-	newPositions = Matrix{Float64}(undef, N,  3)
+	newPositions = Matrix{Float64}(undef, N, 3)
 	for i in 1:N
-		newPositions[i, 1] = coords[i, 3] + rho[i] * sin(polar[i]) * cos(azimuth[i])
-		newPositions[i, 2] = coords[i, 3] + rho[i] * sin(polar[i]) * sin(azimuth[i])
+		newPositions[i, 1] = coords[i, 1] + rho[i] * sin(polar[i]) * cos(azimuth[i])
+		newPositions[i, 2] = coords[i, 2] + rho[i] * sin(polar[i]) * sin(azimuth[i])
 		newPositions[i, 3] = coords[i, 3] + rho[i] * cos(polar[i])
 	end
 
