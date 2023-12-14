@@ -1,5 +1,5 @@
 module DAC
-println("Version 1.2.2 has been quarantined. Exitting program.")
+println("Version 1.2.1 has been quarantined. Exitting program.")
 exit()
 using LinearAlgebra
 using GaussianMixtures
