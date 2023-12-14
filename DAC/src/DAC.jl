@@ -1,5 +1,6 @@
 module DAC
-
+println("Version 1.2.2 has been quarantined. Exitting program.")
+exit()
 using LinearAlgebra
 using GaussianMixtures
 using MultivariateStats
