@@ -379,7 +379,7 @@ function hop(bh::BasinHopper, steps::Int64, stepsAtomic::Threads.Atomic{Int64}, 
 
 			setPositions!(oldCluster, bh.reseeder.getReseedStructure(bh.reseeder.args...))
 			optimize!(bh.optimizer, oldCluster, bh.fmax)
-			while !isClusterCoherent(newCluster.positions, 2)
+			while !isClusterCoherent(oldCluster.positions, 2)
 				setPositions!(oldCluster, bh.reseeder.getReseedStructure(bh.reseeder.args...))
 				optimize!(bh.optimizer, oldCluster, bh.fmax)
 			end
