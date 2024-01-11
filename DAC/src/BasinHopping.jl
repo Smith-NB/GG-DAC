@@ -276,12 +276,12 @@ function hop(bh::BasinHopper, steps::Int64, stepsAtomic::Threads.Atomic{Int64}, 
 		stepLog *= "\n================================\n"
 		stepLog *= "Attempting step $step in Walk $(walkID) with Walker $(Threads.threadid())"
 
-
+		print("A")
 		iterations += 1
 
 		newPos, pertrubString = bh.perturber(getPositions(oldCluster))
 		setPositions!(newCluster, newPos)
-		
+		print("B"); flush(stdout)
 
 		optimize!(bh.optimizer, newCluster, bh.fmax)
 		while !isClusterCoherent(newCluster.positions, 2)
@@ -291,7 +291,7 @@ function hop(bh::BasinHopper, steps::Int64, stepsAtomic::Threads.Atomic{Int64}, 
 		end
 		calculateEnergy!(newCluster, bh.calculator)
 		bh.postOptimisationTasks(newCluster, bh)
-			
+		print("c"); flush(stdout)
 
 		# Check if the cluster is unique, add it to the vector of clusters, and update the CNA log.
 		# clusterID will be negative if is was already in the vector.
@@ -306,7 +306,7 @@ function hop(bh::BasinHopper, steps::Int64, stepsAtomic::Threads.Atomic{Int64}, 
 		else
 			stepLog *=  "\nRegenerated cluster:\n\tID = $clusterID\n\tE = $(getEnergy(newCluster))"
 		end
-
+		print("D"); flush(stdout)
 		# Determine if hop to new structure is to be accepted.
 		acceptHop, MetCString = getAcceptanceBoolean(bh.metC, oldCluster, newCluster)
 		stepLog *= MetCString
@@ -332,7 +332,7 @@ function hop(bh::BasinHopper, steps::Int64, stepsAtomic::Threads.Atomic{Int64}, 
 			bh.postOptimisationTasks(newCluster, bh)
 				
 		end
-
+		print("E"); flush(stdout)
 		# Log the move.
 		logStep(bh.logIO, walkID, step, abs(clusterID), newCluster.energy, string(acceptHop))
 
@@ -368,7 +368,7 @@ function hop(bh::BasinHopper, steps::Int64, stepsAtomic::Threads.Atomic{Int64}, 
 				break
 			end
 		end
-
+		print("F"); flush(stdout)
 		# Check if time for reseed. Will not trigger if hopsToReseed is negative.
 		if timeToReseed!(bh.reseeder)
 			# if this walk should exit upon a reseed:
@@ -403,7 +403,7 @@ function hop(bh::BasinHopper, steps::Int64, stepsAtomic::Threads.Atomic{Int64}, 
 			# Reset hopsToReseed.
 			hopsToReseed = getReseedPeriod(bh.reseeder)
 		end
-
+		print("G"); flush(stdout)
 		# log the step
 		print(bh.io[1], stepLog)
 		flush(bh.io[1])
