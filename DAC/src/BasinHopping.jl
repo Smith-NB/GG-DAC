@@ -284,14 +284,17 @@ function hop(bh::BasinHopper, steps::Int64, stepsAtomic::Threads.Atomic{Int64}, 
 		print("B"); flush(stdout)
 
 		optimize!(bh.optimizer, newCluster, bh.fmax)
-
+		print("B1"); flush(stdout)
 		while !isClusterCoherent(newCluster.positions, 2)
-			print("B2")
+			print("B2"); flush(stdout)
 			newPos, pertrubString = bh.perturber(getPositions(oldCluster))
 			setPositions!(newCluster, newPos)
 			optimize!(bh.optimizer, newCluster, bh.fmax)
+			print("B3"); flush(stdout)
 		end
+		print("B4"); flush(stdout)
 		calculateEnergy!(newCluster, bh.calculator)
+		print("B5"); flush(stdout)
 		bh.postOptimisationTasks(newCluster, bh)
 		print("c"); flush(stdout)
 
