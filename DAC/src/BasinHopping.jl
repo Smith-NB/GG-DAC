@@ -340,11 +340,11 @@ function hop(bh::BasinHopper, steps::Int64, stepsAtomic::Threads.Atomic{Int64}, 
 		if acceptHop && exitOnLocatingTargets
 			allTargetsFound = true
 			for t in 1:length(targets)
-				if round(getEnergy(oldCluster), digits=targetRounding) == targets[t]
+				if round(getEnergy(newCluster), digits=targetRounding) == targets[t]
 					
 					found = false
 					# If CNA checking enabled, ensure CNAs match
-					if checkCNAsOfTarget && getCNASimilarity(targetCNAs[t], getCNAProfile(oldCluster)) == 1.0
+					if checkCNAsOfTarget && getCNASimilarity(targetCNAs[t], getCNAProfile(newCluster)) == 1.0
 						found = true
 					elseif !checkCNAsOfTarget # If CNA checking disabled, assume target is found.
 						found = true
