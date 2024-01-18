@@ -530,7 +530,7 @@ Returns true or false for accepting the move from the oldCluster to the newClust
 	based on the EnergyMetC.
 """
 function getAcceptanceBoolean(MetC::GMMwithInfTempMetC, oldCluster::Cluster, newCluster::Cluster)
-	metcLog = ""
+	metcLog = "\n$(MetC.hopsToInfTemp) $(MetC.hopsRemainingOfInfTemp) $(MetC.infTempEnergyToBeat)"
 	
 	tempIsInf = MetC.hopsRemainingOfInfTemp > 0 # is the temperature infinite?
 	if tempIsInf
