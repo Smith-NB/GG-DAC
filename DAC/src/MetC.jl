@@ -533,6 +533,8 @@ function getAcceptanceBoolean(MetC::GMMwithInfTempMetC, oldCluster::Cluster, new
 	metcLog = ""
 	
 	tempIsInf = MetC.hopsRemainingOfInfTemp > 0 # is the temperature infinite?
+	if tempIsInf
+		metcLog *= "\nTemperature is infinite. Auto accepting uphill moves except for GMM conditions."
 
 	# if kT is currently infinite OR if move is downhill, accept hop
 	if tempIsInf || newCluster.energy < oldCluster.energy
