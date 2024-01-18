@@ -486,3 +486,113 @@ function getAcceptanceBoolean(MetC::GMMMetC, oldCluster::Cluster, newCluster::Cl
 	return accept, metcLog * "__badReturn"
 
 end
+
+#=============================================================================#
+#=============================GMMwithInfTempMetC==============================#
+#=============================================================================#
+
+mutable struct GMMwithInfTempMetC <: MetC
+	gaussian::GMM
+	gaussianCluster::Int64
+	pca::PCA
+	mode::Symbol
+	useExplorationDataOnly::Bool
+	kT::Float64
+	classes::normalCNAProfile
+	nClasses::Int64
+	workspace::Matrix{Float64}
+	infTempPeriod::Int64
+	infTempDuration::Int64
+	hopsToInfTemp::Int64
+	hopsOfInfTemp::Int64
+	infTempEnergyToBeat::Float64
+	io::Tuple{IO, Channel}
+end
+
+function GMMwithInfTempMetC(gaussian::GMM, gaussianCluster::Int64, pca::PCA, mode::Symbol, useExplorationDataOnly::Bool, kT::Float64, io::Tuple{IO, Channel})
+	# sets workspace as a 1x{PCA_out_dims} Matrix.
+	classes = getClasses()
+	GMMwithInfTempMetC(gaussian, gaussianCluster, pca, mode, useExplorationDataOnly, kT, classes, length(classes), Matrix{Float64}(undef, 1, size(pca)[2]), io)
+end
+
+function setMLClusterIndex!(MetC::GMMwithInfTempMetC, cluster::Cluster)
+	fractionalClassVector = getFrequencyClassVector(getAtomClasses(cluster.nCNA, MetC.classes), MetC.nClasses)
+	bh.metC.workspace[1, :] = predict(MetC.pca, fractionalClassVector)'[:, :]
+	mlClusterIndex = findmax(gmmposterior(MetC.gaussian, MetC.workspace)[1])[2][2]
+end
+
+"""
+	getAcceptanceBoolean(MetC::EnergyMetC, oldCluster::Cluster, newCluster::Cluster)
+
+Returns true or false for accepting the move from the oldCluster to the newCluster
+	based on the EnergyMetC.
+"""
+function getAcceptanceBoolean(MetC::GMMwithInfTempMetC, oldCluster::Cluster, newCluster::Cluster)
+	metcLog = ""
+	
+	tempIsInf = MetC.hopsOfInfTemp > 0 # is the temperature infinite?
+
+	# if kT is currently infinite OR if move is downhill, accept hop
+	if tempIsInf || newCluster.energy < oldCluster.energy
+		accept = true
+		
+	else # apply boltzmann to get chance to accept uphill move 
+		probability = exp((oldCluster.energy - newCluster.energy) / MetC.kT)
+		
+		metcLog *= "\nChance to accept = $(string(probability))"
+		
+		accept = probability > rand()
+	end
+
+
+
+	# if the hop is rejected before any GMM checks are made, stop here
+	if !accept
+		return accept, metcLog
+	end
+
+	# get the class vector for atom classes (Roncaglia scheme)
+	fractionalClassVector = newCluster.atomClassCount
+
+	# transform the class vector into PCA space
+	MetC.workspace[1, :] = predict(MetC.pca, fractionalClassVector)'[:, :]
+
+	# get the probabilities that this datapoint belongs to each of the n Gaussian clusters.
+	posteriorProbs = gmmposterior(MetC.gaussian, MetC.workspace)[1]
+
+	# this mode only accepts a hop if the target Gaussian cluster is the most likely Gaussian for this datapoint
+	if MetC.mode == :maxProbOnly
+		# `findmax` returns (maxvalue, indexOf), where indexOf is of type CartesianIndex{2} (as the arg is a 1xn Matrix).
+		mlClusterIndex = findmax(posteriorProbs)[2][2]
+		accept = mlClusterIndex == MetC.gaussianCluster
+		metcLog *= "\nnewCluster belongs to cluster $(mlClusterIndex)."
+	# this accepts a hop depending on how likely it is this datapoint belongs to the target Gaussian.
+	elseif MetC.mode == :clusterProb
+		accept = posteriorProbs[1, MetC.gaussianCluster] > rand()
+		metcLog *= "\nnewCluster belongs to cluster $(MetC.gaussianCluster)\n\twith probability $(posteriorProbs[1, MetC.gaussianCluster])"
+	end
+
+	# if temperature is NOT currently infinite
+	if !tempIsInf 
+		if accept && newCluster.energy < MetC.infTempEnergyToBeat # if a new energy minimum has been found and hopped to since the last inf temp run
+			MetC.hopsToInfTemp = MetC.infTempPeriod # reset the hops until infinite temperature
+		else # decrement remaining hops until infinite temperature
+			MetC.hopsToInfTemp -= 1
+			if MetC.hopsToInfTemp == 0 # if NEXT hop IS at infinite temperature, set the number of hops of infinite temperature.
+				MetC.hopsOfInfTemp = MetC.infTempDuration
+			end
+		end
+
+	# otherwise if temperature IS currently infinite, decrement remaining hops of infinite temperature
+	else 
+		MetC.hopsOfInfTemp -= 1
+		if MetC.hopsOfInfTemp == 0 # if this was the last hop of infinite temperature...
+			MetC.hopsToInfTemp = MetC.infTempPeriod # reset number of hops until next reseed period
+			MetC.infTempEnergyToBeat = accept ? newCluster.energy : oldCluster.energy # set the energy to beat depending on if the hop was accepted.
+		end
+
+	end
+
+	return accept, metcLog
+
+end
