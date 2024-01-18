@@ -550,7 +550,6 @@ function getAcceptanceBoolean(MetC::GMMwithInfTempMetC, oldCluster::Cluster, new
 	end
 
 
-	print(metcLog)
 	# if the hop is rejected before any GMM checks are made, stop here
 	if !accept
 		return accept, metcLog
