@@ -581,6 +581,7 @@ function getAcceptanceBoolean(MetC::GMMwithInfTempMetC, oldCluster::Cluster, new
 	if !tempIsInf 
 		if accept && newCluster.energy < MetC.infTempEnergyToBeat # if a new energy minimum has been found and hopped to since the last inf temp run
 			MetC.hopsToInfTemp = MetC.infTempPeriod # reset the hops until infinite temperature
+			MetC.infTempEnergyToBeat = newCluster.energy
 		else # decrement remaining hops until infinite temperature
 			MetC.hopsToInfTemp -= 1
 			if MetC.hopsToInfTemp == 0 # if NEXT hop IS at infinite temperature, set the number of hops of infinite temperature.
