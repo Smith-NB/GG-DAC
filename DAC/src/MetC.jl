@@ -514,7 +514,7 @@ function GMMwithInfTempMetC(gaussian::GMM, gaussianCluster::Int64, pca::PCA, mod
 	# sets workspace as a 1x{PCA_out_dims} Matrix.
 	classes = getClasses()
 	GMMwithInfTempMetC(gaussian, gaussianCluster, pca, mode, useExplorationDataOnly, kT, classes, length(classes), Matrix{Float64}(undef, 1, size(pca)[2]), 
-					   infTempperiod, infTempDuration, hopsToInfTemp, hopsRemainingOfInfTemp, infTempEnergyToBeat, io)
+					   infTempPeriod, infTempDuration, hopsToInfTemp, hopsRemainingOfInfTemp, infTempEnergyToBeat, io)
 end
 
 function setMLClusterIndex!(MetC::GMMwithInfTempMetC, cluster::Cluster)
