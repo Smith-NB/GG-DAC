@@ -504,16 +504,17 @@ mutable struct GMMwithInfTempMetC <: MetC
 	infTempPeriod::Int64
 	infTempDuration::Int64
 	hopsToInfTemp::Int64
-	hopsOfInfTemp::Int64
+	hopsRemainingOfInfTemp::Int64
 	infTempEnergyToBeat::Float64
 	io::Tuple{IO, Channel}
 end
 
 function GMMwithInfTempMetC(gaussian::GMM, gaussianCluster::Int64, pca::PCA, mode::Symbol, useExplorationDataOnly::Bool, kT::Float64, infTempPeriod::Int64, 
-							infTempDuration::Int64, hopsToInfTemp::Int64, hopsOfInfTemp::Int64, infTempEnergyToBeat::Float64, io::Tuple{IO, Channel})
+							infTempDuration::Int64, hopsToInfTemp::Int64, hopsRemainingOfInfTemp::Int64, infTempEnergyToBeat::Float64, io::Tuple{IO, Channel})
 	# sets workspace as a 1x{PCA_out_dims} Matrix.
 	classes = getClasses()
-	GMMwithInfTempMetC(gaussian, gaussianCluster, pca, mode, useExplorationDataOnly, kT, classes, length(classes), Matrix{Float64}(undef, 1, size(pca)[2]), io)
+	GMMwithInfTempMetC(gaussian, gaussianCluster, pca, mode, useExplorationDataOnly, kT, classes, length(classes), Matrix{Float64}(undef, 1, size(pca)[2]), 
+					   infTempperiod, infTempDuration, hopsToInfTemp, hopsRemainingOfInfTemp, infTempEnergyToBeat, io)
 end
 
 function setMLClusterIndex!(MetC::GMMwithInfTempMetC, cluster::Cluster)
@@ -531,7 +532,7 @@ Returns true or false for accepting the move from the oldCluster to the newClust
 function getAcceptanceBoolean(MetC::GMMwithInfTempMetC, oldCluster::Cluster, newCluster::Cluster)
 	metcLog = ""
 	
-	tempIsInf = MetC.hopsOfInfTemp > 0 # is the temperature infinite?
+	tempIsInf = MetC.hopsRemainingOfInfTemp > 0 # is the temperature infinite?
 
 	# if kT is currently infinite OR if move is downhill, accept hop
 	if tempIsInf || newCluster.energy < oldCluster.energy
@@ -580,14 +581,14 @@ function getAcceptanceBoolean(MetC::GMMwithInfTempMetC, oldCluster::Cluster, new
 		else # decrement remaining hops until infinite temperature
 			MetC.hopsToInfTemp -= 1
 			if MetC.hopsToInfTemp == 0 # if NEXT hop IS at infinite temperature, set the number of hops of infinite temperature.
-				MetC.hopsOfInfTemp = MetC.infTempDuration
+				MetC.hopsRemainingOfInfTemp = MetC.infTempDuration
 			end
 		end
 
 	# otherwise if temperature IS currently infinite, decrement remaining hops of infinite temperature
 	else 
-		MetC.hopsOfInfTemp -= 1
-		if MetC.hopsOfInfTemp == 0 # if this was the last hop of infinite temperature...
+		MetC.hopsRemainingOfInfTemp -= 1
+		if MetC.hopsRemainingOfInfTemp == 0 # if this was the last hop of infinite temperature...
 			MetC.hopsToInfTemp = MetC.infTempPeriod # reset number of hops until next reseed period
 			MetC.infTempEnergyToBeat = accept ? newCluster.energy : oldCluster.energy # set the energy to beat depending on if the hop was accepted.
 		end
