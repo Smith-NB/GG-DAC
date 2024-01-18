@@ -509,7 +509,8 @@ mutable struct GMMwithInfTempMetC <: MetC
 	io::Tuple{IO, Channel}
 end
 
-function GMMwithInfTempMetC(gaussian::GMM, gaussianCluster::Int64, pca::PCA, mode::Symbol, useExplorationDataOnly::Bool, kT::Float64, io::Tuple{IO, Channel})
+function GMMwithInfTempMetC(gaussian::GMM, gaussianCluster::Int64, pca::PCA, mode::Symbol, useExplorationDataOnly::Bool, kT::Float64, infTempPeriod::Int64, 
+							infTempDuration::Int64, hopsToInfTemp::Int64, hopsOfInfTemp::Int64, infTempEnergyToBeat::Float64, io::Tuple{IO, Channel})
 	# sets workspace as a 1x{PCA_out_dims} Matrix.
 	classes = getClasses()
 	GMMwithInfTempMetC(gaussian, gaussianCluster, pca, mode, useExplorationDataOnly, kT, classes, length(classes), Matrix{Float64}(undef, 1, size(pca)[2]), io)
