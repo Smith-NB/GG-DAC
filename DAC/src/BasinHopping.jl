@@ -213,6 +213,18 @@ function extendedPostOptimisationTasks!(cluster::Cluster, bh::BasinHopper, clust
 	cluster.mlLabel = clusterToGetValuesFrom.mlLabel
 end
 
+function extendedPostOptimisationTasksNoPCA!(cluster::Cluster, bh::BasinHopper)
+	setCNAProfiles!(cluster, bh.rcut) # normal and total CNA profiles
+	cluster.atomClassCount = getFrequencyClassVector(getAtomClasses(cluster.nCNA, bh.metC.classes), bh.metC.nClasses, UInt8)
+	cluster.mlLabel = findmax(gmmposterior(bh.metC.gaussian, bh.metC.workspace)[1])[2][2]
+end
+
+function extendedPostOptimisationTasksNoPCA!(cluster::Cluster, bh::BasinHopper, clusterToGetValuesFrom::Cluster)
+	setCNAProfiles!(cluster, clusterToGetValuesFrom.CNA, clusterToGetValuesFrom.nCNA) # total CNA profile
+	cluster.atomClassCount = clusterToGetValuesFrom.atomClassCount
+	cluster.mlLabel = clusterToGetValuesFrom.mlLabel
+end
+
 function hop(bh::BasinHopper, steps::Int64, stepsAtomic::Threads.Atomic{Int64}, seed::Union{String, Cluster}, walkID::Int64, additionalInfo::Dict{String, Any}, start::DateTime, version::String)
 	if version != "v1.2.3" || bh.version != "v1.2.3"
 		println(bh.io[1], "The version number passed to the hop function or BasinHopper constructor does not match\nthe hard coded
