@@ -509,7 +509,7 @@ end
 
 function setMLClusterIndex!(MetC::GMMnoPCAMetC, cluster::Cluster)
 	fractionalClassVector = getFrequencyClassVector(getAtomClasses(cluster.nCNA, MetC.classes), MetC.nClasses)
-	mlClusterIndex = findmax(gmmposterior(MetC.gaussian, fractionalClassVector)[1])[2][2]
+	mlClusterIndex = findmax(gmmposterior(MetC.gaussian, fractionalClassVector'[:, :])[1])[2][2]
 end
 
 """
@@ -540,7 +540,7 @@ function getAcceptanceBoolean(MetC::GMMnoPCAMetC, oldCluster::Cluster, newCluste
 	fractionalClassVector = newCluster.atomClassCount
 
 	# get the probabilities that this datapoint belongs to each of the n Gaussian clusters.
-	posteriorProbs = gmmposterior(MetC.gaussian, fractionalClassVector)[1]
+	posteriorProbs = gmmposterior(MetC.gaussian, fractionalClassVector'[:, :])[1]
 
 	# this mode only accepts a hop if the target Gaussian cluster is the most likely Gaussian for this datapoint
 	if MetC.mode == :maxProbOnly

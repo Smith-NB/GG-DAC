@@ -216,7 +216,7 @@ end
 function extendedPostOptimisationTasksNoPCA!(cluster::Cluster, bh::BasinHopper)
 	setCNAProfiles!(cluster, bh.rcut) # normal and total CNA profiles
 	cluster.atomClassCount = getFrequencyClassVector(getAtomClasses(cluster.nCNA, bh.metC.classes), bh.metC.nClasses, UInt8)
-	cluster.mlLabel = findmax(gmmposterior(bh.metC.gaussian, cluster.atomClassCount)[1])[2][2]
+	cluster.mlLabel = findmax(gmmposterior(bh.metC.gaussian, cluster.atomClassCount'[:, :])[1])[2][2]
 end
 
 function extendedPostOptimisationTasksNoPCA!(cluster::Cluster, bh::BasinHopper, clusterToGetValuesFrom::Cluster)
