@@ -499,10 +499,10 @@ mutable struct GMMnoPCAMetC <: MetC
 	kT::Float64
 	classes::normalCNAProfile
 	nClasses::Int64
-	io::Tuple{IO, Channel}
+	io::Tuple{IO, Channel{String}}
 end
 
-function GMMnoPCAMetC(gaussian::GMM, gaussianCluster::Int64, mode::Symbol, useExplorationDataOnly::Bool, kT::Float64, io::Tuple{IO, Channel})
+function GMMnoPCAMetC(gaussian::GMM, gaussianCluster::Int64, mode::Symbol, useExplorationDataOnly::Bool, kT::Float64, io::Tuple{IO, Channel{String}})
 	classes = getClasses()
 	GMMnoPCAMetC(gaussian, gaussianCluster, mode, useExplorationDataOnly, kT, classes, length(classes), Matrix{Float64}(undef, 1, length(classes)), io)
 end
