@@ -499,17 +499,19 @@ mutable struct GMMnoPCAMetC <: MetC
 	kT::Float64
 	classes::normalCNAProfile
 	nClasses::Int64
+	workspace::Matrix{UInt8}
 	io::Tuple{IO, Channel}
 end
 
 function GMMnoPCAMetC(gaussian::GMM, gaussianCluster::Int64, mode::Symbol, useExplorationDataOnly::Bool, kT::Float64, io::Tuple{IOStream, Channel{String}})
 	classes = getClasses()
-	GMMnoPCAMetC(gaussian, gaussianCluster, mode, useExplorationDataOnly, kT, classes, length(classes), io)
+	GMMnoPCAMetC(gaussian, gaussianCluster, mode, useExplorationDataOnly, kT, classes, length(classes), Matrix{UInt8}(undef, 1, length(classes)), io)
 end
 
 function setMLClusterIndex!(MetC::GMMnoPCAMetC, cluster::Cluster)
 	fractionalClassVector = getFrequencyClassVector(getAtomClasses(cluster.nCNA, MetC.classes), MetC.nClasses)
-	mlClusterIndex = findmax(gmmposterior(MetC.gaussian, fractionalClassVector'[:, :])[1])[2][2]
+	MetC.workspace[1, :] = fractionalClassVector[:]
+	mlClusterIndex = findmax(gmmposterior(MetC.gaussian, MetC.workspace)[1])[2][2]
 end
 
 """
@@ -538,9 +540,10 @@ function getAcceptanceBoolean(MetC::GMMnoPCAMetC, oldCluster::Cluster, newCluste
 
 	# get the class vector for atom classes (Roncaglia scheme)
 	fractionalClassVector = newCluster.atomClassCount
+	MetC.workspace[1, :] = fractionalClassVector
 
 	# get the probabilities that this datapoint belongs to each of the n Gaussian clusters.
-	posteriorProbs = gmmposterior(MetC.gaussian, fractionalClassVector'[:, :])[1]
+	posteriorProbs = gmmposterior(MetC.gaussian, MetC.workspace)[1]
 
 	# this mode only accepts a hop if the target Gaussian cluster is the most likely Gaussian for this datapoint
 	if MetC.mode == :maxProbOnly
