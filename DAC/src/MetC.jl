@@ -499,12 +499,12 @@ mutable struct GMMnoPCAMetC <: MetC
 	kT::Float64
 	classes::normalCNAProfile
 	nClasses::Int64
-	io::Tuple{IOStream, Channel{String}}
+	io::Tuple{IO, Channel}
 end
 
 function GMMnoPCAMetC(gaussian::GMM, gaussianCluster::Int64, mode::Symbol, useExplorationDataOnly::Bool, kT::Float64, io::Tuple{IOStream, Channel{String}})
 	classes = getClasses()
-	GMMnoPCAMetC(gaussian, gaussianCluster, mode, useExplorationDataOnly, kT, classes, length(classes), Matrix{Float64}(undef, 1, length(classes)), io)
+	GMMnoPCAMetC(gaussian, gaussianCluster, mode, useExplorationDataOnly, kT, classes, length(classes), io)
 end
 
 function setMLClusterIndex!(MetC::GMMnoPCAMetC, cluster::Cluster)
