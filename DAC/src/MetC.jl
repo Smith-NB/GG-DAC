@@ -492,7 +492,7 @@ end
 #=============================================================================#
 
 mutable struct GMMnoPCAMetC <: MetC
-	gaussian::GMM{Float64, Vector{LinearAlgebra.UpperTriangular{Float64, Matrix{Float64}}}}
+	gaussian::GMM
 	gaussianCluster::Int64
 	mode::Symbol
 	useExplorationDataOnly::Bool
@@ -503,7 +503,7 @@ mutable struct GMMnoPCAMetC <: MetC
 	io::Tuple{IO, Channel}
 end
 
-function GMMnoPCAMetC(gaussian::GMM, gaussianCluster::Int64, mode::Symbol, useExplorationDataOnly::Bool, kT::Float64, io::Tuple{IOStream, Channel{String}})
+function GMMnoPCAMetC(gaussian::GMM, gaussianCluster::Int64, mode::Symbol, useExplorationDataOnly::Bool, kT::Float64, io::Tuple{IO, Channel})
 	classes = getClasses()
 	GMMnoPCAMetC(gaussian, gaussianCluster, mode, useExplorationDataOnly, kT, classes, length(classes), Matrix{UInt8}(undef, 1, length(classes)), io)
 end
