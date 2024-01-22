@@ -492,7 +492,7 @@ end
 #=============================================================================#
 
 mutable struct GMMnoPCAMetC <: MetC
-	gaussian::GMM
+	gaussian::GMM{Float64, Vector{LinearAlgebra.UpperTriangular{Float64, Matrix{Float64}}}}
 	gaussianCluster::Int64
 	mode::Symbol
 	useExplorationDataOnly::Bool
