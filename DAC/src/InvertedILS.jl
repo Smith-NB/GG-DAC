@@ -117,7 +117,7 @@ function invILS(data::Matrix{Float64}, labels::Vector{Int64}, iterative::Bool)
             #D[index[1], j] = Inf
         end
 
-        println("lab $(length(labelled)) unl $(length(unlabelled)) index $index")
+        #println("lab $(length(labelled)) unl $(length(unlabelled)) index $index")
         labels[unlabelled[index[1]]] = labelled[index[2]]
         iterationLabelledAt[unlabelled[index[1]]-1] = i
         
@@ -132,7 +132,7 @@ function invILS(data::Matrix{Float64}, labels::Vector{Int64}, iterative::Bool)
                 dist = Inf
                 loc = 0
                 for k in 1:length(v)
-                    println("toUpdate $(toUpdate[j]) v[k] $(v[k])")
+                    #println("toUpdate $(toUpdate[j]) v[k] $(v[k])")
                     if v[k] < dist
                         dist = v[k]
                         loc = k
