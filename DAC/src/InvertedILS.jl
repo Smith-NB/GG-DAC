@@ -65,7 +65,7 @@ function getMaxFromClosestLab!(D::Matrix{Float64}, closestLab::Vector{Int64}, cl
    #println("closestLab $(Base.view(closestLab, unlPerm))")
    #println("closestLabDist $v")
    #println("unlPerm$unlPerm")
-   #println("max unlindex labindex $max $unlIndex $labIndex")
+   #:println("max unlindex labindex $max $unlIndex $labIndex")
    nToUpdate::Int64 = 0
    
    for i in 1:length(v)
