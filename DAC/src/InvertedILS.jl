@@ -58,11 +58,11 @@ decrementIfGThan(a::Int64, b::Int64) = a > b ? a-1 : a
 
 
 function getMaxFromClosestLab!(D::Matrix{Float64}, closestLab::Vector{Int64}, closestLabDist::Vector{Float64}, unlPerm::Vector{Int64}, toUpdate::Vector{Int64}, nUnl::Int64)
-   #v::SubArray{Float64, 1, Vector{Float64}, Tuple{UnitRange{Int64}}, true} = view(closestLabDist, unlPerm)
-   v = view(closestLabDist, unlPerm)
+   #v::SubArray{Float64, 1, Vector{Float64}, Tuple{UnitRange{Int64}}, true} = Base.view(closestLabDist, unlPerm)
+   v = Base.view(closestLabDist, unlPerm)
    max::Float64, unlIndex::Int64 = findmax(v) # min is the smallest distance. labIndex gives the labelled point involved.
    labIndex = closestLab[unlPerm[unlIndex]]
-   println("closestLab $(view(closestLab, unlPerm))")
+   println("closestLab $(Base.view(closestLab, unlPerm))")
    println("closestLabDist $v")
    println("unlPerm$unlPerm")
    println("max unlindex labindex $max $unlIndex $labIndex")
@@ -127,8 +127,8 @@ function invILS(data::Matrix{Float64}, labels::Vector{Int64}, iterative::Bool)
         # toUpdate gives all indices in closestUnl/closestUnlDist that need updating        
         if length(unlabelled) != 0
             for j in 1:nToUpdate
-                #v::SubArray{Float64, 1, Matrix{Float64}, Tuple{Vector{Int64}, Int64}, false} = view(D, toUpdate[j], 1:nLab)
-                v = view(D, toUpdate[j], 1:nLab)
+                #v::SubArray{Float64, 1, Matrix{Float64}, Tuple{Vector{Int64}, Int64}, false} = Base.view(D, toUpdate[j], 1:nLab)
+                v = Base.view(D, toUpdate[j], 1:nLab)
                 dist = Inf
                 loc = 0
                 for k in 1:length(v)
