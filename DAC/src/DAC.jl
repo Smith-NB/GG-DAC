@@ -24,4 +24,5 @@ include("generateRandomSeed.jl")
 include("BasinHopping.jl")
 include("MyLib.jl")
 include("ILS.jl")
+include("InvertedILS.jl")
 end # module DAC
