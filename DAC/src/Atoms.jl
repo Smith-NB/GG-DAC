@@ -822,7 +822,7 @@ function write_xyz(filename::String, positions::Matrix{Float64}, formula::Dict{S
 	end
 	close(newfile)
 	atoms = read_xyz(filename)
-	DC.write_xyz(filename, atoms, tags)
+	write_xyz(filename, atoms, tags)
 end
 
 function formulaDictToString(formula::Dict{String, Int64})
