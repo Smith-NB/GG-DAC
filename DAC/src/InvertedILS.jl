@@ -36,6 +36,7 @@ function inv_getDistances!(data::Matrix{Float64}, D::Matrix{Float64}, nLab::Int6
     for j in 1:length(Y)
         r::Float64 = 0.0
         for k in 1:nDims
+            println("$k $X $k $(Y[j])")
             r += (data[k, X] - data[k, Y[j]])^2
         end
         
