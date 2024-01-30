@@ -8,12 +8,12 @@ f(i::Int64, nCols::Int64) = ((i-1)÷nCols+1, (i-1)%nCols+1)
 F(a::Int64, b::Int64, nCols::Int64) = (a-1)*nCols + b
 
 """
-    getDistances!(data::Matrix{Float64}, D::Matrix{Float64}, lab::Int64, unl::Vector{Int64}, X::Int64, Y::Vector{Int64}, nDims::Int64)
+    inv_getDistances!(data::Matrix{Float64}, D::Matrix{Float64}, lab::Int64, unl::Vector{Int64}, X::Int64, Y::Vector{Int64}, nDims::Int64)
 
 Calculate the Cartesian distances in n-dim space between point `X` and the points `Y`, each pointing to values in `data`. Store the resulting 
 distance matrix in `D`. `lab` and `unl` each point to the positions of `X` and `Y` respectively within `D`, which are different to in `data`.   
 """
-function getDistances!(data::Matrix{Float64}, D::Matrix{Float64}, lab::Int64, unl::Vector{Int64}, X::Int64, Y::Vector{Int64}, nDims::Int64)
+function inv_getDistances!(data::Matrix{Float64}, D::Matrix{Float64}, lab::Int64, unl::Vector{Int64}, X::Int64, Y::Vector{Int64}, nDims::Int64)
     for j in 1:length(Y)
         r::Float64 = 0.0
         for k in 1:nDims
@@ -27,12 +27,12 @@ function getDistances!(data::Matrix{Float64}, D::Matrix{Float64}, lab::Int64, un
 end
 
 """
-    getDistances!(data::Matrix{Float64}, D::Matrix{Float64}, lab::Int64, unl::Vector{Int64}, X::Int64, Y::Vector{Int64}, closestUnl::Vector{Int64}, closestUnlDist::Vector{Float64}, nDims::Int64)
+    inv_getDistances!(data::Matrix{Float64}, D::Matrix{Float64}, lab::Int64, unl::Vector{Int64}, X::Int64, Y::Vector{Int64}, closestUnl::Vector{Int64}, closestUnlDist::Vector{Float64}, nDims::Int64)
 
 Calculate the Cartesian distances in n-dim space between point `X` and the points `Y`, each pointing to values in `data`. Store the resulting 
 distance matrix in `D`. `lab` and `unl` each point to the positions of `X` and `Y` respectively within `D`, which are different to in `data`.   
 """
-function getDistances!(data::Matrix{Float64}, D::Matrix{Float64}, nLab::Int64, unlPerm::Vector{Int64}, X::Int64, Y::Vector{Int64}, closestLab::Vector{Int64}, closestLabDist::Vector{Float64},  nDims::Int64)
+function inv_getDistances!(data::Matrix{Float64}, D::Matrix{Float64}, nLab::Int64, unlPerm::Vector{Int64}, X::Int64, Y::Vector{Int64}, closestLab::Vector{Int64}, closestLabDist::Vector{Float64},  nDims::Int64)
     for j in 1:length(Y)
         r::Float64 = 0.0
         for k in 1:nDims
@@ -54,10 +54,10 @@ end
 
 Returns the decrement of `a` if `a` > `b`. Intended for use in `broadcast!` function
 """
-decrementIfGThan(a::Int64, b::Int64) = a > b ? a-1 : a
+inv_decrementIfGThan(a::Int64, b::Int64) = a > b ? a-1 : a
 
 
-function getMaxFromClosestLab!(D::Matrix{Float64}, closestLab::Vector{Int64}, closestLabDist::Vector{Float64}, unlPerm::Vector{Int64}, toUpdate::Vector{Int64}, nUnl::Int64)
+function inv_getMaxFromClosestLab!(D::Matrix{Float64}, closestLab::Vector{Int64}, closestLabDist::Vector{Float64}, unlPerm::Vector{Int64}, toUpdate::Vector{Int64}, nUnl::Int64)
    #v::SubArray{Float64, 1, Vector{Float64}, Tuple{UnitRange{Int64}}, true} = Base.view(closestLabDist, unlPerm)
    v = Base.view(closestLabDist, unlPerm)
    max::Float64, unlIndex::Int64 = findmax(v) # min is the smallest distance. labIndex gives the labelled point involved.
@@ -75,7 +75,7 @@ function getMaxFromClosestLab!(D::Matrix{Float64}, closestLab::Vector{Int64}, cl
        end
    end
     
-   broadcast!(decrementIfGThan, closestLab, closestLab, unlIndex)
+   broadcast!(inv_decrementIfGThan, closestLab, closestLab, unlIndex)
    return max, (unlIndex, labIndex), nToUpdate
 end
 
@@ -110,8 +110,8 @@ function invILS(data::Matrix{Float64}, labels::Vector{Int64}, iterative::Bool)
         
         # get distances between each labelled point to each unlabelled point
         
-        getDistances!(data, D, nLab, unlPerm, labelled[nLab], unlabelled, closestLab, closestLabDist, nDims)        
-        Ri[i], index, nToUpdate = getMaxFromClosestLab!(D, closestLab, closestLabDist, unlPerm, toUpdate, nUnl)
+        inv_getDistances!(data, D, nLab, unlPerm, labelled[nLab], unlabelled, closestLab, closestLabDist, nDims)        
+        Ri[i], index, nToUpdate = inv_getMaxFromClosestLab!(D, closestLab, closestLabDist, unlPerm, toUpdate, nUnl)
         
         for j in 1:nLab
             #D[index[1], j] = Inf
