@@ -822,6 +822,7 @@ function write_xyz(filename::String, positions::Matrix{Float64}, formula::Dict{S
 	end
 	close(newfile)
 	atoms = read_xyz(filename)
+	centreCluster!(atoms)
 	write_xyz(filename, atoms, tags)
 end
 
