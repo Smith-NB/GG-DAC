@@ -87,7 +87,6 @@ function invILS(data::Matrix{Float64}, labels::Vector{Int64}, iterative::Bool)
     
     labelled = findall(i->i!=0, labels)             # indices of all labelled points in data
     unlabelled = findall(i->i==0, labels)           # indices of all unlabelled points in data
-    println(unlabelled)
     unlPerm = [i for i in 1:length(unlabelled)]     # Gives the row index in D for the corresponding unlabelled point in `unlabelled`.
     
     Ri = Vector{Float64}(undef, length(unlabelled))             # The distances between the closest labelled and unlabelled points at each interation
