@@ -36,7 +36,7 @@ function inv_getDistances!(data::Matrix{Float64}, D::Matrix{Float64}, nLab::Int6
     for j in 1:length(Y)
         r::Float64 = 0.0
         for k in 1:nDims
-            println("$k $X $k $(Y[j])")
+            #println("$k $X $k $(Y[j])")
             r += (data[k, X] - data[k, Y[j]])^2
         end
         
@@ -87,6 +87,7 @@ function invILS(data::Matrix{Float64}, labels::Vector{Int64}, iterative::Bool)
     
     labelled = findall(i->i!=0, labels)             # indices of all labelled points in data
     unlabelled = findall(i->i==0, labels)           # indices of all unlabelled points in data
+    println(unlabelled)
     unlPerm = [i for i in 1:length(unlabelled)]     # Gives the row index in D for the corresponding unlabelled point in `unlabelled`.
     
     Ri = Vector{Float64}(undef, length(unlabelled))             # The distances between the closest labelled and unlabelled points at each interation
