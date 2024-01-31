@@ -692,7 +692,7 @@ function read_xyz(filename::String)
 	return Cluster(formula, positions, cell)
 end
 
-function read_xyz(lines::Vector{String})
+function read_xyz(lines::Vector{SubString{String}})
 	natoms = parse(Int64, lines[1])
 	formula = Dict{String, Int64}()
 	positions = zeros(Float64, natoms, 3)
