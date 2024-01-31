@@ -890,7 +890,8 @@ end
 
 function getStructure(name::String)
 	if name == "LJ98_GM"
-		xyzCatenation = "Lattice=\"15.17457465 0.0 0.0 0.0 15.17457465 0.0 0.0 0.0 15.17457465\" Properties=species:S:1:pos:R:3 pbc=\"F F F\"
+		xyzCatenation = "98
+Lattice=\"15.17457465 0.0 0.0 0.0 15.17457465 0.0 0.0 0.0 15.17457465\" Properties=species:S:1:pos:R:3 pbc=\"F F F\"
 Ne       7.54119271       7.47150856      10.14420067
 Ne       6.73483947       8.19552962       9.94261875
 Ne       8.30690278       8.24649626       9.87930329
