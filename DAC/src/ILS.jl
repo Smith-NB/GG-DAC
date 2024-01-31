@@ -113,7 +113,7 @@ decrementIfGThan(a::Int64, b::Int64) = a > b ? a-1 : a
 
 
 function getMinFromClosestUnl!(D::Matrix{Float64}, closestUnl::Vector{Int64}, closestDist::Vector{Float64}, unlPerm::Vector{Int64}, toUpdate::Vector{Int64}, nLab::Int64)
-   v::SubArray{Float64, 1, Vector{Float64}, Tuple{UnitRange{Int64}}, true} = view(closestDist, 1:nLab)
+   v::SubArray{Float64, 1, Vector{Float64}, Tuple{UnitRange{Int64}}, true} = Base.view(closestDist, 1:nLab)
    min::Float64, labIndex::Int64 = findmin(v) # min is the smallest distance. labIndex gives the labelled poiint involved.
    unlIndex = closestUnl[labIndex]
    nToUpdate::Int64 = 0
@@ -174,7 +174,7 @@ function ILS(data::Matrix{Float64}, labels::Vector{Int64}, iterative::Bool)
         
         if length(unlabelled) != 0
             for j in 1:nToUpdate
-                v::SubArray{Float64, 1, Matrix{Float64}, Tuple{Vector{Int64}, Int64}, false} = view(D, unlPerm, toUpdate[j])
+                v::SubArray{Float64, 1, Matrix{Float64}, Tuple{Vector{Int64}, Int64}, false} = Base.view(D, unlPerm, toUpdate[j])
                 dist = Inf
                 loc = 0
                 for k in 1:length(v)
