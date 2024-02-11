@@ -670,7 +670,7 @@ Takes a path to a ".xyz" file and loads it as a Cluster type,
 which is returned.
 """
 function read_xyz(filename::String)
-	lines = readlines(filename)
+	lines = readlines(open(filename, "r"))
 	natoms = parse(Int64, lines[1])
 	formula = Dict{String, Int64}()
 	positions = zeros(Float64, natoms, 3)
