@@ -217,7 +217,7 @@ mutable struct HISTO2DMetC <: MetC
 	clusterVector::ClusterVector
 	waitTime::Int64
 	timeElapsed::Int64
-	hist::Vector{Int64}
+	hist::Matrix{Int64}
 	io::Tuple{IO, Channel}
 end
 
