@@ -300,6 +300,7 @@ function getAcceptanceBoolean(MetC::HISTO2DMetC, oldCluster::Cluster, newCluster
 	accept = probability > rand()
 
 	if accept && updateHist
+		metcLog *= "\nincrementing hist[$binNew1, $binNew2]"
 		MetC.hist[binNew1, binNew2] += 1
 	end
 
