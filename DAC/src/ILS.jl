@@ -2,7 +2,6 @@ using BenchmarkTools
 using PyPlot
 import Random
 using MultivariateStats
-Random.seed!(1)
 
 f(i::Int64, nCols::Int64) = ((i-1)÷nCols+1, (i-1)%nCols+1)
 F(a::Int64, b::Int64, nCols::Int64) = (a-1)*nCols + b
