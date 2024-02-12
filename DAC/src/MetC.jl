@@ -274,16 +274,16 @@ function getAcceptanceBoolean(MetC::HISTO2DMetC, oldCluster::Cluster, newCluster
 
 		simOld1 = getCNASimilarity(getCNA(oldCluster), MetC.refCNA1)
 		simOld2 = getCNASimilarity(getCNA(oldCluster), MetC.refCNA2)
-		binOld1 = simOld == 1.0 ? trunc(Int64, 1/MetC.delta) : trunc(Int64, simOld1/MetC.delta) + 1 # get bin of old Cluster
-		binOld2 = simOld == 1.0 ? trunc(Int64, 1/MetC.delta) : trunc(Int64, simOld2/MetC.delta) + 1 # get bin of old Cluster
+		binOld1 = simOld1 == 1.0 ? trunc(Int64, 1/MetC.delta) : trunc(Int64, simOld1/MetC.delta) + 1 # get bin of old Cluster
+		binOld2 = simOld2 == 1.0 ? trunc(Int64, 1/MetC.delta) : trunc(Int64, simOld2/MetC.delta) + 1 # get bin of old Cluster
 		hOld   = MetC.hist[binOld1, binOld2]/histSum # get height (normalised) of bars
 		
 		metcLog *= "\nsimOld=$(simOld)\nbinOld=$(binOld)\nhOld=$(hOld)"
 
 		simNew1 = getCNASimilarity(getCNA(newCluster), MetC.refCNA1)
 		simNew2 = getCNASimilarity(getCNA(newCluster), MetC.refCNA2)
-		binNew1 = simNew == 1.0 ? trunc(Int64, 1/MetC.delta) : trunc(Int64, simNew1/MetC.delta) + 1 # get bin of new Cluster
-		binNew2 = simNew == 1.0 ? trunc(Int64, 1/MetC.delta) : trunc(Int64, simNew2/MetC.delta) + 1 # get bin of new Cluster
+		binNew1 = simNew1 == 1.0 ? trunc(Int64, 1/MetC.delta) : trunc(Int64, simNew1/MetC.delta) + 1 # get bin of new Cluster
+		binNew2 = simNew2 == 1.0 ? trunc(Int64, 1/MetC.delta) : trunc(Int64, simNew2/MetC.delta) + 1 # get bin of new Cluster
 		hNew   = MetC.hist[binNew1, binNew2]/histSum # get height (normalised) of bars
 
 		metcLog *= "\nsimNew=$(simNew)\nbinNew=$(binNew)\nhNew=$(hNew)"
