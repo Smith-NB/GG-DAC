@@ -199,6 +199,113 @@ function getAcceptanceBoolean(MetC::HISTOMetC, oldCluster::Cluster, newCluster::
 
 end
 
+#=============================================================================#
+#================================HISTO2DMetC==================================#
+#=============================================================================#
+
+# Accounts for accepted hops only
+
+mutable struct HISTO2DMetC <: MetC
+	kT::Float64
+	w::Float64
+	delta::Float64
+	resetPeriod::Float64
+	refCNA1::CNAProfile
+	refCNA2::CNAProfile
+	refID1::Int64
+	refID2::Int64
+	clusterVector::ClusterVector
+	waitTime::Int64
+	timeElapsed::Int64
+	hist::Vector{Int64}
+	io::Tuple{IO, Channel}
+end
+
+function HISTO2DMetC(kT::Float64, w::Float64, delta::Float64, resetPeriod::Float64, clusterVector::ClusterVector, waitTime::Int64, io::Tuple{IO, Channel})
+	refCNA1 = CNAProfile()
+	refCNA2 = CNAProfile()
+	refID = -1
+	timeElapsed = 0
+	hist = zeros(Int64, trunc(Int64, 1/delta), trunc(Int64, 1/delta))
+	return HISTO2DMetC(kT, w, delta, resetPeriod, refCNA1, refID, clusterVector, waitTime, timeElapsed, hist, io)
+end
+
+function HISTO2DMetC(kT::Float64, w::Float64, delta::Float64, resetPeriod::Float64, clusterVector::ClusterVector, refCNA1::CNAProfile, refCNA2::CNAProfile, io::Tuple{IO, Channel})
+	refID1 = -1
+	refID2 = -2
+	timeElapsed = 0
+	hist = zeros(Int64, trunc(Int64, 1/delta), trunc(Int64, 1/delta))
+	waitTime = 0
+	return HISTO2DMetC(kT, w, delta, resetPeriod, refCNA1, refCNA2, refID1, refID2, clusterVector, waitTime, timeElapsed, hist, io)
+end
+
+
+function getAcceptanceBoolean(MetC::HISTO2DMetC, oldCluster::Cluster, newCluster::Cluster)
+	metcLog = ""
+	if newCluster.energy < oldCluster.energy
+		return true, metcLog
+	end
+
+	updateHist = false
+	binNew = nothing
+	metcLog *=  "\nlenRefCNA=$(length(MetC.refCNA1)) timeElapsed=$(MetC.timeElapsed)"
+	if length(MetC.refCNA1) == 0
+
+		if MetC.timeElapsed >= MetC.waitTime
+			MetC.refCNA1 = MetC.clusterVector.vec[1].CNA
+			MetC.refCNA2 = MetC.clusterVector.vec[2].CNA
+			MetC.refID1 = MetC.clusterVector.vec[1].ID
+			MetC.refID2 = MetC.clusterVector.vec[2].ID
+			metcLog *= "\nSETTING refCNA1: $(MetC.refCNA1)\nrefID1: $(MetC.refID1)"
+			metcLog *= "\nSETTING refCNA2: $(MetC.refCNA2)\nrefID2: $(MetC.refID2)"
+		end
+		MetC.timeElapsed += 1
+
+		hScore = 0
+
+
+	else
+
+
+		histSum = sum(MetC.hist) # used to normalise bar heights
+		if histSum == 0 # avoid division by zero
+			histSum = 1
+		end
+
+		simOld1 = getCNASimilarity(getCNA(oldCluster), MetC.refCNA1)
+		simOld2 = getCNASimilarity(getCNA(oldCluster), MetC.refCNA2)
+		binOld1 = simOld == 1.0 ? trunc(Int64, 1/MetC.delta) : trunc(Int64, simOld1/MetC.delta) + 1 # get bin of old Cluster
+		binOld2 = simOld == 1.0 ? trunc(Int64, 1/MetC.delta) : trunc(Int64, simOld2/MetC.delta) + 1 # get bin of old Cluster
+		hOld   = MetC.hist[binOld1, binOld2]/histSum # get height (normalised) of bars
+		
+		metcLog *= "\nsimOld=$(simOld)\nbinOld=$(binOld)\nhOld=$(hOld)"
+
+		simNew1 = getCNASimilarity(getCNA(newCluster), MetC.refCNA1)
+		simNew2 = getCNASimilarity(getCNA(newCluster), MetC.refCNA2)
+		binNew1 = simNew == 1.0 ? trunc(Int64, 1/MetC.delta) : trunc(Int64, simNew1/MetC.delta) + 1 # get bin of new Cluster
+		binNew2 = simNew == 1.0 ? trunc(Int64, 1/MetC.delta) : trunc(Int64, simNew2/MetC.delta) + 1 # get bin of new Cluster
+		hNew   = MetC.hist[binNew1, binNew2]/histSum # get height (normalised) of bars
+
+		metcLog *= "\nsimNew=$(simNew)\nbinNew=$(binNew)\nhNew=$(hNew)"
+
+		hScore = MetC.w * (hOld - hNew)
+		updateHist = true
+
+	end
+	
+	probability = exp((oldCluster.energy - newCluster.energy + hScore) / MetC.kT)	
+
+	metcLog *=  "\nhScore = $(hScore)\nChance to accept = $(string(probability))"
+
+	accept = probability > rand()
+
+	if accept && updateHist
+		MetC.hist[binNew1, binNew2] += 1
+	end
+
+	return accept, metcLog
+
+end
 
 #=============================================================================#
 #================================HISTOAttMetC=================================#
