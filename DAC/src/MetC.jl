@@ -278,7 +278,7 @@ function getAcceptanceBoolean(MetC::HISTO2DMetC, oldCluster::Cluster, newCluster
 		binOld2 = simOld2 == 1.0 ? trunc(Int64, 1/MetC.delta) : trunc(Int64, simOld2/MetC.delta) + 1 # get bin of old Cluster
 		hOld   = MetC.hist[binOld1, binOld2]/histSum # get height (normalised) of bars
 		
-		metcLog *= "\nsimOld=$(simOld)\nbinOld=$(binOld)\nhOld=$(hOld)"
+		metcLog *= "\nsimOld=$(simOld1), $(simOld2)\nbinOld=$(binOld1), $(binOld2)\nhOld=$(hOld)"
 
 		simNew1 = getCNASimilarity(getCNA(newCluster), MetC.refCNA1)
 		simNew2 = getCNASimilarity(getCNA(newCluster), MetC.refCNA2)
@@ -286,7 +286,7 @@ function getAcceptanceBoolean(MetC::HISTO2DMetC, oldCluster::Cluster, newCluster
 		binNew2 = simNew2 == 1.0 ? trunc(Int64, 1/MetC.delta) : trunc(Int64, simNew2/MetC.delta) + 1 # get bin of new Cluster
 		hNew   = MetC.hist[binNew1, binNew2]/histSum # get height (normalised) of bars
 
-		metcLog *= "\nsimNew=$(simNew)\nbinNew=$(binNew)\nhNew=$(hNew)"
+		metcLog *= "\nsimOld=$(simNew1), $(simNew2)\nbinOld=$(binNew1), $(binNew2)\nhOld=$(hNew)"
 
 		hScore = MetC.w * (hOld - hNew)
 		updateHist = true
