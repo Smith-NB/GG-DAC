@@ -34,7 +34,7 @@ end
 Returns a DC.Cluster or Matrix{Float64} (`returnCoordsOnly` dependant) type with randomly generated positions of atoms inside
 	a box of size `boxLength` and with a cell of size `boxLength` + `vacuumAdd`.
 """
-function generateRandomSeed(formula::Dict{String, Int64}, boxLength::Number, vacuumAdd::Number, returnCoordsOnly::Bool=false)
+function generateRandomSeed(formula::Dict{String, Int64}, boxLength::Number, vacuumAdd::Number, returnCoordsOnly::Bool=false, coherencyDistance::Float64=1.5)
 	# get number of atoms
 	N = 0
 	for key in keys(formula)
@@ -66,7 +66,7 @@ function generateRandomSeed(formula::Dict{String, Int64}, boxLength::Number, vac
 		end
 
 		# Check that the cluster is coherent. Restart if it isn't. 
-		if isClusterCoherent(clusterCoords, 1.5)
+		if isClusterCoherent(clusterCoords, coherencyDistance)
 			break
 		else
 			clusterCoords = zeros(Float64, N, 3)
