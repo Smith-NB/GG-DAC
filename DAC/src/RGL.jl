@@ -110,7 +110,6 @@ function calculateEnergy!(atoms::Cluster, calc::RGL)
 	end
 	atoms.energy = sum(atoms.energies)
 	atoms.validEnergies = true
-	println("Energy sq: $sigma_q")
 	return nothing
 
 end
