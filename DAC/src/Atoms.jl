@@ -260,6 +260,35 @@ Returns the atom count of a Cluster type.
 """
 getNAtoms(atoms::Cluster) = getNAtoms(atoms.positions)
 
+"""
+	getDistances(coordinates::Matrix{Float64})
+
+Returns the distances between all atoms in each cartesian dimension
+from a Maxtrix of atomic coordinates.
+"""
+function getXYZDistances(coordinates::Matrix{Float64})
+	natoms = getNAtoms(coordinates)
+
+	r = zeros(Float64, natoms, natoms, 3)
+	for i in 1:natoms
+		for j in i+1:natoms
+			r[i, j, 1] = coordinates[i, 1] - coordinates[j, 1]
+			r[i, j, 2] = coordinates[i, 2] - coordinates[j, 2]
+			r[i, j, 3] = coordinates[i, 3] - coordinates[j, 3]
+
+			r[j, i, 1] = r[i, j, 1]
+			r[j, i, 2] = r[i, j, 2]
+			r[j, i, 3] = r[i, j, 3]
+		end
+	end
+
+	return r
+end
+
+
+function getXYZDistances(atoms::Cluster)
+	return getXYZDistances(aotms.positions)
+end
 
 """
 	getDistances(coordinates::Matrix{Float64})
