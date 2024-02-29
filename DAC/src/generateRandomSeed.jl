@@ -4,7 +4,7 @@
 Returns true if a cluster is coherent, else false. Cohenerncy is that all atoms form one cluster - if one or more atoms
 	cannot be reached by any other atom in a graph via bonds of size maxDistance, the cluster is incoherent.
 """
-function isClusterCoherent(clusterCoords::Matrix{Float64}, maxDistance::Number)
+function isClusterCoherent(clusterCoords::Matrix{Float64}, maxDistance::Float64)
 
 	N =	getNAtoms(clusterCoords)
 	neighboursList = getNeighboursList(clusterCoords, maxDistance)
@@ -27,6 +27,7 @@ function isClusterCoherent(clusterCoords::Matrix{Float64}, maxDistance::Number)
 	return length(atomsNotReached) == 0
 end
 
+isClusterCoherent(clusterCoords::Matrix{Float64}, maxDistance::Float64) = isClusterCoherent(clusterCoords, float(maxDistance))
 
 """
 	generateRandomSeed(formula::Dict{String, Int64}, boxLength::Number, vacuumAdd::Number, returnCoordsOnly::Bool=false)

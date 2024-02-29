@@ -249,6 +249,7 @@ function hop(bh::BasinHopper, steps::Int64, stepsAtomic::Threads.Atomic{Int64}, 
 
 	# Specify variables from additionalInfo.
 	step::Int64							= haskey(additionalInfo, "stepsCompleted")			? additionalInfo["stepsCompleted"] 			: 0
+	coherencyDistance::Float64			= haskey(additionalInfo, "coherencyDistance")		? additionalInfo["coherencyDistance"] 		: 0.0
 	setHopsToReseed!(bh.reseeder, 		  haskey(additionalInfo, "hopsToReseed")			? additionalInfo["hopsToReseed"] 			: getReseedPeriod(bh.reseeder))
 	setReseedEnergyToBeat!(bh.reseeder,   haskey(additionalInfo, "reseedEnergyToBeat")		? additionalInfo["reseedEnergyToBeat"] 		: Inf)
 	Emin::Float64						= haskey(additionalInfo, "Emin") 					? additionalInfo["Emin"] 					: Inf
@@ -295,7 +296,7 @@ function hop(bh::BasinHopper, steps::Int64, stepsAtomic::Threads.Atomic{Int64}, 
 		setPositions!(newCluster, newPos)
 
 		optimize!(bh.optimizer, newCluster, bh.fmax)
-		while !isClusterCoherent(newCluster.positions, 2)
+		while !isClusterCoherent(newCluster.positions, coherencyDistance)
 			newPos, pertrubString = bh.perturber(getPositions(oldCluster))
 			setPositions!(newCluster, newPos)
 			optimize!(bh.optimizer, newCluster, bh.fmax)
@@ -392,7 +393,7 @@ function hop(bh::BasinHopper, steps::Int64, stepsAtomic::Threads.Atomic{Int64}, 
 
 			setPositions!(oldCluster, bh.reseeder.getReseedStructure(bh.reseeder.args...))
 			optimize!(bh.optimizer, oldCluster, bh.fmax)
-			while !isClusterCoherent(oldCluster.positions, 2)
+			while !isClusterCoherent(oldCluster.positions, coherencyDistance)
 				setPositions!(oldCluster, bh.reseeder.getReseedStructure(bh.reseeder.args...))
 				optimize!(bh.optimizer, oldCluster, bh.fmax)
 			end
