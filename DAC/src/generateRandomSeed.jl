@@ -27,7 +27,7 @@ function isClusterCoherent(clusterCoords::Matrix{Float64}, maxDistance::Float64)
 	return length(atomsNotReached) == 0
 end
 
-isClusterCoherent(clusterCoords::Matrix{Float64}, maxDistance::Float64) = isClusterCoherent(clusterCoords, float(maxDistance))
+isClusterCoherent(clusterCoords::Matrix{Float64}, maxDistance::Int64) = isClusterCoherent(clusterCoords, float(maxDistance))
 
 """
 	generateRandomSeed(formula::Dict{String, Int64}, boxLength::Number, vacuumAdd::Number, returnCoordsOnly::Bool=false)
