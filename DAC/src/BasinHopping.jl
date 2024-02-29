@@ -229,7 +229,7 @@ function extendedPostOptimisationTasksNoPCA!(cluster::Cluster, bh::BasinHopper, 
 end
 
 function hop(bh::BasinHopper, steps::Int64, stepsAtomic::Threads.Atomic{Int64}, seed::Union{String, Cluster}, walkID::Int64, additionalInfo::Dict{String, Any}, start::DateTime, version::String)
-	if version != "v1.2.3" || bh.version != "v1.2.3"
+	if version != "v1.2.4" || bh.version != "v1.2.4"
 		println(bh.io[1], "The version number passed to the hop function or BasinHopper constructor does not match\nthe hard coded
 			version number. Double check you are using the correct run script. This program will now terminate.")
 		return 0
