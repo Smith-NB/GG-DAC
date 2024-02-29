@@ -54,27 +54,34 @@ function calculateForces!(atoms::Cluster, calc::RGL)
 	natoms =  getNAtoms(atoms)
 	fill!(atoms.forces, 0.0)
 	φ = get_φ(atoms, calc, natoms)
+	for i in 1:length(φ)
+		φ[i] = sqrt(φ[i])
+	end
+
 	for i in 1:natoms
 		for j in i+1:natoms
 			rx::Float64 = atoms.positions[i, 1] - atoms.positions[j, 1]
 			ry::Float64 = atoms.positions[i, 2] - atoms.positions[j, 2]
 			rz::Float64 = atoms.positions[i, 3] - atoms.positions[j, 3]
-			r_ij::Float64 = (rx^2 + ry^2 + rz^2)^0.5
+			r_ij::Float64 = sqrt(rx*rx + ry*ry + rz*rz)
 			R::Float64 = r_ij / calc.r0 - 1.0
 
 			pTerm::Float64 = -2.0 * calc.A * calc.p / calc.r0 * exp(-calc.p * R) 
 			qTerm::Float64 = -calc.xi2 * calc.q / calc.r0 * exp(-2.0 * calc.q * R)
-			F_ij::Float64 = ( pTerm - qTerm * ( (1.0 / φ[i]^0.5) + (1.0 / φ[j]^0.5) ) ) / r_ij
+			F_ij::Float64 = ( pTerm - qTerm * ( (1.0 / φ[i]) + (1.0 / φ[j]) ) ) / r_ij
 
 			
-			atoms.forces[1, i] -= F_ij * rx
-			atoms.forces[1, j] += F_ij * rx
+			Fa::Float64 = F_ij * rx
+			atoms.forces[1, i] -= Fa
+			atoms.forces[1, j] += Fa
 
-			atoms.forces[2, i] -= F_ij * ry
-			atoms.forces[2, j] += F_ij * ry
-
-			atoms.forces[3, i] -= F_ij * rz
-			atoms.forces[3, j] += F_ij * rz
+			Fa = F_ij * ry
+			atoms.forces[2, i] -= Fa
+			atoms.forces[2, j] += Fa
+			
+			Fa = F_ij * rz
+			atoms.forces[3, i] -= Fa
+			atoms.forces[3, j] += Fa
 			
 
 		end
@@ -83,6 +90,54 @@ function calculateForces!(atoms::Cluster, calc::RGL)
 
 end
 
+
+function calculateEnergyTime!(atoms::Cluster, calc::RGL)
+	natoms = getNAtoms(atoms)
+	fill!(atoms.energies, 0.0)
+
+	sigma_p = zeros(Float64, natoms)
+	sigma_q = zeros(Float64, natoms)
+	t1 = 0.0
+	t2 = 0.0
+	t3 = 0.0
+	t4 = 0.0
+	t5 = 0.0
+	t6 = 0.0
+	t7 = 0.0
+	t8 = 0.0
+	t9 = 0.0
+	for i in 1:natoms
+		
+		for j in i+1:natoms
+			if i == j continue end
+			t1 += @elapsed r_ij::Float64 = sqrt((atoms.positions[i, 1] - atoms.positions[j, 1])^2 + (atoms.positions[i, 2] - atoms.positions[j, 2])^2 + (atoms.positions[i, 3] - atoms.positions[j, 3])^2)
+
+			t2 += @elapsed dx::Float64 = r_ij / calc.r0 - 1.0
+			t3 += @elapsed dp::Float64 = calc.A * exp(-calc.p * dx)
+			t4 += @elapsed dq::Float64 = calc.xi2 * exp(-2.0 * calc.q * dx)
+
+			t5 += @elapsed sigma_p[i] += dp
+			t6 += @elapsed sigma_q[i] += dq
+
+			t7 += @elapsed sigma_p[j] += dp
+			t8 += @elapsed sigma_q[j] += dq
+		end
+		t9 += @elapsed atoms.energies[i] = sigma_p[i] - sigma_q[i]^0.5
+	end
+	atoms.energy = sum(atoms.energies)
+	atoms.validEnergies = true
+	println(t1)
+	println(t2)
+	println(t3)
+	println(t4)
+	println(t5)
+	println(t6)
+	println(t7)
+	println(t8)
+	println(t9)
+	return nothing
+
+end
 
 function calculateEnergy!(atoms::Cluster, calc::RGL)
 	natoms = getNAtoms(atoms)
@@ -94,7 +149,7 @@ function calculateEnergy!(atoms::Cluster, calc::RGL)
 		
 		for j in i+1:natoms
 			if i == j continue end
-			r_ij::Float64 = ((atoms.positions[i, 1] - atoms.positions[j, 1])^2 + (atoms.positions[i, 2] - atoms.positions[j, 2])^2 + (atoms.positions[i, 3] - atoms.positions[j, 3])^2)^0.5
+			r_ij::Float64 = sqrt((atoms.positions[i, 1] - atoms.positions[j, 1])^2 + (atoms.positions[i, 2] - atoms.positions[j, 2])^2 + (atoms.positions[i, 3] - atoms.positions[j, 3])^2)
 
 			dx::Float64 = r_ij / calc.r0 - 1.0
 			dp::Float64 = calc.A * exp(-calc.p * dx)
@@ -106,12 +161,11 @@ function calculateEnergy!(atoms::Cluster, calc::RGL)
 			sigma_p[j] += dp
 			sigma_q[j] += dq
 		end
-		atoms.energies[i] = sigma_p[i] - sigma_q[i]^0.5
+		atoms.energies[i] = sigma_p[i] - sqrt(sigma_q[i])
 	end
 	atoms.energy = sum(atoms.energies)
 	atoms.validEnergies = true
 	return nothing
 
 end
-
 

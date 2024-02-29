@@ -96,8 +96,8 @@ function optimize!(opt::FIRE, atoms::Atoms, fmax::Float64)
 		#if n <= 134 print("$(vf > 0) $(!is_uphill) ") end
 		if vf > 0 && !is_uphill# && n > 2
 			#if n <= 134 println("if1") end
-			dotf::Float64 = dot(f, f)^0.5
-			dotv::Float64 = dot(opt.v, opt.v)^0.5
+			dotf::Float64 = sqrt(dot(f, f))
+			dotv::Float64 = sqrt(dot(opt.v, opt.v))
 			for i in 1:length(opt.v)
 				opt.v[i] = (1 - opt.a) * opt.v[i] + opt.a * f[i] / dotf * dotv
 			end
@@ -127,7 +127,7 @@ function optimize!(opt::FIRE, atoms::Atoms, fmax::Float64)
 			opt.dr[i] = opt.dt * opt.v[i]
 		end
 		
-		normdr::Float64 = dot(opt.dr, opt.dr)^0.5
+		normdr::Float64 = sqrt(dot(opt.dr, opt.dr))
 
 		if normdr > opt.maxstep
 			#println("maxstep $n $normdr $(opt.maxstep)")
