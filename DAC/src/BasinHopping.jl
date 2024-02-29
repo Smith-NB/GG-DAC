@@ -14,6 +14,8 @@ struct BasinHopper
 	perturber::Function
 	postOptimisationTasks::Function
 	fmax::Float64
+	fmaxTight::Float64
+	tightEnergyThreshold::Float64
 	rcut::Float64
 	walltime::Float64
 	recordingMode::String
@@ -302,6 +304,10 @@ function hop(bh::BasinHopper, steps::Int64, stepsAtomic::Threads.Atomic{Int64}, 
 			optimize!(bh.optimizer, newCluster, bh.fmax)
 		end
 		calculateEnergy!(newCluster, bh.calculator)
+		if newCluster.energy < bh.tightEnergyThreshold
+			stepLog *= "\nTight minimisation run as sloppy energy < $(bh.tightEnergyThreshold)"
+			optimize!(bh.optimizer, newCluster, bh.fmaxTight)
+		end
 		bh.postOptimisationTasks(newCluster, bh)
 
 		# Check if the cluster is unique, add it to the vector of clusters, and update the CNA log.

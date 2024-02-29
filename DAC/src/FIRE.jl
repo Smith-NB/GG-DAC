@@ -52,12 +52,20 @@ end
 
 function getForces2sum!(opt::FIRE, f::Matrix{Float64}, N::Int64)
 	for i in 1:length(f)
-		opt.f2[i] = f[i]^2
+		opt.f2[i] = f[i]*f[i]
 	end
 	for i in 1:N
 		opt.f2sum[i] = opt.f2[1, i] + opt.f2[2, i] + opt.f2[3, i]
 	end
 
+end
+
+function myDot(a::Matrix{Float64}, b::Matrix{Float64})
+	ab::Float64 = 0.0
+	for i in 1:length(a)
+		ab += a[i] * b[i]
+	end
+	return ab
 end
 
 """
@@ -80,33 +88,28 @@ function optimize!(opt::FIRE, atoms::Atoms, fmax::Float64)
 	opt.a = 0.1
 	getForces2sum!(opt, f, natoms)
 	
-	traj = Vector{Atoms}(undef, 0)
 	fill!(opt.v, 0.0)
 	fill!(opt.dr, 0.0)
 
 	NSteps::Int64 = 0
 	n = 0
-
-	while maximum(opt.f2sum) > fmax^2
+	fmax2::Float64 = fmax * fmax
+	while maximum(opt.f2sum) > fmax2
 		n += 1
 
-		#write_xyz("OPTSTEPALT$nStr.xyz", atoms)
 		is_uphill::Bool = false
-		vf::Float64 = dot(f, opt.v)
-		#if n <= 134 print("$(vf > 0) $(!is_uphill) ") end
+
+		vf::Float64 = myDot(f, opt.v)
 		if vf > 0 && !is_uphill# && n > 2
-			#if n <= 134 println("if1") end
-			dotf::Float64 = sqrt(dot(f, f))
-			dotv::Float64 = sqrt(dot(opt.v, opt.v))
+			dotf::Float64 = sqrt(myDot(f, f))
+			dotv::Float64 = sqrt(myDot(opt.v, opt.v))
 			for i in 1:length(opt.v)
 				opt.v[i] = (1 - opt.a) * opt.v[i] + opt.a * f[i] / dotf * dotv
 			end
 			
 			if NSteps > opt.NMin
-				#println("if2 $NSteps")
 				opt.dt = opt.dt * opt.finc
 				if opt.dtmax < opt.dt
-					#if n <= 134 println("if3") end
 					opt.dt = opt.dtmax
 				end
 				
@@ -114,27 +117,26 @@ function optimize!(opt::FIRE, atoms::Atoms, fmax::Float64)
 			end
 			NSteps += 1
 		else
-			#if n <= 134 println("else1") end
 			opt.v .*= 0.0
 			opt.a = opt.astart
 			opt.dt *= opt.fdec
 			NSteps = 0
 		end
 
-		opt.v .+= opt.dt .* f
+		#opt.v .+= opt.dt .* f
+		for i in 1:length(opt.v)
+			opt.v[i] += opt.dt * f[i]
+		end
 		
 		for i in 1:length(opt.v)
 			opt.dr[i] = opt.dt * opt.v[i]
 		end
 		
-		normdr::Float64 = sqrt(dot(opt.dr, opt.dr))
+		normdr::Float64 = sqrt(myDot(opt.dr, opt.dr))
 
 		if normdr > opt.maxstep
-			#println("maxstep $n $normdr $(opt.maxstep)")
 			for i in 1:length(opt.dr)
-				#if n == 134 print("$(opt.dr[i])->") end
 				opt.dr[i] = opt.dr[i] * opt.maxstep / normdr
-				#if n == 134 print("$(opt.dr[i])\n") end
 			end
 			
 		end
@@ -147,7 +149,6 @@ function optimize!(opt::FIRE, atoms::Atoms, fmax::Float64)
 		f = getForces!(atoms)
 		
 		getForces2sum!(opt, f, natoms)
-
 	end
 	#reset_params!(opt)
 	setDistances!(atoms)
@@ -156,6 +157,7 @@ function optimize!(opt::FIRE, atoms::Atoms, fmax::Float64)
 	atoms.validEnergies = false
 	atoms.validStresses = false
 	atoms.validForces = true
+
 	return n+1
 end
 
