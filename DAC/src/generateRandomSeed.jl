@@ -97,10 +97,6 @@ Returns new postions of a cluster after moving `nAtomsToMove` atoms on the surfa
 """
 function perturbClusterSurface(coords::Matrix{Float64}, nAtomsToMove::Number, rCut::Float64)
 	
-	if coords[75, 1] > 100 || coords[75, 1] < -100 || coords[75, 2] > 100 || coords[75, 2] < -100 || coords[75, 3] > 100 || coords[75, 3] < -100
-		println("COORDALERT1")
-	end
-
 	# get radius to place cluster on to.
 	radius = getInclusionRadiusOfCluster(coords)
 	if radius == Inf || radius == -Inf
