@@ -17,6 +17,7 @@ struct BasinHopper
 	fmaxTight::Float64
 	tightEnergyThreshold::Float64
 	rcut::Float64
+	energyRounding::Int64
 	walltime::Float64
 	recordingMode::String
 	io::Tuple{IO, Channel}
@@ -313,7 +314,7 @@ function hop(bh::BasinHopper, steps::Int64, stepsAtomic::Threads.Atomic{Int64}, 
 		# Check if the cluster is unique, add it to the vector of clusters, and update the CNA log.
 		# clusterID will be negative if is was already in the vector.
 		Threads.lock(bh.clusterVector.lock) do 
-			clusterID = addToVector!(newCluster, bh.clusterVector, 2)
+			clusterID = addToVector!(newCluster, bh.clusterVector, bh.energyRounding)
 		end
 
 
@@ -407,7 +408,7 @@ function hop(bh::BasinHopper, steps::Int64, stepsAtomic::Threads.Atomic{Int64}, 
 			bh.postOptimisationTasks(oldCluster, bh)
 
 			# Check if the cluster is unique, add it to the vector of clusters, and update the CNA log.
-			clusterID = addToVector!(oldCluster, bh.clusterVector, 2)
+			clusterID = addToVector!(oldCluster, bh.clusterVector, bh.energyRounding)
 			if clusterID > 0
 				logCNA(bh.CNAIO, clusterID, getCNA(oldCluster), getEnergy(oldCluster))
 				stepLog *= "\nGenerated new cluster:\n\tID = $clusterID\n\tE = $(getEnergy(oldCluster))"
