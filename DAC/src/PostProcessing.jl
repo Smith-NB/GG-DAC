@@ -35,7 +35,7 @@ function getSimsAndEnergiesAndClasses(clusterVector::ClusterVector, refCNA::CNAP
 		sims[i] = getCNASimilarity(clusterVector.vec[i].CNA, refCNA)
 
 		# get normal CNA, atomic classes then frequency of each atomic class
-		nCNA::normalCNAProfile = getNormalCNAProfile(clusterVector.vec[j].positions, rcut)
+		nCNA::normalCNAProfile = getNormalCNAProfile(clusterVector.vec[i].positions, rcut)
 		atomClasses = getAtomClasses(nCNA, classes)
 		atomClassMatrix[:, i] = getFrequencyClassVector(atomClasses, nClasses, UInt8)
 	end
