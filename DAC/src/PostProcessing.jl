@@ -137,7 +137,7 @@ plotBirdpoo(clusterVector::String, refCNA::String, system::String, filename::Str
 																										filename)
 
 
-function plotBirdpooAndILSDistances(sims::Vector{Float64}, energies::Vector{Float64}, Ri::Vector{Float64}, iterationLabelledAt::Vector{Int64}, system::String, filename::String="")
+function plotBirdpooAndILSDistances(sims::Vector{Float64}, energies::Vector{Float64}, Ri::Vector{Float64}, iterationLabelledAt::Vector{Int64}; system::String, filename::String="")
 
 	display = filename == ""
 
@@ -167,7 +167,7 @@ function plotBirdpooAndILSDistances(sims::Vector{Float64}, energies::Vector{Floa
 end
 
 
-function plotBirdpooAndILSDistances(clusterVector::String, refCNA::String, rcut::Float64, system::String, filename::String="", cutOff::Int64=-1)
+function plotBirdpooAndILSDistances(clusterVector::String, refCNA::String, rcut::Float64, system::String; filename::String="", cutOff::Int64=-1)
 	clusterVector = jldopen(clusterVector)["clusterVector"]
 	refCNA = stringToCNA(getCNA(refCNA))
 	if cutOff != -1
