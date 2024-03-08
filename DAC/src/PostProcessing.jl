@@ -137,7 +137,7 @@ plotBirdpoo(clusterVector::String, refCNA::String, system::String, filename::Str
 																										filename)
 
 
-function plotBirdpooAndILSDistances(sims::Vector{Float64}, energies::Vector{Float64}, Ri::Vector{Float64}, iterationLabelledAt::Vector{Int64}; system::String, filename::String="")
+function plotBirdpooAndILSDistances(sims::Vector{Float64}, energies::Vector{Float64}, Ri::Vector{Float64}, iterationLabelledAt::Vector{Int64}, system::String, filename::String="")
 
 	display = filename == ""
 
