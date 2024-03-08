@@ -137,7 +137,7 @@ plotBirdpoo(clusterVector::String, refCNA::String, system::String, filename::Str
 																										filename)
 
 
-function plotBirdpooAndILSDistances(sims::Vector{Float64}, energies::Vector{Float64}, Ri::Vector{Float64}, iterationLabelledAt::Vector{Int64}, system::String, filename::String="")
+function plotBirdpooAndILSDistances(sims::Vector{Float64}, energies::Vector{Float64}, Ri::Vector{Float64}, iterationLabelledAt::Vector{Int64}, system::String; filename::String="", cmap::String="jet")
 
 	display = filename == ""
 
@@ -145,11 +145,11 @@ function plotBirdpooAndILSDistances(sims::Vector{Float64}, energies::Vector{Floa
 
 	x = [i for i in 1:length(Ri)]
 	N = length(Ri)
-	axs[1].scatter(x, Ri, c=x)
+	axs[1].scatter(x, Ri, c=x, cmap=cmap)
 	axs[1].plot(x, Ri, c="k")
 
 	insert!(iterationLabelledAt, 1, 0)
-	axs[2].scatter(sims, energies, c=iterationLabelledAt, s=1)
+	axs[2].scatter(sims, energies, c=iterationLabelledAt, s=1, cmap=cmap)
 
 	axs[2].set_xlim([0, 1])
 
@@ -167,7 +167,7 @@ function plotBirdpooAndILSDistances(sims::Vector{Float64}, energies::Vector{Floa
 end
 
 
-function plotBirdpooAndILSDistances(clusterVector::String, refCNA::String, rcut::Float64, system::String; filename::String="", cutOff::Int64=-1)
+function plotBirdpooAndILSDistances(clusterVector::String, refCNA::String, rcut::Float64, system::String; filename::String="", cmap::String="jet", cutOff::Int64=-1)
 	clusterVector = jldopen(clusterVector)["clusterVector"]
 	refCNA = stringToCNA(getCNA(refCNA))
 	if cutOff != -1
