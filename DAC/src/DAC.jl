@@ -5,6 +5,7 @@ using GaussianMixtures
 using MultivariateStats
 using Random
 using PyCall
+using PyPlot
 using HDF5
 using JLD2
 using Dates
@@ -26,4 +27,5 @@ include("BasinHopping.jl")
 include("MyLib.jl")
 include("ILS.jl")
 include("InvertedILS.jl")
+include("PostProcessing.jl")
 end # module DAC
