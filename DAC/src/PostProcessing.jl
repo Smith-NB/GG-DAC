@@ -166,9 +166,12 @@ function plotBirdpooAndILSDistances(sims::Vector{Float64}, energies::Vector{Floa
 end
 
 
-function plotBirdpooAndILSDistances(clusterVector::String, refCNA::String, rcut::Float64, system::String, filename::String="")
+function plotBirdpooAndILSDistances(clusterVector::String, refCNA::String, rcut::Float64, system::String, filename::String="", cutOff::Int64=-1)
 	clusterVector = jldopen(clusterVector)["clusterVector"]
 	refCNA = stringToCNA(getCNA(refCNA))
+	if cutOff != -1
+		clusterVector.vec = clusterVector.vec[1:cutOff]
+	end
 
 	
 	sims, energies, classMatrix = getSimsAndEnergiesAndClassMatrix(clusterVector, refCNA, rcut)
