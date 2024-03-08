@@ -55,6 +55,33 @@ function getSimsAndEnergiesAndClasses(clusterVector::ClusterVector, refCNA::CNAP
 
 end
 
+function getSimsAndEnergiesAndClassMatrix(clusterVector::ClusterVector, refCNA::CNAProfile, rcut::Float64)
+	nSamples::Int64 = clusterVector.N[]
+	energies = Vector{Float64}(undef, nSamples)
+	sims = Vector{Float64}(undef, nSamples)
+
+	# class definitions
+	classes = getClasses()
+	nClasses::Int64 = length(classes)
+
+	# class of each structure in clusterVector
+	structureClasses = Vector{Int64}(undef, nSamples)
+	# atomic classes
+	atomClassMatrix = Matrix{UInt8}(undef, nClasses, nSamples)
+
+	for i in 1:nSamples
+		#get energy and sim
+		energies[i] = clusterVector.vec[i].energy
+		sims[i] = getCNASimilarity(clusterVector.vec[i].CNA, refCNA)
+
+		# get normal CNA, atomic classes then frequency of each atomic class
+		nCNA::normalCNAProfile = getNormalCNAProfile(clusterVector.vec[i].positions, rcut)
+		atomClasses = getAtomClasses(nCNA, classes)
+		atomClassMatrix[:, i] = getFrequencyClassVector(atomClasses, nClasses, UInt8)
+	end
+
+	return sims, energies, atomClassMatrix
+end
 
 function plotBirdpoo(sims::Vector{Float64}, energies::Vector{Float64}, system::String, c::Union{Vector{Int64}, Nothing}=nothing, filename::String="")
 	
@@ -108,3 +135,47 @@ plotBirdpoo(clusterVector::String, refCNA::String, system::String, filename::Str
 																										stringToCNA(getCNA(refCNA)), 
 																										system, 
 																										filename)
+
+
+function plotBirdpooAndILSDistances(sims::Vector{Float64}, energies::Vector{Float64}, Ri::Vector{Float64}, iterationLabelledAt::Vector{Int64}, system::String, filename::String="")
+
+	display = filename == ""
+
+	fig, axs = subplots(1, 2)
+
+	axs[1].scatter(sims, energies, c=iterationLabelledAt, s=1)
+
+	axs[1].set_xlim([0, 1])
+
+	if system == "Au55"
+		axs[1].set_ylim([-195.4, -192.0])
+	elseif system == "LJ75"
+		axs[1].set_ylim([-397.5, -360.0])
+	end
+
+	x = [i for i in 1:length(Ri)]
+	N = length(Ri)
+	axs[2].scatter(x, Ri, c=iterationLabelledAt)
+	axs[2].plot(x, Ri, c="k")
+
+	if display
+		show()
+	else
+		savefig(filename, dpi=250)
+	end
+end
+
+
+function plotBirdpooAndILSDistances(clusterVector::String, refCNA::String, rcut::Float64, system::String, filename::String="")
+	clusterVector = jldopen(clusterVector)["clusterVector"]
+	refCNA = stringToCNA(getCNA(refCNA))
+
+	N = length(sims)
+	sims, energies, classMatrix = getSimsAndEnergiesAndClassMatrix(clusterVector, refCNA, rcut)
+	labels = zeros(Int64, N)
+	labels[1] = 1
+	Ri, iterationLabelledAt = ILS(classMatrix, labels, true)
+
+	return plotBirdpooAndILSDistances(sims, energies, Ri, iterationLabelledAt, system, filename)
+end
+
