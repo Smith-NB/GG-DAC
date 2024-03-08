@@ -16,20 +16,20 @@ end
 
 function getSimsAndEnergiesAndClasses(clusterVector::ClusterVector, refCNA::CNAProfile, gmm::GMM, pca::PCA, rcut::Float64)
 
-	N::Int64 = clusterVector.N[]
-	energies = Vector{Float64}(undef, N)
-	sims = Vector{Float64}(undef, N)
+	nSamples::Int64 = clusterVector.N[]
+	energies = Vector{Float64}(undef, nSamples)
+	sims = Vector{Float64}(undef, nSamples)
 
 	# class definitions
 	classes = getClasses()
 	nClasses::Int64 = length(classes)
 
 	# class of each structure in clusterVector
-	structureClasses = Vector{Int64}(undef, N)
+	structureClasses = Vector{Int64}(undef, nSamples)
 	# atomic classes
 	atomClassMatrix = Matrix{UInt8}(undef, nClasses, nSamples)
 
-	for i in 1:N
+	for i in 1:nSamples
 		#get energy and sim
 		energies[i] = clusterVector.vec[i].energy
 		sims[i] = getCNASimilarity(clusterVector.vec[i].CNA, refCNA)
@@ -47,7 +47,7 @@ function getSimsAndEnergiesAndClasses(clusterVector::ClusterVector, refCNA::CNAP
 	# get the division index of each structure
 	posteriorprobs = gmmposterior(gmm, X)[1]
 	divisions = findmax(posteriorprobs, dims=2)[2]
-	for i in 1:N
+	for i in 1:nSamples
 		structureClasses[i] = divisions[i][2]
 	end
 
