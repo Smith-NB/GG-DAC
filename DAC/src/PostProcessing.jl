@@ -143,20 +143,21 @@ function plotBirdpooAndILSDistances(sims::Vector{Float64}, energies::Vector{Floa
 
 	fig, axs = subplots(1, 2)
 
-	axs[1].scatter(sims, energies, c=iterationLabelledAt, s=1)
-
-	axs[1].set_xlim([0, 1])
-
-	if system == "Au55"
-		axs[1].set_ylim([-195.4, -192.0])
-	elseif system == "LJ75"
-		axs[1].set_ylim([-397.5, -360.0])
-	end
-
 	x = [i for i in 1:length(Ri)]
 	N = length(Ri)
-	axs[2].scatter(x, Ri, c=iterationLabelledAt)
-	axs[2].plot(x, Ri, c="k")
+	axs[1].scatter(x, Ri, c=iterationLabelledAt)
+	axs[1].plot(x, Ri, c="k")
+
+	insert!(iterationLabelledAt, 1, 0)
+	axs[2].scatter(sims, energies, c=iterationLabelledAt, s=1)
+
+	axs[2].set_xlim([0, 1])
+
+	if system == "Au55"
+		axs[2].set_ylim([-195.4, -192.0])
+	elseif system == "LJ75"
+		axs[2].set_ylim([-397.5, -360.0])
+	end
 
 	if display
 		show()
