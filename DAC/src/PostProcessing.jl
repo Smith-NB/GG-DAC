@@ -79,9 +79,11 @@ function plotBirdpoo(sims::Vector{Float64}, energies::Vector{Float64}, system::S
 end
 
 
-plotBirdpoo(clusterVector::ClusterVector, refCNA::CNAProfile, gmm::GMM, pca::PCA, 
-											rcut::Float64, system::String, filename::String="") = plotBirdpoo(getSimsAndEnergiesAndClasses(clusterVector, refCNA, gmm, pca, rcut)...,
-																												system, filename)
+function plotBirdpoo(clusterVector::ClusterVector, refCNA::CNAProfile, gmm::GMM, pca::PCA, rcut::Float64, system::String, filename::String="")  
+	sims, energies, structureClasses = getSimsAndEnergiesAndClasses(clusterVector, refCNA, gmm, pca, rcut)
+	return plotBirdpoo(sims, energies, system, structureClasses, filename)
+end
+
 
 plotBirdpoo(clusterVector::String, refCNA::String, gmm::String, pca::String,
 											rcut::Float64, system::String, filename::String="") = plotBirdpoo(jldopen(clusterVector)["clusterVector"],
