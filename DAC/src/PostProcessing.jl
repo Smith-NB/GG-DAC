@@ -145,7 +145,7 @@ function plotBirdpooAndILSDistances(sims::Vector{Float64}, energies::Vector{Floa
 
 	x = [i for i in 1:length(Ri)]
 	N = length(Ri)
-	axs[1].scatter(x, Ri, c=iterationLabelledAt)
+	axs[1].scatter(x, Ri, c=x)
 	axs[1].plot(x, Ri, c="k")
 
 	insert!(iterationLabelledAt, 1, 0)
