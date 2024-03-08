@@ -128,7 +128,7 @@ function getMinFromClosestUnl!(D::Matrix{Float64}, closestUnl::Vector{Int64}, cl
    return min, (unlIndex, labIndex), nToUpdate
 end
 
-function ILS(data::Matrix{Float64}, labels::Vector{Int64}, iterative::Bool)
+function ILS(data::Union{Matrix{Float64}, Matrix{UInt8}}, labels::Vector{Int64}, iterative::Bool)
     
     # seperate labelled and unlabelled points
     nDims, nSamples = size(data)
