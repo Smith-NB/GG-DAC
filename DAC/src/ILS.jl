@@ -128,7 +128,7 @@ function getMinFromClosestUnl!(D::Matrix{Float64}, closestUnl::Vector{Int64}, cl
    return min, (unlIndex, labIndex), nToUpdate
 end
 
-function ILS(data::Union{Matrix{Float64}, Matrix{UInt8}}, labels::Vector{Int64}, iterative::Bool)
+function ILS(data::Matrix{Float64}, labels::Vector{Int64}, iterative::Bool)
     
     # seperate labelled and unlabelled points
     nDims, nSamples = size(data)
@@ -195,3 +195,95 @@ function ILS(data::Union{Matrix{Float64}, Matrix{UInt8}}, labels::Vector{Int64},
     return Ri, iterationLabelledAt
 end
 
+function getDistances!(data::Matrix{UInt8}, D::Matrix{Float64}, nLab::Int64, unlPerm::Vector{Int64}, X::Int64, Y::Vector{Int64}, closestUnl::Vector{Int64}, closestDist::Vector{Float64},  nDims::Int64)
+    min::Float64, minIndex::Int64 = Inf, 0
+    #min = fill(Inf, Threads.nthreads())
+    #minIndex = fill(0, Threads.nthreads())
+    #println("foroop")
+    for j in 1:length(Y)
+        r::Float64 = 0.0
+        #tID = Threads.threadid()
+        for k in 1:nDims
+            r += (data[k, X] - data[k, Y[j]])^2
+        end
+        if r < min
+            min = r
+            minIndex = j
+            #min[tID] = D[unlPerm[j], nLab]
+            #minIndex[tID] = j
+        end
+        D[unlPerm[j], nLab] = r
+    end
+    
+    closestUnl[nLab] = minIndex
+    closestDist[nLab] = min
+    
+    return D
+end
+
+function ILS(data::Matrix{UInt8}, labels::Vector{Int64}, iterative::Bool)
+    
+    # seperate labelled and unlabelled points
+    nDims, nSamples = size(data)
+    
+    labelled = findall(i->i!=0, labels)             # indices of all labelled points in data
+    unlabelled = findall(i->i==0, labels)           # indices of all unlabelled points in data
+    unlPerm = [i for i in 1:length(unlabelled)]     # Gives the row index in D for the corresponding unlabelled point in `unlabelled`.
+    
+    Ri = Vector{Float64}(undef, length(unlabelled))             # The distances between the closest labelled and unlabelled points at each interation
+    iterationLabelledAt = Vector{Int64}(undef, length(unlabelled))   # The order points were labelled in. iterationLabelledAt[1] gives the interation the first unlabelled point was labelled at.
+    
+    i = 1
+    D = Matrix{Float64}(undef, nSamples-1, nSamples-1)          # Distance matrix working space
+    #D = zeros(nSamples-1, nSamples-1)
+    closestUnl = Vector{Int64}(undef, nSamples-1)               # Gives the closest unlabelled point to each labelled point. closestUnl[1] is the closest unlabelled point to labelled[1]
+    closestDist = Vector{Float64}(undef, nSamples-1)            # Values for distances of above.
+
+    toUpdate = Vector{Int64}(undef, nSamples-1)
+
+    nCols = size(data)[2]-1
+    nLab = length(labelled)
+    nUnl = length(unlabelled)
+
+    while length(unlabelled) > 0
+        
+        # get distances between each labelled point to each unlabelled point
+        
+        getDistances!(data, D, nLab, unlPerm, labelled[nLab], unlabelled, closestUnl, closestDist, nDims)        
+        Ri[i], index, nToUpdate = getMinFromClosestUnl!(D, closestUnl, closestDist, unlPerm, toUpdate, nLab)
+        
+        for j in 1:nLab
+            D[index[1], j] = Inf
+        end
+        
+        labels[unlabelled[index[1]]] = labelled[index[2]]
+        iterationLabelledAt[unlabelled[index[1]]-1] = i
+        
+        push!(labelled, popat!(unlabelled, index[1]))       # add newly labelled point to list, and remove from unlabelled
+        popat!(unlPerm, index[1])                           # remove the pointer to D of the unlabelled datapoint
+        
+        # toUpdate gives all indices in closestUnl/closestDist that need updating
+        
+        if length(unlabelled) != 0
+            for j in 1:nToUpdate
+                v::SubArray{Float64, 1, Matrix{Float64}, Tuple{Vector{Int64}, Int64}, false} = Base.view(D, unlPerm, toUpdate[j])
+                dist = Inf
+                loc = 0
+                for k in 1:length(v)
+                    if v[k] < dist
+                        dist = v[k]
+                        loc = k
+                    end
+                end
+                
+                closestDist[toUpdate[j]] = dist
+                closestUnl[toUpdate[j]] = loc
+            end
+        end
+        
+        i += 1
+        nLab += 1
+        nUnl -= 1
+    end
+    return Ri, iterationLabelledAt
+end
