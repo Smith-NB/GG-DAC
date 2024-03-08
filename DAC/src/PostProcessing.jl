@@ -56,7 +56,7 @@ function getSimsAndEnergiesAndClasses(clusterVector::ClusterVector, refCNA::CNAP
 end
 
 
-function plotBirdpoo(sims::Vector{Float64}, energies::Vector{Float64}, c::Union{Vector{Int64}, Nothing}=nothing, system::String, filename::String="")
+function plotBirdpoo(sims::Vector{Float64}, energies::Vector{Float64}, system::String, c::Union{Vector{Int64}, Nothing}=nothing, filename::String="")
 	
 	display = filename == ""
 
@@ -93,8 +93,7 @@ plotBirdpoo(clusterVector::String, refCNA::String, gmm::String, pca::String,
 																												filename)
 
 
-plotBirdpoo(clusterVector::ClusterVector, refCNA::CNAProfile, system::String, filename::String="") = plotBirdpoo(getSimsAndEnergies(clusterVector, refCNA)..., 
-																													nothing, 
+plotBirdpoo(clusterVector::ClusterVector, refCNA::CNAProfile, system::String, filename::String="") = plotBirdpoo(getSimsAndEnergies(clusterVector, refCNA)...,  
 																													system, 
 																													filename)
 
