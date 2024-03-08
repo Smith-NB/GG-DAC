@@ -21,7 +21,7 @@ function getSimsAndEnergiesAndClasses(clusterVector::ClusterVector, refCNA::CNAP
 	sims = Vector{Float64}(undef, N)
 
 	# class definitions
-	classes = DC.getClasses()
+	classes = getClasses()
 	nClasses::Int64 = length(classes)
 
 	# class of each structure in clusterVector
@@ -36,13 +36,13 @@ function getSimsAndEnergiesAndClasses(clusterVector::ClusterVector, refCNA::CNAP
 
 		# get normal CNA, atomic classes then frequency of each atomic class
 		nCNA::normalCNAProfile = getNormalCNAProfile(clusterVector.vec[j].positions, rcut)
-		atomClasses = DC.getAtomClasses(nCNA, classes)
+		atomClasses = getAtomClasses(nCNA, classes)
 		atomClassMatrix[:, i] = getFrequencyClassVector(atomClasses, nClasses, UInt8)
 	end
 
 	# convert atom class frequency to PC values
 	X = Matrix{Float64}(undef, nSamples, size(pca)[2])
-	X[:, :] = DC.predict(pca, atomClassMatrix)'[:, :]
+	X[:, :] = predict(pca, atomClassMatrix)'[:, :]
 
 	# get the division index of each structure
 	posteriorprobs = gmmposterior(gmm, X)[1]
