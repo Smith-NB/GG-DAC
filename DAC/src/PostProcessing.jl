@@ -182,6 +182,6 @@ function plotBirdpooAndILSDistances(clusterVector::String, refCNA::String, rcut:
 	labels[1] = 1
 	Ri, iterationLabelledAt = ILS(classMatrix, labels, true)
 
-	return plotBirdpooAndILSDistances(sims, energies, Ri, iterationLabelledAt, system, filename)
+	return plotBirdpooAndILSDistances(sims, energies, Ri, iterationLabelledAt, system, filename=filename)
 end
 
