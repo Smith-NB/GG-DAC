@@ -172,6 +172,7 @@ function plotBirdpooAndILSDistances(clusterVector::String, refCNA::String, rcut:
 	refCNA = stringToCNA(getCNA(refCNA))
 	if cutOff != -1
 		clusterVector.vec = clusterVector.vec[1:cutOff]
+		clusterVector.N = Threads.Atomic{Int64}(cutOff)
 	end
 
 	
