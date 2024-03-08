@@ -170,8 +170,9 @@ function plotBirdpooAndILSDistances(clusterVector::String, refCNA::String, rcut:
 	clusterVector = jldopen(clusterVector)["clusterVector"]
 	refCNA = stringToCNA(getCNA(refCNA))
 
-	N = length(sims)
+	
 	sims, energies, classMatrix = getSimsAndEnergiesAndClassMatrix(clusterVector, refCNA, rcut)
+	N = length(sims)
 	labels = zeros(Int64, N)
 	labels[1] = 1
 	Ri, iterationLabelledAt = ILS(classMatrix, labels, true)
