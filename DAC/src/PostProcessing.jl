@@ -67,7 +67,7 @@ function getSimsAndEnergiesAndClassMatrix(clusterVector::ClusterVector, refCNA::
 	# class of each structure in clusterVector
 	structureClasses = Vector{Int64}(undef, nSamples)
 	# atomic classes
-	atomClassMatrix = Matrix{Float64}(undef, nClasses, nSamples)
+	atomClassMatrix = Matrix{UInt8}(undef, nClasses, nSamples)
 
 	for i in 1:nSamples
 		#get energy and sim
