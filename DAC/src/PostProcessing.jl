@@ -356,6 +356,8 @@ plotBirdpooAndPCA(clusterVector::String, refCNA::String, pca::String, rcut::Floa
 																														stringToCNA(getCNA(refCNA)),
 																														jldopen(pca)["pca"],
 																														rcut,
+																														plotGridSpecs,
+																														plotAxes
 																														system,
 																														cmap=cmap,
 																														gmm=gmm,
