@@ -360,6 +360,6 @@ plotBirdpooAndPCA(clusterVector::String, refCNA::String, pca::String, rcut::Floa
 																														plotAxes,
 																														system,
 																														cmap=cmap,
-																														gmm=gmm,
+																														gmm=gmm==nothing ? nothing : jldopen(gmm)["gmm"],
 																														filename=filename)
 
