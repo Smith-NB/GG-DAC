@@ -245,7 +245,7 @@ function plotBirdpooAndILSDistances(clusterVector::ClusterVector, refCNA::CNAPro
 	end
 
 	
-	sims, energies getSimsAndEnergies(clusterVector, refCNA)
+	sims, energies = getSimsAndEnergies(clusterVector, refCNA)
 	classMatrix = getClassMatrix(clusterVector, rcut)
 	N = length(sims)
 	labels = zeros(Int64, N)
