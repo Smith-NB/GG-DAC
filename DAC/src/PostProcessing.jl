@@ -336,7 +336,7 @@ function plotBirdpooAndPCA(sims::Vector{Float64}, energies::Vector{Float64}, pcA
 end
 
 function plotBirdpooAndPCA(clusterVector::ClusterVector, refCNA::CNAProfile, pca::PCA, rcut::Float64,
-							plotGridSpecs::Tuple{Int64, Int64}, plotAxes::Vector{Pair{Any, Any}}, system::String; 
+							plotGridSpecs::Tuple{Int64, Int64}, plotAxes::Vector{Tuple{Any, Any}}, system::String; 
 							gmm::Union{GMM, Nothing}=nothing, cmap::String="tab20", filename::String="")
 	
 	sims, energies = getSimsAndEnergies(clusterVector, refCNA)
@@ -350,7 +350,8 @@ function plotBirdpooAndPCA(clusterVector::ClusterVector, refCNA::CNAProfile, pca
 	return nothing
 end
 
-plotBirdpooAndPCA(clusterVector::String, refCNA::String, pca::String, rcut::Float64, system::String; 
+plotBirdpooAndPCA(clusterVector::String, refCNA::String, pca::String, rcut::Float64, 
+					plotGridSpecs::Tuple{Int64, Int64}, plotAxes::Vector{Tuple{Any, Any}}, system::String; 
 					cmap::String="tab20", gmm::Union{String, Nothing}=nothing, filename::String="") = plotBirdpooAndPCA(jldopen(clusterVector)["clusterVector"],
 																														stringToCNA(getCNA(refCNA)),
 																														jldopen(pca)["pca"],
