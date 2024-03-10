@@ -303,22 +303,28 @@ function plotBirdpooAndPCA(sims::Vector{Float64}, energies::Vector{Float64}, pcA
 
 		if typeof(plotAxes[i][1]) == Int64
 			x = pcAxes[:, plotAxes[i][1]]
+			axs[i].set_xlabel("PC$(plotAxes[i][1])")
 		elseif plotAxes[i][1] == "e"
 			x = energies
 			axs[i].set_xlim(getAxesLims(system))
+			axs[i].set_xlabel("Energy")
 		elseif plotAxes[i][1] == "s"
 			x = sims
 			axs[i].set_xlim([0, 1])
+			axs[i].set_xlabel("Similarity")
 		end
 
 		if typeof(plotAxes[i][2]) == Int64
 			y = pcAxes[:, plotAxes[i][2]]
+			axs[i].set_ylabel("PC$(plotAxes[i][1])")
 		elseif plotAxes[i][2] == "e"
 			y = energies
 			axs[i].set_ylim(getAxesLims(system))
+			axs[i].set_ylabel("Energy")
 		elseif plotAxes[i][2] == "s"
 			y = sims
 			axs[i].set_ylim([0, 1])
+			axs[i].set_ylabel("Similarity")
 		end
 
 		axs[i].scatter(x, y, s=1, c=c)
