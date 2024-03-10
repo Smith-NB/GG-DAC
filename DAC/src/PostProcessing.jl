@@ -303,7 +303,7 @@ function plotBirdpooAndPCA(sims::Vector{Float64}, energies::Vector{Float64}, pcA
 
 		if typeof(plotAxes[i][1]) == Int64
 			x = pcAxes[:, plotAxes[i][1]]
-			axs[i].set_xlabel("PC$(plotAxes[i][2])")
+			axs[i].set_xlabel("PC$(plotAxes[i][1])")
 		elseif plotAxes[i][1] == "e"
 			x = energies
 			axs[i].set_xlim(getAxesLims(system))
