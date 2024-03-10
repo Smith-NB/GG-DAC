@@ -343,7 +343,12 @@ end
 
 function plotBirdpooAndPCA(clusterVector::ClusterVector, refCNA::CNAProfile, pca::PCA, rcut::Float64,
 							plotGridSpecs::Tuple{Int64, Int64}, plotAxes::Vector{Tuple{Any, Any}}, system::String; 
-							gmm::Union{GMM, Nothing}=nothing, cmap::String="tab20", filename::String="")
+							gmm::Union{GMM, Nothing}=nothing, cmap::String="tab20", cutOff::Int64=-1, filename::String="")
+	
+	if cutOff != -1
+		clusterVector.vec = clusterVector.vec[1:cutOff]
+		clusterVector.N = Threads.Atomic{Int64}(cutOff)
+	end
 	
 	sims, energies = getSimsAndEnergies(clusterVector, refCNA)
 	pcAxes = getPCAxes(clusterVector, pca, rcut)
@@ -358,7 +363,7 @@ end
 
 plotBirdpooAndPCA(clusterVector::String, refCNA::String, pca::String, rcut::Float64, 
 					plotGridSpecs::Tuple{Int64, Int64}, plotAxes::Vector{Tuple{Any, Any}}, system::String; 
-					cmap::String="tab20", gmm::Union{String, Nothing}=nothing, filename::String="") = plotBirdpooAndPCA(jldopen(clusterVector)["clusterVector"],
+					cmap::String="tab20", gmm::Union{String, Nothing}=nothing, cutOff::Int64=-1, filename::String="") = plotBirdpooAndPCA(jldopen(clusterVector)["clusterVector"],
 																														stringToCNA(getCNA(refCNA)),
 																														jldopen(pca)["pca"],
 																														rcut,
@@ -366,6 +371,7 @@ plotBirdpooAndPCA(clusterVector::String, refCNA::String, pca::String, rcut::Floa
 																														plotAxes,
 																														system,
 																														cmap=cmap,
+																														cutOff=cutOff,
 																														gmm=gmm==nothing ? nothing : jldopen(gmm)["gmm"],
 																														filename=filename)
 
