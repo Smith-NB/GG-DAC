@@ -189,26 +189,30 @@ plotBirdpoo(clusterVector::String, refCNA::String, gmm::String, pca::String, rcu
 																						jldopen(pca)["pca"],
 																						rcut,
 																						system,
-																						filename)
+																						axs=axs,
+																						filename=filename)
 
 
 plotBirdpoo(clusterVector::ClusterVector, refCNA::CNAProfile, system::String; 
 			axs::Union{PyObject, Nothing}=nothing, filename::String="") = plotBirdpoo(getSimsAndEnergies(clusterVector, refCNA)...,  
 																						system, 
 																						nothing,
-																						filename)
+																						axs=axs,
+																						filename=filename)
 
 plotBirdpoo(clusterVector::String, refCNA::CNAProfile, system::String; 
 			axs::Union{PyObject, Nothing}=nothing, filename::String="") = plotBirdpoo(jldopen(clusterVector)["clusterVector"], 
 																						refCNA, 
 																						system, 
-																						filename)
+																						axs=axs,
+																						filename=filename)
 
 plotBirdpoo(clusterVector::String, refCNA::String, system::String; 
 			axs::Union{PyObject, Nothing}=nothing, filename::String="") = plotBirdpoo(jldopen(clusterVector)["clusterVector"], 
 																						stringToCNA(getCNA(refCNA)), 
 																						system, 
-																						filename)
+																						axs=axs,
+																						filename=filename)
 
 
 
