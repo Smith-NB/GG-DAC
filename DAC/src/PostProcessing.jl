@@ -118,6 +118,15 @@ end
 ####################################################
 ####################################################
 
+function plotBirdpoo(sims::Vector{Float64}, energies::Vector{Float64}, system::String, axs::PyObject, c::Union{Vector{Int64}, Nothing}=nothing)
+
+	axs.scatter(sims, energies, c=c, s=1)
+	axs.set_xlim([0, 1])
+	axs.set_ylim(getAxesLims(system))
+
+	return nothing
+end
+
 """
 	plotBirdpoo(sims::Vector{Float64}, energies::Vector{Float64}, system::String, c::Union{Vector{Int64}, Nothing}=nothing, filename::String="")
 
