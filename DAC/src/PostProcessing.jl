@@ -181,7 +181,7 @@ plotBirdpoo(clusterVector::String, refCNA::String, gmm::String, pca::String,
 
 plotBirdpoo(clusterVector::ClusterVector, refCNA::CNAProfile, system::String, filename::String="") = plotBirdpoo(getSimsAndEnergies(clusterVector, refCNA)...,  
 																													system, 
-																													nothing
+																													nothing,
 																													filename)
 
 plotBirdpoo(clusterVector::String, refCNA::CNAProfile, system::String, filename::String="") = plotBirdpoo(jldopen(clusterVector)["clusterVector"], 
