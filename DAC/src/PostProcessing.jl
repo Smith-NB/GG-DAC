@@ -118,7 +118,7 @@ end
 ####################################################
 ####################################################
 
-function plotBirdpoo(sims::Vector{Float64}, energies::Vector{Float64}, system::String, axs::PyObject; c::Union{Vector{Int64}, Nothing}=nothing)
+function plotBirdpoo(sims::Vector{Float64}, energies::Vector{Float64}, system::String; axs::PyObject, c::Union{Vector{Int64}, Nothing}=nothing)
 
 	axs.scatter(sims, energies, c=c, s=1)
 	axs.set_xlim([0, 1])
@@ -193,12 +193,16 @@ plotBirdpoo(clusterVector::String, refCNA::String, gmm::String, pca::String, rcu
 																						filename=filename)
 
 
-plotBirdpoo(clusterVector::ClusterVector, refCNA::CNAProfile, system::String; 
-			axs::Union{PyObject, Nothing}=nothing, filename::String="") = plotBirdpoo(getSimsAndEnergies(clusterVector, refCNA)...,  
-																						system, 
-																						nothing,
-																						axs=axs,
-																						filename=filename)
+function plotBirdpoo(clusterVector::ClusterVector, refCNA::CNAProfile, system::String; 
+			axs::Union{PyObject, Nothing}=nothing, filename::String="") 
+
+	if axs != nothing
+		plotBirdpoo(getSimsAndEnergies(clusterVector, refCNA)..., system, nothing, axs=axs)
+	else
+		plotBirdpoo(getSimsAndEnergies(clusterVector, refCNA)..., system, nothing, filename=filename)
+	end
+
+end
 
 plotBirdpoo(clusterVector::String, refCNA::CNAProfile, system::String; 
 			axs::Union{PyObject, Nothing}=nothing, filename::String="") = plotBirdpoo(jldopen(clusterVector)["clusterVector"], 
