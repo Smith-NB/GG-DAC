@@ -118,7 +118,7 @@ end
 ####################################################
 ####################################################
 
-function plotBirdpoo(sims::Vector{Float64}, energies::Vector{Float64}, system::String, axs::PyObject, c::Union{Vector{Int64}, Nothing}=nothing)
+function plotBirdpoo(sims::Vector{Float64}, energies::Vector{Float64}, system::String, axs::PyObject; c::Union{Vector{Int64}, Nothing}=nothing)
 
 	axs.scatter(sims, energies, c=c, s=1)
 	axs.set_xlim([0, 1])
@@ -134,7 +134,7 @@ Takes a Vector of sims and energies and plots a birdpoo plot. system required to
 colours can be fed, e.g. from structure classes from GMM. 
 if filename is provided, saves the figure, otherwise figure is displated with `show()`.
 """
-function plotBirdpoo(sims::Vector{Float64}, energies::Vector{Float64}, system::String, c::Union{Vector{Int64}, Nothing}=nothing, filename::String="")
+function plotBirdpoo(sims::Vector{Float64}, energies::Vector{Float64}, system::String; c::Union{Vector{Int64}, Nothing}=nothing, filename::String="")
 	
 	display = filename == ""
 
@@ -160,12 +160,16 @@ Wrapper function for plotting a birdpoo plot. Takes a clusterVector, and refCNA 
 gmm and pca models, alongside rcut, to recalculate normal cna profiles to determine structure classes from gmm model.
 passes these values along side system and filename to the actual plotting function.
 """
-function plotBirdpoo(clusterVector::ClusterVector, refCNA::CNAProfile, gmm::GMM, pca::PCA, rcut::Float64, system::String, filename::String="")  
+function plotBirdpoo(clusterVector::ClusterVector, refCNA::CNAProfile, gmm::GMM, pca::PCA, rcut::Float64, system::String; axs::Union{PyObject, Nothing}=nothing, filename::String="")  
 
 	sims, energies = getSimsAndEnergies(clusterVector, refCNA)
 	structureClasses = getStructureClasses(clusterVector, gmm, pca, rcut)
 
-	plotBirdpoo(sims, energies, system, structureClasses, filename)
+	if axs == nothing
+		plotBirdpoo(sims, energies, system, c=structureClasses, filename=filename)
+	else
+		plotBirdpoo(sims, energies, system, axs, c=structureClasses)
+	end
 
 	return nothing
 end
