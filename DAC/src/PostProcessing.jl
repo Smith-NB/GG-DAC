@@ -197,7 +197,7 @@ function plotBirdpoo(clusterVector::ClusterVector, refCNA::CNAProfile, system::S
 			axs::Union{PyObject, Nothing}=nothing, filename::String="") 
 
 	if axs != nothing
-		plotBirdpoo(getSimsAndEnergies(clusterVector, refCNA)..., system, nothing, axs=axs)
+		plotBirdpoo(getSimsAndEnergies(clusterVector, refCNA)..., system, axs=axs, c=nothing)
 	else
 		plotBirdpoo(getSimsAndEnergies(clusterVector, refCNA)..., system, nothing, filename=filename)
 	end
