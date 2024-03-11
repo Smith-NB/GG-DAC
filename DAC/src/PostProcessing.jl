@@ -182,30 +182,33 @@ Wrapper function for plotting birdpoo plot. Takes filenames for clusterVector, s
 filenames of gmm and pca models (all files names point to .jld2 file), opens the files and passes to 
 middleman processing function to get plotting data.
 """
-plotBirdpoo(clusterVector::String, refCNA::String, gmm::String, pca::String,
-			rcut::Float64, system::String, filename::String="") = plotBirdpoo(jldopen(clusterVector)["clusterVector"],
-																				stringToCNA(getCNA(refCNA)),
-																				jldopen(gmm)["gmm"],
-																				jldopen(pca)["pca"],
-																				rcut,
-																				system,
-																				filename)
+plotBirdpoo(clusterVector::String, refCNA::String, gmm::String, pca::String, rcut::Float64, system::String; 
+			axs::Union{PyObject, Nothing}=nothing, filename::String="") = plotBirdpoo(jldopen(clusterVector)["clusterVector"],
+																						stringToCNA(getCNA(refCNA)),
+																						jldopen(gmm)["gmm"],
+																						jldopen(pca)["pca"],
+																						rcut,
+																						system,
+																						filename)
 
 
-plotBirdpoo(clusterVector::ClusterVector, refCNA::CNAProfile, system::String, filename::String="") = plotBirdpoo(getSimsAndEnergies(clusterVector, refCNA)...,  
-																													system, 
-																													nothing,
-																													filename)
+plotBirdpoo(clusterVector::ClusterVector, refCNA::CNAProfile, system::String; 
+			axs::Union{PyObject, Nothing}=nothing, filename::String="") = plotBirdpoo(getSimsAndEnergies(clusterVector, refCNA)...,  
+																						system, 
+																						nothing,
+																						filename)
 
-plotBirdpoo(clusterVector::String, refCNA::CNAProfile, system::String, filename::String="") = plotBirdpoo(jldopen(clusterVector)["clusterVector"], 
-																											refCNA, 
-																											system, 
-																											filename)
+plotBirdpoo(clusterVector::String, refCNA::CNAProfile, system::String; 
+			axs::Union{PyObject, Nothing}=nothing, filename::String="") = plotBirdpoo(jldopen(clusterVector)["clusterVector"], 
+																						refCNA, 
+																						system, 
+																						filename)
 
-plotBirdpoo(clusterVector::String, refCNA::String, system::String, filename::String="") = plotBirdpoo(jldopen(clusterVector)["clusterVector"], 
-																										stringToCNA(getCNA(refCNA)), 
-																										system, 
-																										filename)
+plotBirdpoo(clusterVector::String, refCNA::String, system::String; 
+			axs::Union{PyObject, Nothing}=nothing, filename::String="") = plotBirdpoo(jldopen(clusterVector)["clusterVector"], 
+																						stringToCNA(getCNA(refCNA)), 
+																						system, 
+																						filename)
 
 
 
