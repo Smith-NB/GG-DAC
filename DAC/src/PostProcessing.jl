@@ -181,6 +181,7 @@ plotBirdpoo(clusterVector::String, refCNA::String, gmm::String, pca::String,
 
 plotBirdpoo(clusterVector::ClusterVector, refCNA::CNAProfile, system::String, filename::String="") = plotBirdpoo(getSimsAndEnergies(clusterVector, refCNA)...,  
 																													system, 
+																													nothing
 																													filename)
 
 plotBirdpoo(clusterVector::String, refCNA::CNAProfile, system::String, filename::String="") = plotBirdpoo(jldopen(clusterVector)["clusterVector"], 
@@ -349,7 +350,7 @@ function plotBirdpooAndPCA(clusterVector::ClusterVector, refCNA::CNAProfile, pca
 		clusterVector.vec = clusterVector.vec[1:cutOff]
 		clusterVector.N = Threads.Atomic{Int64}(cutOff)
 	end
-	
+
 	sims, energies = getSimsAndEnergies(clusterVector, refCNA)
 	pcAxes = getPCAxes(clusterVector, pca, rcut)
 	if gmm != nothing
