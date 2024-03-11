@@ -187,13 +187,11 @@ plotBirdpoo(clusterVector::ClusterVector, refCNA::CNAProfile, system::String, fi
 plotBirdpoo(clusterVector::String, refCNA::CNAProfile, system::String, filename::String="") = plotBirdpoo(jldopen(clusterVector)["clusterVector"], 
 																											refCNA, 
 																											system, 
-																											nothing,
 																											filename)
 
 plotBirdpoo(clusterVector::String, refCNA::String, system::String, filename::String="") = plotBirdpoo(jldopen(clusterVector)["clusterVector"], 
 																										stringToCNA(getCNA(refCNA)), 
 																										system, 
-																										nothing,
 																										filename)
 
 
