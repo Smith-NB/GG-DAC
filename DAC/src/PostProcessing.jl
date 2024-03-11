@@ -118,7 +118,7 @@ end
 ####################################################
 ####################################################
 
-function plotBirdpoo(sims::Vector{Float64}, energies::Vector{Float64}, system::String; axs::PyObject, c::Union{Vector{Int64}, Nothing}=nothing)
+function plotBirdpoo(sims::Vector{Float64}, energies::Vector{Float64}, system::String, axs::PyObject; c::Union{Vector{Int64}, Nothing}=nothing)
 
 	axs.scatter(sims, energies, c=c, s=1)
 	axs.set_xlim([0, 1])
@@ -197,7 +197,7 @@ function plotBirdpoo(clusterVector::ClusterVector, refCNA::CNAProfile, system::S
 			axs::Union{PyObject, Nothing}=nothing, filename::String="") 
 
 	if axs != nothing
-		plotBirdpoo(getSimsAndEnergies(clusterVector, refCNA)..., system, axs=axs, c=nothing)
+		plotBirdpoo(getSimsAndEnergies(clusterVector, refCNA)..., system, axs, c=nothing)
 	else
 		plotBirdpoo(getSimsAndEnergies(clusterVector, refCNA)..., system, nothing, filename=filename)
 	end
