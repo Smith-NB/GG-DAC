@@ -374,7 +374,7 @@ function plotBirdpooAndPCA(sims::Vector{Float64}, energies::Vector{Float64}, pcA
 			axs[i].set_ylabel("Similarity")
 		end
 
-		axs[i].scatter(x, y, s=1, c=c)
+		axs[i].scatter(x, y, s=1, c=c, cmap=cmap)
 
 	end
 
