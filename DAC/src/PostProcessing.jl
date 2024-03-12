@@ -408,9 +408,9 @@ function plotBirdpooAndPCA(clusterVector::ClusterVector, refCNA::CNAProfile, pca
 	return nothing
 end
 
-plotBirdpooAndPCA(clusterVector::String, 
-					refCNA::String,
-					pca::String,
+plotBirdpooAndPCA(clusterVector::Union{String, ClusterVector}, 
+					refCNA::Union{String, CNAProfile},
+					pca::Union{String, PCA},
 					rcut::Float64, 
 					plotGridSpecs::Tuple{Int64, Int64},
 					plotAxes::Vector{Tuple{Any, Any}},
