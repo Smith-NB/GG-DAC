@@ -429,7 +429,7 @@ plotBirdpooAndPCA(clusterVector::Union{String, ClusterVector},
 											system,
 											cmap=cmap,
 											cutOff=cutOff,
-											gmm=gmm==nothing ? nothing : jldopen(gmm)["gmm"],
+											gmm=gmm==nothing ? nothing : typeof(gmm) == String ? jldopen(gmm)["gmm"] : gmm,
 											filename=filename
 										)
 
