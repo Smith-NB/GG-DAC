@@ -174,14 +174,8 @@ function plotBirdpoo(clusterVector::ClusterVector, refCNA::CNAProfile, gmm::GMM,
 	return nothing
 end
 
-"""
-	plotBirdpoo(clusterVector::String, refCNA::String, gmm::String, pca::String,
-											rcut::Float64, system::String, filename::String="")
 
-Wrapper function for plotting birdpoo plot. Takes filenames for clusterVector, structurename of refCNA, and 
-filenames of gmm and pca models (all files names point to .jld2 file), opens the files and passes to 
-middleman processing function to get plotting data.
-"""
+#=
 plotBirdpoo(clusterVector::String, refCNA::String, gmm::String, pca::String, rcut::Float64, system::String; 
 			axs::Union{PyObject, Nothing}=nothing, filename::String="") = plotBirdpoo(jldopen(clusterVector)["clusterVector"],
 																						stringToCNA(getCNA(refCNA)),
@@ -191,6 +185,34 @@ plotBirdpoo(clusterVector::String, refCNA::String, gmm::String, pca::String, rcu
 																						system,
 																						axs=axs,
 																						filename=filename)
+=#
+"""
+	plotBirdpoo(clusterVector::String, refCNA::String, gmm::String, pca::String,
+											rcut::Float64, system::String, filename::String="")
+
+Wrapper function for plotting birdpoo plot. Takes filenames for clusterVector, structurename of refCNA, and 
+filenames of gmm and pca models (all files names point to .jld2 file), opens the files and passes to 
+middleman processing function to get plotting data.
+"""
+plotBirdpoo(
+			clusterVector::Union{String, ClusterVector}, 
+			refCNA::Union{String, CNAProfile}, 
+			gmm::Union{String, GMM}, 
+			pca::Union{String, PCA}, 
+			rcut::Float64, 
+			system::String; 
+			axs::Union{PyObject, Nothing}=nothing, 
+			filename::String=""
+			) = plotBirdpoo(
+							typeof(clusterVector) == String ? jldopen(clusterVector)["clusterVector"] : clusterVector,
+							typeof(refCNA) == String ? stringToCNA(getCNA(refCNA)) : refCNA,
+							typeof(gmm) == String ? jldopen(gmm)["gmm"] : gmm,
+							typeof(pca) == String ? jldopen(pca)["pca"] : pca,
+							rcut,
+							system,
+							axs=axs,
+							filename=filename
+							)
 
 
 function plotBirdpoo(clusterVector::ClusterVector, refCNA::CNAProfile, system::String; 
@@ -386,17 +408,28 @@ function plotBirdpooAndPCA(clusterVector::ClusterVector, refCNA::CNAProfile, pca
 	return nothing
 end
 
-plotBirdpooAndPCA(clusterVector::String, refCNA::String, pca::String, rcut::Float64, 
-					plotGridSpecs::Tuple{Int64, Int64}, plotAxes::Vector{Tuple{Any, Any}}, system::String; 
-					cmap::String="tab20", gmm::Union{String, Nothing}=nothing, cutOff::Int64=-1, filename::String="") = plotBirdpooAndPCA(jldopen(clusterVector)["clusterVector"],
-																														stringToCNA(getCNA(refCNA)),
-																														jldopen(pca)["pca"],
-																														rcut,
-																														plotGridSpecs,
-																														plotAxes,
-																														system,
-																														cmap=cmap,
-																														cutOff=cutOff,
-																														gmm=gmm==nothing ? nothing : jldopen(gmm)["gmm"],
-																														filename=filename)
+plotBirdpooAndPCA(clusterVector::String, 
+					refCNA::String,
+					pca::String,
+					rcut::Float64, 
+					plotGridSpecs::Tuple{Int64, Int64},
+					plotAxes::Vector{Tuple{Any, Any}},
+					system::String; 
+					cmap::String="tab20",
+					gmm::Union{String, Nothing, GMM}=nothing,
+					cutOff::Int64=-1,
+					filename::String=""
+					) = plotBirdpooAndPCA(
+											typeof(clusterVector) == String ? jldopen(clusterVector)["clusterVector"] : clusterVector,
+											typeof(refCNA) == String ? stringToCNA(getCNA(refCNA)) : refCNA,
+											typeof(pca) == String ? jldopen(pca)["pca"] : pca,
+											rcut,
+											plotGridSpecs,
+											plotAxes,
+											system,
+											cmap=cmap,
+											cutOff=cutOff,
+											gmm=gmm==nothing ? nothing : jldopen(gmm)["gmm"],
+											filename=filename
+										)
 
