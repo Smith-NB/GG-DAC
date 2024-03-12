@@ -72,12 +72,6 @@ incrementIfGorE(a::Int32, b::Int64) = a >= b ? a+1 : a
 function addToVector!(cluster::Union{Cluster, ClusterCompressed}, clusterVector::ClusterVectorWithML, dp::Int64)
 	#= binary search =#
 	energy = round(cluster.energy, digits=dp)
-	
-	if energy > clusterVector.eLim
-		presentClusterID = typemax(Int64) - length(clusterVector.highEVec)
-		push!(clusterVector.highEVec, ClusterCompressed(cluster.positions, round(cluster.energy, digits=dp), cluster.CNA, presentClusterID))
-		return presentClusterID
-	end
 
 	presentClusterID = 0
 	L = 1
