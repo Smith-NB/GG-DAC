@@ -290,19 +290,24 @@ function hop(bh::BasinHopper, steps::Int64, stepsAtomic::Threads.Atomic{Int64}, 
 		iterations += 1
 		println("A")
 		newPos, pertrubString = bh.perturber(getPositions(oldCluster))
+		println("A1")
 		setPositions!(newCluster, newPos)
-
+		println("A2")
 		optimize!(bh.optimizer, newCluster, bh.fmax)
+		println("A3")
 		while !isClusterCoherent(newCluster.positions, coherencyDistance)
 			newPos, pertrubString = bh.perturber(getPositions(oldCluster))
 			setPositions!(newCluster, newPos)
 			optimize!(bh.optimizer, newCluster, bh.fmax)
 		end
+		println("A4")
 		calculateEnergy!(newCluster, bh.calculator)
+		println("A5")
 		if newCluster.energy < bh.tightEnergyThreshold
 			stepLog *= "\nTight minimisation run as sloppy energy < $(bh.tightEnergyThreshold)"
 			optimize!(bh.optimizer, newCluster, bh.fmaxTight)
 		end
+		println("A6")
 		bh.postOptimisationTasks(newCluster, bh)
 		println("B")
 		# Check if the cluster is unique, add it to the vector of clusters, and update the CNA log.
