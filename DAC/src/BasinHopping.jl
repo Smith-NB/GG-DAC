@@ -229,7 +229,7 @@ function hop(bh::BasinHopper, steps::Int64, stepsAtomic::Threads.Atomic{Int64}, 
 			version number. Double check you are using the correct run script. This program will now terminate.")
 		return 0
 	end
-
+	println("START")
 	#start = now()
 
 	# If needed, generate a random seed.
