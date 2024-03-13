@@ -271,7 +271,7 @@ function hop(bh::BasinHopper, steps::Int64, stepsAtomic::Threads.Atomic{Int64}, 
 	# Reseeds cause the `step` iteration to desync with the modulus.
 	iterations = 1
 
-
+	println("START WHILE")
 	while step < steps
 		# Break loop if walltime exceeded.
 		if (now() - start) / Hour(1) > bh.walltime
@@ -288,7 +288,7 @@ function hop(bh::BasinHopper, steps::Int64, stepsAtomic::Threads.Atomic{Int64}, 
 		stepLog *= "Attempting step $step in Walk $(walkID) with Walker $(Threads.threadid())"
 
 		iterations += 1
-
+		println("A")
 		newPos, pertrubString = bh.perturber(getPositions(oldCluster))
 		setPositions!(newCluster, newPos)
 
@@ -304,7 +304,7 @@ function hop(bh::BasinHopper, steps::Int64, stepsAtomic::Threads.Atomic{Int64}, 
 			optimize!(bh.optimizer, newCluster, bh.fmaxTight)
 		end
 		bh.postOptimisationTasks(newCluster, bh)
-
+		println("B")
 		# Check if the cluster is unique, add it to the vector of clusters, and update the CNA log.
 		# clusterID will be negative if is was already in the vector.
 		Threads.lock(bh.clusterVector.lock) do 
@@ -324,7 +324,7 @@ function hop(bh::BasinHopper, steps::Int64, stepsAtomic::Threads.Atomic{Int64}, 
 		acceptStr = acceptHop ? "accepted." : "rejected."
 
 		stepLog *= "\nThe current step has been " * acceptStr
-
+		println("C")
 		# Decrease number of hops until next reseed.
 		updateHopsToReseed!(bh.reseeder)
 		# If accepted, update.
@@ -345,7 +345,7 @@ function hop(bh::BasinHopper, steps::Int64, stepsAtomic::Threads.Atomic{Int64}, 
 		end
 		# Log the move.
 		logStep(bh.logIO, walkID, step, abs(clusterID), newCluster.energy, string(acceptHop))
-
+		println("D")
 		# Check if the new cluster is a target. Exit if all targets found.
 		if acceptHop && exitOnLocatingTargets
 			allTargetsFound = true
@@ -378,6 +378,7 @@ function hop(bh::BasinHopper, steps::Int64, stepsAtomic::Threads.Atomic{Int64}, 
 				break
 			end
 		end
+		println("E")
 		# Check if time for reseed. Will not trigger if hopsToReseed is negative.
 		if timeToReseed!(bh.reseeder)
 			# if this walk should exit upon a reseed:
