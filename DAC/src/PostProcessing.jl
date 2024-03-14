@@ -5,7 +5,7 @@
 returns the energies and sims from a ClusterVector relative to a given 
 reference CNA profile.
 """
-function getSimsAndEnergies(clusterVector::ClusterVector, refCNA::CNAProfile)
+function getSimsAndEnergies(clusterVector::Union{ClusterVector, ClusterVectorWithML}, refCNA::CNAProfile)
 	
 	N = clusterVector.N[]
 	energies = Vector{Float64}(undef, N)
@@ -26,7 +26,7 @@ returns the energies and sims from a ClusterVector relative to a given
 reference CNA profile, as well as the atom classes (frequencies) from trained GMM and PCA models. 
 rcut is required to recalculate normal CNA profiles.
 """
-function getClassMatrix(clusterVector::ClusterVector, rcut::Float64)
+function getClassMatrix(clusterVector::Union{ClusterVector, ClusterVectorWithML}, rcut::Float64)
 	nSamples::Int64 = clusterVector.N[]
 
 	# class definitions
@@ -56,7 +56,7 @@ returns the energies and sims from a ClusterVector relative to a given
 reference CNA profile, as well as the PCA data for a given PCA model, with a given rcut
 to recalculate normal CNA profiles.
 """
-function getPCAxes(clusterVector::ClusterVector, pca::PCA, atomClassMatrix::Matrix{UInt8})
+function getPCAxes(clusterVector::Union{ClusterVector, ClusterVectorWithML}, pca::PCA, atomClassMatrix::Matrix{UInt8})
 
 	nSamples::Int64 = clusterVector.N[]
 
@@ -68,7 +68,7 @@ function getPCAxes(clusterVector::ClusterVector, pca::PCA, atomClassMatrix::Matr
 end
 
 
-getPCAxes(clusterVector::ClusterVector, pca::PCA, rcut::Float64) = getPCAxes(clusterVector, pca, getClassMatrix(clusterVector, rcut))
+getPCAxes(clusterVector::Union{ClusterVector, ClusterVectorWithML}, pca::PCA, rcut::Float64) = getPCAxes(clusterVector, pca, getClassMatrix(clusterVector, rcut))
 
 
 """
@@ -76,7 +76,7 @@ getPCAxes(clusterVector::ClusterVector, pca::PCA, rcut::Float64) = getPCAxes(clu
 
 returns the classes from trained GMM model given the PCA space data 
 """
-function getStructureClasses(clusterVector::ClusterVector, gmm::GMM, X::Matrix{Float64})
+function getStructureClasses(clusterVector::Union{ClusterVector, ClusterVectorWithML}, gmm::GMM, X::Matrix{Float64})
 
 	nSamples::Int64 = clusterVector.N[]
 
@@ -98,7 +98,7 @@ end
 returns the structure classes from a trained GMM model. Wrapper function for an 
 input of the trained PCA model and rCut
 """
-getStructureClasses(clusterVector::ClusterVector, gmm::GMM, pca::PCA, rcut::Float64) = getStructureClasses(clusterVector, gmm, getPCAxes(clusterVector, pca, rcut))
+getStructureClasses(clusterVector::Union{ClusterVector, ClusterVectorWithML}, gmm::GMM, pca::PCA, rcut::Float64) = getStructureClasses(clusterVector, gmm, getPCAxes(clusterVector, pca, rcut))
 
 
 function getAxesLims(system::String)
