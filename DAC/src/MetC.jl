@@ -538,6 +538,11 @@ function GMMMetC(gaussian::GMM, gaussianCluster::Int64, pca::PCA, mode::Symbol, 
 	GMMMetC(gaussian, gaussianCluster, pca, mode, useExplorationDataOnly, kT, classes, length(classes), Matrix{Float64}(undef, 1, size(pca)[2]), io)
 end
 
+function GMMMetC(gaussian::GMM, gaussianCluster::Int64, pca::PCA, mode::Symbol, useExplorationDataOnly::Bool, kT::Float64, classes::normalCNAProfile, io::Tuple{IO, Channel})
+	# sets workspace as a 1x{PCA_out_dims} Matrix.
+	GMMMetC(gaussian, gaussianCluster, pca, mode, useExplorationDataOnly, kT, classes, length(classes), Matrix{Float64}(undef, 1, size(pca)[2]), io)
+end
+
 function setMLClusterIndex!(MetC::GMMMetC, cluster::Cluster)
 	fractionalClassVector = getFrequencyClassVector(getAtomClasses(cluster.nCNA, MetC.classes), MetC.nClasses)
 	bh.metC.workspace[1, :] = predict(MetC.pca, fractionalClassVector)'[:, :]
@@ -613,6 +618,10 @@ end
 
 function GMMnoPCAMetC(gaussian::GMM, gaussianCluster::Int64, mode::Symbol, useExplorationDataOnly::Bool, kT::Float64, io::Tuple{IO, Channel})
 	classes = getClasses()
+	GMMnoPCAMetC(gaussian, gaussianCluster, mode, useExplorationDataOnly, kT, classes, length(classes), Matrix{UInt8}(undef, 1, length(classes)), io)
+end
+
+function GMMnoPCAMetC(gaussian::GMM, gaussianCluster::Int64, mode::Symbol, useExplorationDataOnly::Bool, kT::Float64, classes::normalCNAProfile, io::Tuple{IO, Channel})
 	GMMnoPCAMetC(gaussian, gaussianCluster, mode, useExplorationDataOnly, kT, classes, length(classes), Matrix{UInt8}(undef, 1, length(classes)), io)
 end
 
@@ -697,6 +706,13 @@ function GMMwithInfTempMetC(gaussian::GMM, gaussianCluster::Int64, pca::PCA, mod
 							infTempDuration::Int64, hopsToInfTemp::Int64, hopsRemainingOfInfTemp::Int64, infTempEnergyToBeat::Float64, io::Tuple{IO, Channel})
 	# sets workspace as a 1x{PCA_out_dims} Matrix.
 	classes = getClasses()
+	GMMwithInfTempMetC(gaussian, gaussianCluster, pca, mode, useExplorationDataOnly, kT, classes, length(classes), Matrix{Float64}(undef, 1, size(pca)[2]), 
+					   infTempPeriod, infTempDuration, hopsToInfTemp, hopsRemainingOfInfTemp, infTempEnergyToBeat, io)
+end
+
+function GMMwithInfTempMetC(gaussian::GMM, gaussianCluster::Int64, pca::PCA, mode::Symbol, useExplorationDataOnly::Bool, kT::Float64, classes::normalCNAProfile, infTempPeriod::Int64, 
+							infTempDuration::Int64, hopsToInfTemp::Int64, hopsRemainingOfInfTemp::Int64, infTempEnergyToBeat::Float64, io::Tuple{IO, Channel})
+	# sets workspace as a 1x{PCA_out_dims} Matrix.
 	GMMwithInfTempMetC(gaussian, gaussianCluster, pca, mode, useExplorationDataOnly, kT, classes, length(classes), Matrix{Float64}(undef, 1, size(pca)[2]), 
 					   infTempPeriod, infTempDuration, hopsToInfTemp, hopsRemainingOfInfTemp, infTempEnergyToBeat, io)
 end
