@@ -33,8 +33,6 @@ function getClassMatrix(clusterVector::Union{ClusterVector, ClusterVectorWithML}
 	classes = getClasses()
 	nClasses::Int64 = length(classes)
 
-	# class of each structure in clusterVector
-	structureClasses = Vector{Int64}(undef, nSamples)
 	# atomic classes
 	atomClassMatrix = Matrix{UInt8}(undef, nClasses, nSamples)
 
