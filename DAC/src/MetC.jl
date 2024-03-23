@@ -612,22 +612,24 @@ mutable struct GMMnoPCAMetC <: MetC
 	kT::Float64
 	classes::normalCNAProfile
 	nClasses::Int64
+	normFactor::Vector{Float64}
 	workspace::Matrix{UInt8}
 	io::Tuple{IO, Channel}
 end
 
 function GMMnoPCAMetC(gaussian::GMM, gaussianCluster::Int64, mode::Symbol, useExplorationDataOnly::Bool, kT::Float64, io::Tuple{IO, Channel})
 	classes = getClasses()
-	GMMnoPCAMetC(gaussian, gaussianCluster, mode, useExplorationDataOnly, kT, classes, length(classes), Matrix{UInt8}(undef, 1, length(classes)), io)
+	GMMnoPCAMetC(gaussian, gaussianCluster, mode, useExplorationDataOnly, kT, classes, length(classes), ones(length(classes)), Matrix{UInt8}(undef, 1, length(classes)), io)
 end
 
-function GMMnoPCAMetC(gaussian::GMM, gaussianCluster::Int64, mode::Symbol, useExplorationDataOnly::Bool, kT::Float64, classes::normalCNAProfile, io::Tuple{IO, Channel})
-	GMMnoPCAMetC(gaussian, gaussianCluster, mode, useExplorationDataOnly, kT, classes, length(classes), Matrix{UInt8}(undef, 1, length(classes)), io)
+function GMMnoPCAMetC(gaussian::GMM, gaussianCluster::Int64, mode::Symbol, useExplorationDataOnly::Bool, kT::Float64, classes::normalCNAProfile, normFactor::Vector{Float64}, io::Tuple{IO, Channel})
+	GMMnoPCAMetC(gaussian, gaussianCluster, mode, useExplorationDataOnly, kT, classes, length(classes), normFactor, Matrix{UInt8}(undef, 1, length(classes)), io)
 end
 
 function setMLClusterIndex!(MetC::GMMnoPCAMetC, cluster::Cluster)
-	fractionalClassVector = getFrequencyClassVector(getAtomClasses(cluster.nCNA, MetC.classes), MetC.nClasses)
-	MetC.workspace[1, :] = fractionalClassVector[:]
+	frequencyClassVector = getFrequencyClassVector(getAtomClasses(cluster.nCNA, MetC.classes), MetC.nClasses)
+	MetC.workspace[1, :] = frequencyClassVector[:]
+	MetC.workspace[1, :] ./= MetC.normFactor
 	mlClusterIndex = findmax(gmmposterior(MetC.gaussian, MetC.workspace)[1])[2][2]
 end
 
@@ -656,8 +658,9 @@ function getAcceptanceBoolean(MetC::GMMnoPCAMetC, oldCluster::Cluster, newCluste
 	end
 
 	# get the class vector for atom classes (Roncaglia scheme)
-	fractionalClassVector = newCluster.atomClassCount
-	MetC.workspace[1, :] = fractionalClassVector
+	frequencyClassVector = newCluster.atomClassCount
+	MetC.workspace[1, :] = frequencyClassVector
+	MetC.workspace[1, :] ./= MetC.normFactor
 
 	# get the probabilities that this datapoint belongs to each of the n Gaussian clusters.
 	posteriorProbs = gmmposterior(MetC.gaussian, MetC.workspace)[1]
