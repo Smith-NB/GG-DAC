@@ -219,7 +219,7 @@ function plotBirdpoo(clusterVector::ClusterVector, refCNA::CNAProfile, system::S
 	if axs != nothing
 		plotBirdpoo(getSimsAndEnergies(clusterVector, refCNA)..., system, axs, c=nothing)
 	else
-		plotBirdpoo(getSimsAndEnergies(clusterVector, refCNA)..., system, nothing, filename=filename)
+		plotBirdpoo(getSimsAndEnergies(clusterVector, refCNA)..., system; axs=nothing, filename=filename)
 	end
 
 end
