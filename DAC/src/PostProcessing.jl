@@ -5,7 +5,7 @@
 returns the energies and sims from a ClusterVector relative to a given 
 reference CNA profile.
 """
-function getSimsAndEnergies(clusterVector::Union{ClusterVector, ClusterVectorWithML, ReconstructedTypes}, refCNA::CNAProfile)
+function getSimsAndEnergies(clusterVector::Any, refCNA::CNAProfile)
 	
 	if typeof(clusterVector) in [ClusterVector, ClusterVectorWithML]
 		N = clusterVector.N[]
