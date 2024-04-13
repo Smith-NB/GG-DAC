@@ -32,8 +32,14 @@ returns the energies and sims from a ClusterVector relative to a given
 reference CNA profile, as well as the atom classes (frequencies) from trained GMM and PCA models. 
 rcut is required to recalculate normal CNA profiles.
 """
-function getClassMatrix(clusterVector::Union{ClusterVector, ClusterVectorWithML}, rcut::Float64)
-	nSamples::Int64 = clusterVector.N[]
+function getClassMatrix(clusterVector::Any, rcut::Float64)
+	nSamples::Int64 = 0
+	if typeof(clusterVector) in [ClusterVector, ClusterVectorWithML]
+		nSamples = clusterVector.N[]
+	else
+		nSamples = clusterVector.N
+	end
+	
 
 	# class definitions
 	classes = getClasses()
