@@ -19,7 +19,7 @@ function getSimsAndEnergies(clusterVector::Union{ClusterVector, ClusterVectorWit
 
 end
 
-getSimsAndEnergies(clusterVector::String, refCNA::String) = getSimsAndEnergies(jldopen(clusterVector), stringToCNA(refCNA))
+getSimsAndEnergies(clusterVector::String, refCNA::String) = getSimsAndEnergies(jldopen(clusterVector), getCNA(refCNA))
 
 """
 	getSimsAndEnergiesAndClassMatrix(clusterVector::ClusterVector, rcut::Float64)
