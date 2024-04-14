@@ -622,7 +622,7 @@ function getDistance(MetC::GMMExploreOutOfTrainingDataMetC, newCluster::Cluster)
         for k in 1:MetC.nClasses
             r += (MetC.trainingData[k, i] - newCluster.atomClassCount[k])^2
         end
-        D[i, j] = r#^0.5
+        D[i] = r#^0.5
     end
     return D
 end
