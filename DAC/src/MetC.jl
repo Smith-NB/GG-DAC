@@ -624,7 +624,7 @@ function getDistance(MetC::GMMExploreOutOfTrainingDataMetC, newCluster::Cluster)
         end
         D[i] = r#^0.5
     end
-    return D
+    return minimum(D)
 end
 
 
