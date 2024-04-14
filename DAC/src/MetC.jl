@@ -656,10 +656,10 @@ function getAcceptanceBoolean(MetC::GMMExploreOutOfTrainingDataMetC, oldCluster:
 	newDistance = getDistance(MetC, newCluster)
 
 	# if far enough away from training data
-	if newDistance > distCutOff
+	if newDistance > MetC.distCutOff
 		MetC.currentDistance = newDistance
 	# if not far enough away but this move would take us farther than where oldCluster currently sits
-	elseif currentDistance < distCutOff && currentDistance < newDistance
+	elseif MetC.currentDistance < MetC.distCutOff && MetC.currentDistance < newDistance
 		MetC.currentDistance = newDistance
 		metcLog *="\nnewCluster to close to trainingData but this hop moves further away"
 	# if not far enough away
