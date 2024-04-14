@@ -627,7 +627,7 @@ function getDistance(MetC::GMMExploreOutOfTrainingDataMetC, newCluster::Cluster)
     return D
 end
 
-function GMMExploreOutOfTrainingDataMetC(trainingData::Matrix{UInt8}, seed::Cluster, distCutOff::Int64, kT::Float64, classes::normalCNAProfile, nClasses::Int64, io::Tuple{IO, Channel})
+function GMMExploreOutOfTrainingDataMetC(trainingData::Matrix{UInt8}, distCutOff::Int64, kT::Float64, classes::normalCNAProfile, nClasses::Int64, io::Tuple{IO, Channel}, seed::Cluster)
 	MetC = GMMExploreOutOfTrainingDataMetC(trainingData, 0, distCutOff, kT, classes, nClasses, io)
 	currentDistance = getDistance(MetC, seed)
 	MetC.currentDistance = currentDistance
