@@ -197,6 +197,16 @@ function standardPostOptimisationTasks!(cluster::Cluster, bh::BasinHopper, clust
 	setCNAProfile!(cluster, clusterToGetValuesFrom.CNA) # total CNA profile
 end
 
+function classMatrixOnlyPostOptimisationTasks!(cluster::Cluster, bh::BasinHopper)
+	setCNAProfiles!(cluster, bh.rcut) # normal and total CNA profiles
+	cluster.atomClassCount = getFrequencyClassVector(getAtomClasses(cluster.nCNA, bh.metC.classes), bh.metC.nClasses, UInt8)
+end
+
+function classMatrixOnlyPostOptimisationTasks!(cluster::Cluster, bh::BasinHopper, clusterToGetValuesFrom::Cluster)
+	setCNAProfiles!(cluster, clusterToGetValuesFrom.CNA, clusterToGetValuesFrom.nCNA) # total CNA profile
+	cluster.atomClassCount = clusterToGetValuesFrom.atomClassCount
+end
+
 function extendedPostOptimisationTasks!(cluster::Cluster, bh::BasinHopper)
 	setCNAProfiles!(cluster, bh.rcut) # normal and total CNA profiles
 	cluster.atomClassCount = getFrequencyClassVector(getAtomClasses(cluster.nCNA, bh.metC.classes), bh.metC.nClasses, UInt8)
