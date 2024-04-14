@@ -601,7 +601,77 @@ function getAcceptanceBoolean(MetC::GMMMetC, oldCluster::Cluster, newCluster::Cl
 end
 
 #=============================================================================#
-#==================================GMMnoPCAMetC====================================#
+#======================GMMExploreOutOfTrainingDataMetC========================#
+#=============================================================================#
+
+mutable struct GMMExploreOutOfTrainingDataMetC <: MetC
+	trainingData::Matrix{UInt8}
+	currentDistance::Int64
+	distCutOff::Int64
+	kT::Float64
+	classes::normalCNAProfile
+	nClasses::Int64
+	io::Tuple{IO, Channel}
+end
+
+function getDistance(MetC::GMMExploreOutOfTrainingDataMetC, newCluster::Cluster)
+    D = Vector{Int64}(undef, size(MetC.trainingData)[2])
+
+    for i in 1:size(MetC.trainingData)[2]
+        r::Int64 = 0
+        for k in 1:MetC.nClasses
+            r += (MetC.trainingData[k, i] - newCluster.atomClassCount[k])^2
+        end
+        D[i, j] = r#^0.5
+    end
+    return D
+end
+
+"""
+	getAcceptanceBoolean(MetC::EnergyMetC, oldCluster::Cluster, newCluster::Cluster)
+
+Returns true or false for accepting the move from the oldCluster to the newCluster
+	based on the EnergyMetC.
+"""
+function getAcceptanceBoolean(MetC::GMMExploreOutOfTrainingDataMetC, oldCluster::Cluster, newCluster::Cluster)
+	metcLog = ""
+	if newCluster.energy < oldCluster.energy
+		accept = true
+	else
+
+		probability = exp((oldCluster.energy - newCluster.energy) / MetC.kT)
+		
+		metcLog *= "\nChance to accept = $(string(probability))"
+		
+		accept = probability > rand()
+	end
+
+	# if the hop is rejected before any GMM checks are made, stop here
+	if !accept
+		return accept, metcLog
+	end
+
+	newDistance = getDistance(MetC, newCluster)
+
+	# if far enough away from training data
+	if newDistance > distCutOff
+		MetC.currentDistance = newDistance
+	# if not far enough away but this move would take us farther than where oldCluster currently sits
+	elseif currentDistance < distCutOff && currentDistance < newDistance
+		MetC.currentDistance = newDistance
+		metcLog *="\nnewCluster to close to trainingData but this hop moves further away"
+	# if not far enough away
+	else
+		accept = false
+		metcLog *="\nnewCluster to close to trainingData"
+	end
+
+	return accept, metcLog
+
+end
+
+#=============================================================================#
+#===============================GMMnoPCAMetC==================================#
 #=============================================================================#
 
 mutable struct GMMnoPCAMetC <: MetC
@@ -804,3 +874,5 @@ function getAcceptanceBoolean(MetC::GMMwithInfTempMetC, oldCluster::Cluster, new
 	return accept, metcLog
 
 end
+
+
