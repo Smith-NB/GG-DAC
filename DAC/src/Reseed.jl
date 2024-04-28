@@ -80,11 +80,13 @@ mutable struct ELimReseeder <: Reseeder
 	args::Vector{Any}
 	ELimBounceCounter::Int64
 	eLimBounceLimit::Int64
+	forceReseed::Bool
 end
 
 function timeToReseed!(r::ELimReseeder)
-	if r.hopsToReseed <= 0
+	if r.hopsToReseed <= 0 || r.forceReseed
 		resetHopsToReseed!(r)
+		r.forceReseed = false
 		return true
 	end
 
@@ -119,6 +121,6 @@ function eLimCrossed!(r::ELimReseeder)
 	# if the ELim has been bounced off too many times, set the hops to reseed to 0
 	# This will force a reseed at the next call of `timeToReseed!`
 	if r.ELimBounceCounter >= r.eLimBounceLimit
-		r.hopsToReseed = 0
+		r.forceReseed = true
 	end
 end
