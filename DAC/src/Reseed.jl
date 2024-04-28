@@ -67,3 +67,58 @@ function getReseedEnergyToBeat(r::ReseedDisabled) return Inf end
 function setHopsToReseed!(r::ReseedDisabled, reseedPeriod::Int64) end
 
 function setReseedEnergyToBeat!(r::ReseedDisabled, energy::Float64) end
+
+#=============================================================================#
+#===============================ELimReseeder================================#
+#=============================================================================#
+
+mutable struct ELimReseeder <: Reseeder
+	reseedPeriod::Int64
+	hopsToReseed::Int64
+	reseedEnergyToBeat::Float64
+	getReseedStructure::Function
+	args::Vector{Any}
+	ELimBounceCounter::Int64
+	eLimBounceLimit::Int64
+end
+
+function timeToReseed!(r::ELimReseeder)
+	if r.hopsToReseed <= 0
+		resetHopsToReseed!(r)
+		return true
+	end
+
+	return false
+
+end
+
+function checkNewlyAcceptedStructure!(r::ELimReseeder, newCluster::Cluster)
+	if getEnergy(newCluster) < r.reseedEnergyToBeat
+		resetHopsToReseed!(r)
+		r.reseedEnergyToBeat = getEnergy(newCluster)
+	end
+end
+
+updateHopsToReseed!(r::ELimReseeder) = r.hopsToReseed -= 1
+
+resetHopsToReseed!(r::ELimReseeder) = r.hopsToReseed, r.reseedEnergyToBeat = r.reseedPeriod, Inf
+
+function getReseedPeriod(r::ELimReseeder) return r.reseedPeriod end
+
+function getHopsToReseed(r::ELimReseeder) return r.hopsToReseed end
+
+function getReseedEnergyToBeat(r::ELimReseeder) return r.reseedEnergyToBeat end
+
+setHopsToReseed!(r::ELimReseeder, hopsToReseed::Int64) = r.hopsToReseed = hopsToReseed
+
+setReseedEnergyToBeat!(r::ELimReseeder, energy::Float64) = r.reseedEnergyToBeat = energy
+
+function eLimBounce!(r::ELimReseeder)
+	r.ELimBounceCounter += 1 #increment counter
+
+	# if the ELim has been bounced off too many times, set the hops to reseed to 0
+	# This will force a reseed at the next call of `timeToReseed!`
+	if r.eLimBounceLimit >= r.ELimBounceCounter
+		r.hopsToReseed = 0
+	end
+end
