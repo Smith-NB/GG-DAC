@@ -113,7 +113,7 @@ setHopsToReseed!(r::ELimReseeder, hopsToReseed::Int64) = r.hopsToReseed = hopsTo
 
 setReseedEnergyToBeat!(r::ELimReseeder, energy::Float64) = r.reseedEnergyToBeat = energy
 
-function eLimBounce!(r::ELimReseeder)
+function eLimCrossed!(r::ELimReseeder)
 	r.ELimBounceCounter += 1 #increment counter
 
 	# if the ELim has been bounced off too many times, set the hops to reseed to 0
