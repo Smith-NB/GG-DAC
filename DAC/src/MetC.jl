@@ -974,7 +974,7 @@ mutable struct ELimDescentGMMMetC <: MetC
 	io::Tuple{IO, Channel}
 end
 
-function ELimDescentGMMMetC(gaussian::GMM, pca::PCA, GMMmode::Symbol, useExplorationDataOnly::Bool, kT::Float64, ELim::Float64, eLimReseeder::ELimReseeder, seedPositionsPool::Vector{Threads.Atomic{Int64}}, seedPositionsPoolLock::ReentrantLock, io::Tuple{IO, Channel})
+function ELimDescentGMMMetC(gaussian::GMM, pca::PCA, GMMmode::Symbol, useExplorationDataOnly::Bool, kT::Float64, ELim::Float64, eLimReseeder::ELimReseeder, seedPositionsPool::Vector{Vector{Matrix{Float64}}}, seedPositionsPoolLock::ReentrantLock, io::Tuple{IO, Channel})
 	# sets workspace as a 1x{PCA_out_dims} Matrix.
 	classes = getClasses()
 	ELimDescentGMMMetC(gaussian, pca, GMMmode, useExplorationDataOnly, kT, ELim, eLimReeder, classes, length(classes), seedPositionsPool, seedPositionsPoolLock, Matrix{Float64}(undef, 1, size(pca)[2]), io)
