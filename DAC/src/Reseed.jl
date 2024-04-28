@@ -118,7 +118,7 @@ function eLimCrossed!(r::ELimReseeder)
 
 	# if the ELim has been bounced off too many times, set the hops to reseed to 0
 	# This will force a reseed at the next call of `timeToReseed!`
-	if r.eLimBounceLimit >= r.ELimBounceCounter
+	if r.ELimBounceCounter >= r.eLimBounceLimit
 		r.hopsToReseed = 0
 	end
 end
