@@ -1036,7 +1036,6 @@ function getAcceptanceBoolean(MetC::ELimDescentGMMMetC, oldCluster::Cluster, new
 			gmmCluster = findmax(posteriorProbs)[2][2]
 		end
 
-		gmmCluster = getGMMCluster(MetC, newCluster)
 		Threads.lock(MetC.seedPositionsPoolLock) do
 			push!(MetC.seedPositionsPool[gmmCluster], newCluster.positions)
 		end
