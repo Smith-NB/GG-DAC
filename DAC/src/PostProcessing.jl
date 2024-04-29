@@ -86,9 +86,13 @@ getPCAxes(clusterVector::Union{ClusterVector, ClusterVectorWithML}, pca::PCA, rc
 
 returns the classes from trained GMM model given the PCA space data 
 """
-function getStructureClasses(clusterVector::Union{ClusterVector, ClusterVectorWithML}, gmm::GMM, X::Matrix{Float64})
+function getStructureClasses(clusterVector::Any, gmm::GMM, X::Matrix{Float64})
 
-	nSamples::Int64 = clusterVector.N[]
+
+	nSamples = clusterVector.N
+	if typeof(clusterVector) in [ClusterVector, ClusterVectorWithML]
+		nSamples = nSamples[]
+	end
 
 	# get the division index of each structure
 	posteriorprobs = gmmposterior(gmm, X)[1]
