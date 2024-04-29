@@ -1050,3 +1050,104 @@ function getAcceptanceBoolean(MetC::ELimDescentGMMMetC, oldCluster::Cluster, new
 
 end
 
+#=============================================================================#
+#==============================UpToELimDescentGMMMetC================================#
+#=============================================================================#
+
+mutable struct UpToELimDescentGMMMetC <: MetC
+	gaussian::GMM
+	pca::PCA
+	GMMmode::Symbol
+	useExplorationDataOnly::Bool
+	kT::Float64
+	ELim::Float64
+	eLimReseeder::ELimReseeder
+	classes::normalCNAProfile
+	nClasses::Int64
+	seedPositionsPool::Vector{Vector{Matrix{Float64}}}
+	seedPositionsPoolLock::ReentrantLock
+	workspace::Matrix{Float64}
+	io::Tuple{IO, Channel}
+end
+
+function UpToELimDescentGMMMetC(gaussian::GMM, pca::PCA, GMMmode::Symbol, useExplorationDataOnly::Bool, kT::Float64, ELim::Float64, eLimReseeder::ELimReseeder, seedPositionsPool::Vector{Vector{Matrix{Float64}}}, seedPositionsPoolLock::ReentrantLock, io::Tuple{IO, Channel})
+	# sets workspace as a 1x{PCA_out_dims} Matrix.
+	classes = getClasses()
+	UpToELimDescentGMMMetC(gaussian, pca, GMMmode, useExplorationDataOnly, kT, ELim, eLimReseeder, classes, length(classes), seedPositionsPool, seedPositionsPoolLock, Matrix{Float64}(undef, 1, size(pca)[2]), io)
+end
+
+function UpToELimDescentGMMMetC(gaussian::GMM, pca::PCA, GMMmode::Symbol, useExplorationDataOnly::Bool, kT::Float64, ELim::Float64, eLimReseeder::ELimReseeder, classes::normalCNAProfile, seedPositionsPool::Vector{Threads.Atomic{Int64}}, seedPositionsPoolLock::ReentrantLock, io::Tuple{IO, Channel})
+	# sets workspace as a 1x{PCA_out_dims} Matrix.
+	UpToELimDescentGMMMetC(gaussian, pca, GMMmode, useExplorationDataOnly, kT, ELim, eLimReseeder, classes, length(classes), seedPositionsPool, seedPositionsPoolLock, Matrix{Float64}(undef, 1, size(pca)[2]), io)
+ end
+
+function setMLClusterIndex!(MetC::UpToELimDescentGMMMetC, cluster::Cluster)
+	fractionalClassVector = getFrequencyClassVector(getAtomClasses(cluster.nCNA, MetC.classes), MetC.nClasses)
+	bh.metC.workspace[1, :] = predict(MetC.pca, fractionalClassVector)'[:, :]
+	mlClusterIndex = findmax(gmmposterior(MetC.gaussian, MetC.workspace)[1])[2][2]
+end
+
+"""
+	getAcceptanceBoolean(MetC::EnergyMetC, oldCluster::Cluster, newCluster::Cluster)
+
+Returns true or false for accepting the move from the oldCluster to the newCluster
+	based on the EnergyMetC.
+"""
+function getAcceptanceBoolean(MetC::UpToELimDescentGMMMetC, oldCluster::Cluster, newCluster::Cluster)
+	metcLog = ""
+	if newCluster.energy < oldCluster.energy
+		accept = true
+	else
+
+		probability = exp((oldCluster.energy - newCluster.energy) / MetC.kT)
+		
+		metcLog *= "\nChance to accept = $(string(probability))"
+		
+		accept = probability > rand()
+	end
+
+	# if the hop is rejected before any GMM checks are made, stop here
+	if !accept
+		return accept, metcLog
+	end
+
+	# get the class vector for atom classes (Roncaglia scheme)
+	fractionalClassVector = newCluster.atomClassCount
+	# transform the class vector into PCA space
+	MetC.workspace[1, :] = predict(MetC.pca, fractionalClassVector)'[:, :]
+	# get the probabilities that this datapoint belongs to each of the n Gaussian clusters.
+	posteriorProbs = gmmposterior(MetC.gaussian, MetC.workspace)[1]
+	# this mode only accepts a hop if the target Gaussian cluster is the most likely Gaussian for this datapoint
+	if MetC.GMMmode == :maxProbOnly
+		# `findmax` returns (maxvalue, indexOf), where indexOf is of type CartesianIndex{2} (as the arg is a 1xn Matrix).
+		gmmCluster = findmax(posteriorProbs)[2][2]
+	end
+
+	if newCluster.energy > MetC.ELim # if structure in cluster with empty seed pool, end this walk. otherwise continue
+		Threads.lock(MetC.seedPositionsPoolLock) do
+			seedPoolSizes = [length(MetC.seedPositionsPool[x]) for x in 1:length(seedPositionsPool)]
+			emptyPools = findall(x->x==0, seedPoolSizes)
+			if gmmCluster in emptyPools
+				eLimCrossed!(MetC.eLimReseeder)
+				push!(MetC.seedPositionsPool[gmmCluster], newCluster.positions)
+			end
+
+		end
+		return accept, metcLog
+
+	else # if eLim is crossed, end this walk.		
+
+		eLimCrossed!(MetC.eLimReseeder)
+		Threads.lock(MetC.seedPositionsPoolLock) do
+			push!(MetC.seedPositionsPool[gmmCluster], newCluster.positions)
+		end
+		return accept, metcLog
+	end
+
+
+	
+
+	return accept, metcLog * "__badReturn"
+
+end
+
