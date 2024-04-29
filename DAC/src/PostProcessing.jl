@@ -112,7 +112,7 @@ end
 returns the structure classes from a trained GMM model. Wrapper function for an 
 input of the trained PCA model and rCut
 """
-getStructureClasses(clusterVector::Union{ClusterVector, ClusterVectorWithML}, gmm::GMM, pca::PCA, rcut::Float64) = getStructureClasses(clusterVector, gmm, getPCAxes(clusterVector, pca, rcut))
+getStructureClasses(clusterVector::Any, gmm::GMM, pca::PCA, rcut::Float64) = getStructureClasses(clusterVector, gmm, getPCAxes(clusterVector, pca, rcut))
 
 
 function getAxesLims(system::String)
