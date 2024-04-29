@@ -23,7 +23,7 @@ function getSimsAndEnergies(clusterVector::Any, refCNA::CNAProfile)
 
 end
 
-getSimsAndEnergies(clusterVector::String, refCNA::String) = getSimsAndEnergies(jldopen(clusterVector), getCNA(refCNA))
+getSimsAndEnergies(clusterVector::String, refCNA::String) = getSimsAndEnergies(jldopen(clusterVector), stringToCNA(getCNA(refCNA)))
 
 """
 	getSimsAndEnergiesAndClassMatrix(clusterVector::ClusterVector, rcut::Float64)
