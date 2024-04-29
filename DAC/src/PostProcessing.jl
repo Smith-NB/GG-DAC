@@ -66,9 +66,12 @@ returns the energies and sims from a ClusterVector relative to a given
 reference CNA profile, as well as the PCA data for a given PCA model, with a given rcut
 to recalculate normal CNA profiles.
 """
-function getPCAxes(clusterVector::Union{ClusterVector, ClusterVectorWithML}, pca::PCA, atomClassMatrix::Matrix{UInt8})
+function getPCAxes(clusterVector::Any, pca::PCA, atomClassMatrix::Matrix{UInt8})
 
-	nSamples::Int64 = clusterVector.N[]
+	nSamples = clusterVector.N
+	if typeof(clusterVector) in [ClusterVector, ClusterVectorWithML]
+		nSamples = nSamples[]
+	end
 
 	# convert atom class frequency to PC values
 	X = Matrix{Float64}(undef, nSamples, size(pca)[2])
@@ -78,7 +81,7 @@ function getPCAxes(clusterVector::Union{ClusterVector, ClusterVectorWithML}, pca
 end
 
 
-getPCAxes(clusterVector::Union{ClusterVector, ClusterVectorWithML}, pca::PCA, rcut::Float64) = getPCAxes(clusterVector, pca, getClassMatrix(clusterVector, rcut))
+getPCAxes(clusterVector::Any, pca::PCA, rcut::Float64) = getPCAxes(clusterVector, pca, getClassMatrix(clusterVector, rcut))
 
 
 """
