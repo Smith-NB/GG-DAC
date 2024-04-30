@@ -1231,7 +1231,7 @@ function getAcceptanceBoolean(MetC::ELimDescentOnTheGoGMMMetC, oldCluster::Clust
 	end
 
 	Threads.lock(MetC.seedPositionsPoolLock) do
-		seedPoolSizes = [length(MetC.seedPositionsPool[x]) for x in 1:length(seedPositionsPool)]
+		seedPoolSizes = [length(MetC.seedPositionsPool[x]) for x in 1:length(MetC.seedPositionsPool)]
 		emptyPools = findall(x->x==0, seedPoolSizes)
 		if gmmCluster in emptyPools || MetC.addedSeedsCounter[gmmCluster] == false
 			push!(MetC.seedPositionsPool[gmmCluster], newCluster.positions)
