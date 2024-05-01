@@ -1125,7 +1125,7 @@ function getAcceptanceBoolean(MetC::UpToELimDescentGMMMetC, oldCluster::Cluster,
 
 	if newCluster.energy > MetC.ELim # if structure in cluster with empty seed pool, end this walk. otherwise continue
 		Threads.lock(MetC.seedPositionsPoolLock) do
-			seedPoolSizes = [length(MetC.seedPositionsPool[x]) for x in 1:length(seedPositionsPool)]
+			seedPoolSizes = [length(MetC.seedPositionsPool[x]) for x in 1:length(MetC.seedPositionsPool)]
 			emptyPools = findall(x->x==0, seedPoolSizes)
 			if gmmCluster in emptyPools
 				eLimCrossed!(MetC.eLimReseeder)
