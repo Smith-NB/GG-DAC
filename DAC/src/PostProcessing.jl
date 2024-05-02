@@ -113,7 +113,7 @@ end
 
 getPCAxes(clusterVector::Any, pca::PCA, rcut::Float64) = getPCAxes(clusterVector, pca, getClassMatrix(clusterVector, rcut))
 
-getPCAxes(clusterVector::Any, pca::PCA, rcut::Float64, classes::normalCNAProfile) = getPCAxes(clusterVector, pca, getClassMatrix(clusterVector, rcut, normalCNAProfile))
+getPCAxes(clusterVector::Any, pca::PCA, rcut::Float64, classes::normalCNAProfile) = getPCAxes(clusterVector, pca, getClassMatrix(clusterVector, rcut, classes))
 
 
 """
