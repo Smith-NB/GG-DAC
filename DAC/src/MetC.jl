@@ -1242,3 +1242,89 @@ function getAcceptanceBoolean(MetC::ELimDescentOnTheGoGMMMetC, oldCluster::Clust
 	return accept, metcLog
 	
 end
+
+#=============================================================================#
+#==================================GMMMetC====================================#
+#=============================================================================#
+
+mutable struct GMMTowardsGaussianMetC <: MetC
+	gaussian::GMM
+	gaussianCluster::Int64
+	oldProb::Float64
+	pca::PCA
+	mode::Symbol
+	useExplorationDataOnly::Bool
+	kT::Float64
+	classes::normalCNAProfile
+	nClasses::Int64
+	workspace::Matrix{Float64}
+	io::Tuple{IO, Channel}
+end
+
+function GMMTowardsGaussianMetC(gaussian::GMM, gaussianCluster::Int64, pca::PCA, mode::Symbol, useExplorationDataOnly::Bool, kT::Float64, io::Tuple{IO, Channel})
+	# sets workspace as a 1x{PCA_out_dims} Matrix.
+	classes = getClasses()
+	GMMTowardsGaussianMetC(gaussian, gaussianCluster, -1, pca, mode, useExplorationDataOnly, kT, classes, length(classes), Matrix{Float64}(undef, 1, size(pca)[2]), io)
+end
+
+function GMMTowardsGaussianMetC(gaussian::GMM, gaussianCluster::Int64, pca::PCA, mode::Symbol, useExplorationDataOnly::Bool, kT::Float64, classes::normalCNAProfile, io::Tuple{IO, Channel})
+	# sets workspace as a 1x{PCA_out_dims} Matrix.
+	GMMTowardsGaussianMetC(gaussian, gaussianCluster, -1, pca, mode, useExplorationDataOnly, kT, classes, length(classes), Matrix{Float64}(undef, 1, size(pca)[2]), io)
+end
+
+function setMLClusterIndex!(MetC::GMMTowardsGaussianMetC, cluster::Cluster)
+	fractionalClassVector = getFrequencyClassVector(getAtomClasses(cluster.nCNA, MetC.classes), MetC.nClasses)
+	bh.metC.workspace[1, :] = predict(MetC.pca, fractionalClassVector)'[:, :]
+	mlClusterIndex = findmax(gmmposterior(MetC.gaussian, MetC.workspace)[1])[2][2]
+end
+
+"""
+	getAcceptanceBoolean(MetC::EnergyMetC, oldCluster::Cluster, newCluster::Cluster)
+
+Returns true or false for accepting the move from the oldCluster to the newCluster
+	based on the EnergyMetC.
+"""
+function getAcceptanceBoolean(MetC::GMMTowardsGaussianMetC, oldCluster::Cluster, newCluster::Cluster)
+	metcLog = ""
+	if newCluster.energy < oldCluster.energy
+		accept = true
+	else
+
+		probability = exp((oldCluster.energy - newCluster.energy) / MetC.kT)
+		
+		metcLog *= "\nChance to accept = $(string(probability))"
+		
+		accept = probability > rand()
+	end
+
+	# if the hop is rejected before any GMM checks are made, stop here
+	if !accept
+		return accept, metcLog
+	end
+
+	# get the class vector for atom classes (Roncaglia scheme)
+	fractionalClassVector = newCluster.atomClassCount
+
+	# transform the class vector into PCA space
+	MetC.workspace[1, :] = predict(MetC.pca, fractionalClassVector)'[:, :]
+
+	# get the probabilities that this datapoint belongs to each of the n Gaussian clusters.
+	posteriorProbs = gmmposterior(MetC.gaussian, MetC.workspace)[1]
+
+	# this mode only accepts a hop if the target Gaussian cluster is the most likely Gaussian for this datapoint
+	if MetC.mode == :maxProbOnly
+		# `findmax` returns (maxvalue, indexOf), where indexOf is of type CartesianIndex{2} (as the arg is a 1xn Matrix).
+		mlClusterIndex = findmax(posteriorProbs)[2][2]
+		accept = mlClusterIndex == MetC.gaussianCluster
+		metcLog *= "\nnewCluster belongs to cluster $(mlClusterIndex)."
+		if !accept
+			accept = posteriorProbs[MetC.gaussianCluster] > oldProb
+
+			metcLog *= "\nnewCluster moves $(accept ? "closer too" : "further from") cluster $(mlClusterIndex)."
+		end
+		return accept, metcLog
+	end
+
+	return accept, metcLog * "__badReturn"
+
+end

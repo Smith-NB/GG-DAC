@@ -78,7 +78,7 @@ function getClassMatrix(clusterVector::Any, rcut::Float64, classes::normalCNAPro
 	# atomic classes
 	atomClassMatrix = Matrix{UInt8}(undef, nClasses, nSamples)
 
-	for i in 1:nSamples
+	Threads.@threads for i in 1:nSamples
 		# get normal CNA, atomic classes then frequency of each atomic class
 		nCNA::normalCNAProfile = getNormalCNAProfile(clusterVector.vec[i].positions, rcut)
 		atomClasses = getAtomClasses(nCNA, classes)
