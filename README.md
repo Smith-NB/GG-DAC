@@ -1,10 +1,11 @@
 Garden Group Divide-and-Conquer Algorithm (DACA) v1.2.4
 
-Clone the repo or otherwise downloaded to a directory of the users choice.
-Example run files are provided to run the DACA or the basin-hopping algorithm (BHA).
-The User must have Julia installed, version 1.8.0 is recommended.
+Clone the repo or otherwise download to a directory of the users choice.
+Example run files are provided to run the DACA or the basin-hopping algorithm (BHA). These must be edited to point to installation directory, i.e.: `include("<install_dir>/DAC/src/DAC.jl")`
 
-The BHA and DACA may be run using the command in the terminal `julia <runFileName.jl>`
+The user must have Julia installed, version 1.8.0 is recommended.
+
+The BHA and DACA may be run from the terminal using the command: `julia <runFileName.jl>`
 
 For the DACA, we reccomend running Julia with as many threads are there are divisions of the PES made (i.e. k). To do this, instead run: `julia -t <k> <runFileName.jl>`
 
