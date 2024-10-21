@@ -13,11 +13,15 @@ The DACA requires a training dataset for the Gaussian mixture model (and fitting
 
 Two case studies are provided with example input and output in `DACA_exampleRun` and `DACA_exampleRun_noPCA`, with and without PCA enabled of runs of `Au55`, respectively.
 The output files of the program are:
+
+
 	`CNAlog.txt`: file containing the CNA profiles of each unique structure. Format is `<ID>=<CNAProfile>E-<Energy>`
 					where `<CNAProfile` is formatted as: (`n_cn`, `n_b`, `n_l`):`freq`; ...
 						`n_cn` is the number of common neighbours for the CNA signature,
 						`n_b` is the number of bonds between the common neighbours,
 						`n_l` is the longest chain of bonds between common neighbours.
+
+
 	`DAC.out`: verbose output of the run. Each step lists the walk ID, step number (within the walk), the walker (i.e. thread) being used,
 				ID of the structure encountered (negative value indicates re-encounter),
 				Energy (E) of structure,
@@ -25,11 +29,19 @@ The output files of the program are:
 				Which cluster (division) the structure (newCluster, yes that is confusing, sorry) belong too. 
 					(the above line is only listed if the hop was accepted based on energy (above probablity). it will be rejected if it belongs to the wrong cluster
 				If the current step was accepted or rejected.
+
+
 	`GMM_PCA.jld2`: JLD2 file storing the PCA (if enabled) and GMM models trained, see `processResults.jl` for how to access.
+
+
 	`clusterVector.jld2`: JLD2 file storing unique structure positions, energies, and CNA profiles. see `processResults.jl` for how to access.
+
+	
 	`log.txt`: log file of the run. Each line lists the walkID, step number (within the walk), ID of structure (negative if re-encounter), energy, and acceptance of the step.
 				From this file, MFETs are calculated. Encounter time of a given trial is taken to be the line index of `log.txt` the energy of the global minimum/target structure
 				is first found on.
+
+	
 	`tasklog.txt`: used for debugging only.
 
 In each example input/output folder, `processResults.jl` is also provided to show examples of how structural data can be retrieved from the above files, namely:
