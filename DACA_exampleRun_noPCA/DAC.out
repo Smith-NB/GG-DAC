@@ -1,0 +1,2992 @@
+
+================================
+Attempting step 1 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 1
+	E = -195.12495910369455
+newCluster belongs to cluster 4.
+The current step has been rejected.
+================================
+Attempting step 1 in Walk 4 with Walker 2
+Tight minimisation run as sloppy energy < -195.18
+Generated new cluster:
+	ID = 2
+	E = -195.2490995949035
+newCluster belongs to cluster 2.
+The current step has been accepted.
+================================
+Attempting step 1 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 3
+	E = -194.71386347895645
+Chance to accept = 0.00691966164939904
+The current step has been rejected.
+================================
+Attempting step 1 in Walk 3 with Walker 4
+Tight minimisation run as sloppy energy < -195.18
+Generated new cluster:
+	ID = 4
+	E = -195.1910519585226
+newCluster belongs to cluster 4.
+The current step has been accepted.
+================================
+Attempting step 2 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 5
+	E = -194.2030957614215
+Chance to accept = 0.00011271597140265141
+The current step has been rejected.
+================================
+Attempting step 2 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 6
+	E = -194.42360198478193
+Chance to accept = 0.0003797477479371413
+The current step has been rejected.
+================================
+Attempting step 2 in Walk 3 with Walker 4
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -4
+	E = -195.19105584414655
+newCluster belongs to cluster 4.
+The current step has been accepted.
+================================
+Attempting step 2 in Walk 4 with Walker 2
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -2
+	E = -195.24911260700708
+newCluster belongs to cluster 2.
+The current step has been accepted.
+================================
+Attempting step 3 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 7
+	E = -194.73480772685173
+Chance to accept = 0.010436132942540472
+The current step has been rejected.
+================================
+Attempting step 3 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 8
+	E = -195.01804878009898
+Chance to accept = 0.39019477396636454
+The current step has been rejected.
+================================
+Attempting step 3 in Walk 2 with Walker 3
+Tight minimisation run as sloppy energy < -195.18
+Generated new cluster:
+	ID = 9
+	E = -195.21120116085555
+Chance to accept = 0.9999884139146373
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 3 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 10
+	E = -194.52595606400345
+Chance to accept = 0.0007233875637107094
+The current step has been rejected.
+================================
+Attempting step 4 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 11
+	E = -195.0208109479603
+Chance to accept = 0.40112283957252687
+The current step has been rejected.
+================================
+Attempting step 4 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 12
+	E = -194.62605249156897
+Chance to accept = 0.003517398849410256
+The current step has been rejected.
+================================
+Attempting step 4 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 13
+	E = -195.15645227451026
+Chance to accept = 0.3958961597497694
+The current step has been rejected.
+================================
+Attempting step 5 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 14
+	E = -195.15208705204003
+newCluster belongs to cluster 4.
+The current step has been rejected.
+================================
+Attempting step 4 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 15
+	E = -194.91235156617765
+Chance to accept = 0.05036254510130846
+The current step has been rejected.
+================================
+Attempting step 5 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 16
+	E = -194.98344269962456
+Chance to accept = 0.1254144476098643
+The current step has been rejected.
+================================
+Attempting step 6 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 17
+	E = -194.68481763485644
+Chance to accept = 0.01393403742465779
+The current step has been rejected.
+================================
+Attempting step 5 in Walk 4 with Walker 2
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -2
+	E = -195.24910637709155
+Chance to accept = 0.9999377027852775
+newCluster belongs to cluster 2.
+The current step has been accepted.
+================================
+Attempting step 5 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 18
+	E = -194.94810040347465
+Chance to accept = 0.07200504017673733
+The current step has been rejected.
+================================
+Attempting step 6 in Walk 3 with Walker 4
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -4
+	E = -195.19105034245896
+Chance to accept = 0.999944984637581
+newCluster belongs to cluster 4.
+The current step has been accepted.
+================================
+Attempting step 7 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 19
+	E = -195.09729004024172
+Chance to accept = 0.8618305178496052
+newCluster belongs to cluster 4.
+The current step has been rejected.
+================================
+Attempting step 6 in Walk 4 with Walker 2
+Tight minimisation run as sloppy energy < -195.18
+Generated new cluster:
+	ID = 20
+	E = -195.22919229271932
+Chance to accept = 0.819434473003628
+The current step has been rejected.
+================================
+Attempting step 8 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 21
+	E = -195.02319262028655
+Chance to accept = 0.41079094553485723
+The current step has been rejected.
+================================
+Attempting step 7 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 22
+	E = -195.1765476879518
+Chance to accept = 0.8649993313367221
+newCluster belongs to cluster 4.
+The current step has been accepted.
+================================
+Attempting step 7 in Walk 4 with Walker 2
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -2
+	E = -195.2491023528271
+Chance to accept = 0.9999597581651655
+newCluster belongs to cluster 2.
+The current step has been accepted.
+================================
+Attempting step 6 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 23
+	E = -194.22989959682698
+Chance to accept = 5.473390383146613e-5
+The current step has been rejected.
+================================
+Attempting step 8 in Walk 3 with Walker 4
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -4
+	E = -195.19105283393847
+newCluster belongs to cluster 4.
+The current step has been accepted.
+================================
+Attempting step 7 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 24
+	E = -194.8992512650623
+Chance to accept = 0.04417878669713259
+The current step has been rejected.
+================================
+Attempting step 8 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 25
+	E = -195.06606677454624
+Chance to accept = 0.16035650553699013
+The current step has been rejected.
+================================
+Attempting step 9 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 26
+	E = -195.12174813056083
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 9 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 27
+	E = -194.92329429420604
+Chance to accept = 0.0384621519976237
+The current step has been rejected.
+================================
+Attempting step 10 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 28
+	E = -194.8772595281059
+Chance to accept = 0.09546441067586099
+The current step has been rejected.
+================================
+Attempting step 8 in Walk 2 with Walker 3
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -9
+	E = -195.21120087500515
+Chance to accept = 0.9999855554477949
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 10 in Walk 4 with Walker 2
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -2
+	E = -195.24911390159318
+newCluster belongs to cluster 2.
+The current step has been accepted.
+================================
+Attempting step 9 in Walk 3 with Walker 4
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -4
+	E = -195.1910395644625
+Chance to accept = 0.9998673140438467
+newCluster belongs to cluster 4.
+The current step has been accepted.
+================================
+Attempting step 11 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 29
+	E = -195.11954478634522
+newCluster belongs to cluster 4.
+The current step has been rejected.
+================================
+Attempting step 9 in Walk 2 with Walker 3
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -9
+	E = -195.21119786864992
+Chance to accept = 0.9999554927816593
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 12 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 30
+	E = -194.95822206413357
+Chance to accept = 0.21451483036895058
+The current step has been rejected.
+================================
+Attempting step 11 in Walk 4 with Walker 2
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -2
+	E = -195.24910166956778
+Chance to accept = 0.9998776872268382
+newCluster belongs to cluster 2.
+The current step has been accepted.
+================================
+Attempting step 10 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 31
+	E = -193.3897403858279
+Chance to accept = 1.5033394861283866e-8
+The current step has been rejected.
+================================
+Attempting step 10 in Walk 2 with Walker 3
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -9
+	E = -195.21119936119734
+Chance to accept = 0.9999704177030094
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 11 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 32
+	E = -195.15210291119396
+Chance to accept = 0.6774859037719773
+The current step has been rejected.
+================================
+Attempting step 12 in Walk 4 with Walker 2
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -2
+	E = -195.24909966709907
+Chance to accept = 0.9999799755134464
+newCluster belongs to cluster 2.
+The current step has been accepted.
+================================
+Attempting step 13 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 33
+	E = -194.41921253081267
+Chance to accept = 0.0009785176465889112
+The current step has been rejected.
+================================
+Attempting step 13 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 34
+	E = -195.10181525236857
+Chance to accept = 0.22927247231026446
+The current step has been rejected.
+================================
+Attempting step 11 in Walk 2 with Walker 3
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -9
+	E = -195.21119969055135
+Chance to accept = 0.999973711151092
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 14 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 35
+	E = -195.10920941308257
+Chance to accept = 0.970928048095572
+newCluster belongs to cluster 4.
+The current step has been rejected.
+================================
+Attempting step 12 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 36
+	E = -194.2208039946599
+Chance to accept = 6.11392995521029e-5
+The current step has been rejected.
+================================
+Attempting step 12 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 37
+	E = -194.86349323243093
+Chance to accept = 0.03089716427272952
+The current step has been rejected.
+================================
+Attempting step 14 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 38
+	E = -194.6451973248503
+Chance to accept = 0.0023838858265165276
+The current step has been rejected.
+================================
+Attempting step 15 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 39
+	E = -194.91909647320605
+Chance to accept = 0.14505644839688572
+The current step has been rejected.
+================================
+Attempting step 13 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 40
+	E = -194.99687833301206
+Chance to accept = 0.11727427409113468
+The current step has been rejected.
+================================
+Attempting step 15 in Walk 4 with Walker 2
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -2
+	E = -195.24909393002548
+Chance to accept = 0.9999426309097383
+newCluster belongs to cluster 2.
+The current step has been accepted.
+================================
+Attempting step 14 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 41
+	E = -195.16517159994055
+Chance to accept = 0.6310897479202167
+The current step has been rejected.
+================================
+Attempting step 16 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 42
+	E = -194.5705729791248
+Chance to accept = 0.004445480780191011
+The current step has been rejected.
+================================
+Attempting step 13 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 43
+	E = -195.1782375635705
+Chance to accept = 0.8798357744048171
+newCluster belongs to cluster 4.
+The current step has been accepted.
+================================
+Attempting step 16 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 44
+	E = -195.10517643561107
+Chance to accept = 0.2371233179794262
+The current step has been rejected.
+================================
+Attempting step 14 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 45
+	E = -194.8618410423019
+Chance to accept = 0.042257847081460936
+The current step has been rejected.
+================================
+Attempting step 15 in Walk 2 with Walker 3
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -9
+	E = -195.21120210512365
+Chance to accept = 0.9999978565307637
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 17 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 46
+	E = -194.1509978180515
+Chance to accept = 6.694635944178208e-5
+The current step has been rejected.
+================================
+Attempting step 18 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 47
+	E = -194.69959127347025
+Chance to accept = 0.01615243752457495
+The current step has been rejected.
+================================
+Attempting step 16 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 48
+	E = -194.89896223995262
+Chance to accept = 0.044051283257662624
+The current step has been rejected.
+================================
+Attempting step 17 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 49
+	E = -194.9807736402404
+Chance to accept = 0.06834390467945077
+The current step has been rejected.
+================================
+Attempting step 15 in Walk 3 with Walker 4
+Regenerated cluster:
+	ID = -22
+	E = -195.1769180359305
+Chance to accept = 0.9868913996029278
+The current step has been rejected.
+================================
+Attempting step 19 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 50
+	E = -195.15139698619905
+newCluster belongs to cluster 4.
+The current step has been rejected.
+================================
+Attempting step 17 in Walk 2 with Walker 3
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -9
+	E = -195.21119998060064
+Chance to accept = 0.999976611571907
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 18 in Walk 4 with Walker 2
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -2
+	E = -195.2491128801072
+newCluster belongs to cluster 2.
+The current step has been accepted.
+================================
+Attempting step 20 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 51
+	E = -195.10646262397267
+Chance to accept = 0.9446216468493003
+newCluster belongs to cluster 4.
+The current step has been rejected.
+================================
+Attempting step 16 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 52
+	E = -194.12656094258452
+Chance to accept = 2.7078616248992764e-5
+The current step has been rejected.
+================================
+Attempting step 18 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 53
+	E = -194.57566417839467
+Chance to accept = 0.001737372419649262
+The current step has been rejected.
+================================
+Attempting step 17 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 54
+	E = -194.74724119696256
+Chance to accept = 0.013434037696638484
+The current step has been rejected.
+================================
+Attempting step 21 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 55
+	E = -195.12105252919466
+newCluster belongs to cluster 4.
+The current step has been rejected.
+================================
+Attempting step 18 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 56
+	E = -195.17418693029722
+Chance to accept = 0.9603030831494576
+newCluster belongs to cluster 4.
+The current step has been accepted.
+================================
+Attempting step 19 in Walk 4 with Walker 2
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -20
+	E = -195.2291776345754
+Chance to accept = 0.8192610895128828
+newCluster belongs to cluster 2.
+The current step has been accepted.
+================================
+Attempting step 19 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 57
+	E = -194.74248058991796
+Chance to accept = 0.00921228559020154
+The current step has been rejected.
+================================
+Attempting step 22 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 58
+	E = -195.09827704778812
+Chance to accept = 0.8703789676222264
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 19 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 59
+	E = -195.17931409194497
+newCluster belongs to cluster 4.
+The current step has been accepted.
+================================
+Attempting step 23 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 60
+	E = -195.1205825673576
+newCluster belongs to cluster 4.
+The current step has been rejected.
+================================
+Attempting step 20 in Walk 2 with Walker 3
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -9
+	E = -195.21120083882525
+Chance to accept = 0.9999851936541044
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 20 in Walk 4 with Walker 2
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -20
+	E = -195.22919035041753
+newCluster belongs to cluster 2.
+The current step has been accepted.
+================================
+Attempting step 21 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 61
+	E = -194.85849350349872
+Chance to accept = 0.029390371457576392
+The current step has been rejected.
+================================
+Attempting step 20 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 62
+	E = -195.08587807007456
+Chance to accept = 0.39283711498907387
+The current step has been rejected.
+================================
+Attempting step 24 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 63
+	E = -194.6602406146203
+Chance to accept = 0.010897837554900801
+The current step has been rejected.
+================================
+Attempting step 21 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 64
+	E = -193.97730500509425
+Chance to accept = 3.657051072425247e-6
+The current step has been rejected.
+================================
+Attempting step 21 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 65
+	E = -194.9324791933728
+Chance to accept = 0.08472462515772364
+The current step has been rejected.
+================================
+Attempting step 22 in Walk 2 with Walker 3
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -9
+	E = -195.21120274023784
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 22 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 66
+	E = -194.86766834293513
+Chance to accept = 0.026911002131435303
+The current step has been rejected.
+================================
+Attempting step 25 in Walk 1 with Walker 1
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -2
+	E = -195.24910919619012
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 23 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 67
+	E = -194.78802022527177
+Chance to accept = 0.01452591560139345
+The current step has been rejected.
+================================
+Attempting step 22 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 68
+	E = -194.7701441857234
+Chance to accept = 0.016710816707157936
+The current step has been rejected.
+================================
+Attempting step 23 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 69
+	E = -194.98520824073964
+Chance to accept = 0.08717644621399824
+The current step has been rejected.
+================================
+Attempting step 26 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 70
+	E = -194.1555307312341
+Chance to accept = 7.005080925252233e-5
+The current step has been rejected.
+================================
+Attempting step 24 in Walk 2 with Walker 3
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -9
+	E = -195.21120299541957
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 23 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 71
+	E = -194.45396712302139
+Chance to accept = 0.0007077145742738024
+The current step has been rejected.
+================================
+Attempting step 27 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 73
+	E = -193.85042878170427
+Chance to accept = 3.314150495179504e-6
+The current step has been rejected.
+================================
+Attempting step 25 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 72
+	E = -194.89198987221215
+Chance to accept = 0.04108449527438829
+newCluster belongs to cluster 3.
+The current step has been accepted.
+================================
+Attempting step 24 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 74
+	E = -194.63614609423348
+Chance to accept = 0.004375738483821807
+The current step has been rejected.
+================================
+Attempting step 24 in Walk 4 with Walker 2
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -2
+	E = -195.24909418336128
+newCluster belongs to cluster 2.
+The current step has been accepted.
+================================
+Attempting step 26 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 75
+	E = -194.74280842524655
+Chance to accept = 0.22496409446759794
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 28 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 76
+	E = -195.15573563081713
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 25 in Walk 3 with Walker 4
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -4
+	E = -195.19105518638548
+newCluster belongs to cluster 4.
+The current step has been accepted.
+================================
+Attempting step 29 in Walk 1 with Walker 1
+Regenerated cluster:
+	ID = -1
+	E = -195.12468685562953
+newCluster belongs to cluster 4.
+The current step has been rejected.
+================================
+Attempting step 25 in Walk 4 with Walker 2
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -2
+	E = -195.2491091095946
+newCluster belongs to cluster 2.
+The current step has been accepted.
+================================
+Attempting step 27 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 77
+	E = -195.05280165524505
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 30 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 78
+	E = -194.90260747576667
+Chance to accept = 0.12300598239634508
+The current step has been rejected.
+================================
+Attempting step 26 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 79
+	E = -194.72430435817148
+Chance to accept = 0.005257774112986918
+The current step has been rejected.
+================================
+Attempting step 26 in Walk 3 with Walker 4
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -4
+	E = -195.19104811669305
+Chance to accept = 0.9999293055746717
+newCluster belongs to cluster 4.
+The current step has been accepted.
+================================
+Attempting step 27 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 80
+	E = -195.0496837996013
+Chance to accept = 0.1361152807219727
+newCluster belongs to cluster 4.
+The current step has been rejected.
+================================
+Attempting step 31 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 81
+	E = -194.70057211191389
+Chance to accept = 0.01631164635573093
+The current step has been rejected.
+================================
+Attempting step 28 in Walk 2 with Walker 3
+Regenerated cluster:
+	ID = -72
+	E = -194.892371349121
+newCluster belongs to cluster 3.
+The current step has been accepted.
+================================
+Attempting step 27 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 82
+	E = -194.73850723811964
+Chance to accept = 0.010830286264889214
+The current step has been rejected.
+================================
+Attempting step 32 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 83
+	E = -195.1611772771054
+newCluster belongs to cluster 4.
+The current step has been rejected.
+================================
+Attempting step 28 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 84
+	E = -194.76715557618246
+Chance to accept = 0.014423082489336802
+The current step has been rejected.
+================================
+Attempting step 28 in Walk 4 with Walker 2
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -2
+	E = -195.24909975118027
+Chance to accept = 0.9999064202355447
+newCluster belongs to cluster 2.
+The current step has been accepted.
+================================
+Attempting step 29 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 85
+	E = -194.7828272013331
+Chance to accept = 0.33439194770907793
+The current step has been rejected.
+================================
+Attempting step 33 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 86
+	E = -194.8242007719463
+Chance to accept = 0.05615782067693941
+The current step has been rejected.
+================================
+Attempting step 30 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 87
+	E = -194.8911841663117
+Chance to accept = 0.9881983640139724
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 29 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 88
+	E = -195.07806468636556
+Chance to accept = 0.32308678640969296
+newCluster belongs to cluster 3.
+The current step has been rejected.
+================================
+Attempting step 29 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 89
+	E = -194.3992435184488
+Chance to accept = 0.00020376110030256663
+The current step has been rejected.
+================================
+Attempting step 34 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 90
+	E = -195.03045680211147
+Chance to accept = 0.4417421120969567
+newCluster belongs to cluster 4.
+The current step has been rejected.
+================================
+Attempting step 31 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 91
+	E = -194.8882302145067
+Chance to accept = 0.9594343891305073
+newCluster belongs to cluster 3.
+The current step has been accepted.
+================================
+Attempting step 30 in Walk 3 with Walker 4
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -4
+	E = -195.19104332407687
+Chance to accept = 0.9999520749866276
+newCluster belongs to cluster 4.
+The current step has been accepted.
+================================
+Attempting step 35 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 92
+	E = -194.5061490787644
+Chance to accept = 0.002334152853229484
+The current step has been rejected.
+================================
+Attempting step 30 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 93
+	E = -194.33000363650558
+Chance to accept = 0.00010195682213062395
+The current step has been rejected.
+================================
+Attempting step 32 in Walk 2 with Walker 3
+Regenerated cluster:
+	ID = -72
+	E = -194.89214266640843
+newCluster belongs to cluster 3.
+The current step has been accepted.
+================================
+Attempting step 31 in Walk 4 with Walker 2
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -2
+	E = -195.2491038429965
+newCluster belongs to cluster 2.
+The current step has been accepted.
+================================
+Attempting step 33 in Walk 2 with Walker 3
+Regenerated cluster:
+	ID = -91
+	E = -194.8883837004786
+Chance to accept = 0.9631080622566498
+The current step has been rejected.
+================================
+Attempting step 31 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 94
+	E = -194.39414468126898
+Chance to accept = 0.00034602953403078756
+The current step has been rejected.
+================================
+Attempting step 36 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 95
+	E = -195.10882145371565
+Chance to accept = 0.9671685391858714
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 32 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 96
+	E = -194.95940374831147
+Chance to accept = 0.05518848531359772
+The current step has been rejected.
+================================
+Attempting step 34 in Walk 2 with Walker 3
+Regenerated cluster:
+	ID = -72
+	E = -194.89165745552347
+Chance to accept = 0.9951596436147776
+newCluster belongs to cluster 3.
+The current step has been accepted.
+================================
+Attempting step 32 in Walk 3 with Walker 4
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -4
+	E = -195.1910513655851
+newCluster belongs to cluster 4.
+The current step has been accepted.
+================================
+Attempting step 35 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 97
+	E = -194.30596719494218
+Chance to accept = 0.0028600887996237797
+The current step has been rejected.
+================================
+Attempting step 37 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 98
+	E = -194.7186002877777
+Chance to accept = 0.019534089361284927
+The current step has been rejected.
+================================
+Attempting step 33 in Walk 4 with Walker 2
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -2
+	E = -195.2490907829785
+Chance to accept = 0.999869408347775
+newCluster belongs to cluster 2.
+The current step has been accepted.
+================================
+Attempting step 36 in Walk 2 with Walker 3
+Regenerated cluster:
+	ID = -72
+	E = -194.89203375992128
+newCluster belongs to cluster 3.
+The current step has been accepted.
+================================
+Attempting step 33 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 99
+	E = -195.08665086828816
+Chance to accept = 0.35204193640381787
+The current step has been rejected.
+================================
+Attempting step 38 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 100
+	E = -195.1064174859282
+Chance to accept = 0.9441953593264344
+newCluster belongs to cluster 4.
+The current step has been rejected.
+================================
+Attempting step 34 in Walk 4 with Walker 2
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -2
+	E = -195.24911378898818
+newCluster belongs to cluster 2.
+The current step has been accepted.
+================================
+Attempting step 37 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 101
+	E = -194.31895923943605
+Chance to accept = 0.003244658397276817
+The current step has been rejected.
+================================
+Attempting step 34 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 102
+	E = -194.62969938659597
+Chance to accept = 0.003648205814579085
+The current step has been rejected.
+================================
+Attempting step 39 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 103
+	E = -194.80069240786838
+Chance to accept = 0.04439302278356666
+The current step has been rejected.
+================================
+Attempting step 38 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 104
+	E = -194.50657293186325
+Chance to accept = 0.02118189904641268
+The current step has been rejected.
+================================
+Attempting step 35 in Walk 4 with Walker 2
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -2
+	E = -195.2490892721707
+Chance to accept = 0.9997548618763616
+newCluster belongs to cluster 2.
+The current step has been accepted.
+================================
+Attempting step 40 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 106
+	E = -194.98219012269988
+Chance to accept = 0.27261470488437217
+The current step has been rejected.
+================================
+Attempting step 39 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 105
+	E = -194.89402631741083
+newCluster belongs to cluster 3.
+The current step has been accepted.
+================================
+Attempting step 35 in Walk 3 with Walker 4
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -4
+	E = -195.19106150667938
+newCluster belongs to cluster 4.
+The current step has been accepted.
+================================
+Attempting step 36 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 107
+	E = -194.7490094013736
+Chance to accept = 0.012027963444534924
+The current step has been rejected.
+================================
+Attempting step 40 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 108
+	E = -194.8836916410925
+Chance to accept = 0.9018142032921178
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 41 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 109
+	E = -195.15887805741687
+newCluster belongs to cluster 4.
+The current step has been rejected.
+================================
+Attempting step 36 in Walk 4 with Walker 2
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -2
+	E = -195.24910422333295
+newCluster belongs to cluster 2.
+The current step has been accepted.
+================================
+Attempting step 41 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 110
+	E = -194.89476191610822
+newCluster belongs to cluster 3.
+The current step has been accepted.
+================================
+Attempting step 42 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 111
+	E = -194.6994530856327
+Chance to accept = 0.01613013223559821
+The current step has been rejected.
+================================
+Attempting step 37 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 112
+	E = -195.0050187421835
+Chance to accept = 0.15560607198508947
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 37 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 113
+	E = -193.71506666416286
+Chance to accept = 2.1765043034828464e-7
+The current step has been rejected.
+================================
+Attempting step 42 in Walk 2 with Walker 3
+Regenerated cluster:
+	ID = -110
+	E = -194.89454336769003
+Chance to accept = 0.9978169022498415
+newCluster belongs to cluster 3.
+The current step has been accepted.
+================================
+Attempting step 43 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 114
+	E = -195.17976246144767
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 38 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 115
+	E = -194.71999506316038
+Chance to accept = 0.008998796478581308
+The current step has been rejected.
+================================
+Attempting step 43 in Walk 2 with Walker 3
+Regenerated cluster:
+	ID = -110
+	E = -194.8945225061004
+Chance to accept = 0.9997914058624564
+newCluster belongs to cluster 3.
+The current step has been accepted.
+================================
+Attempting step 39 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 116
+	E = -194.83141644542437
+Chance to accept = 0.027420877242840373
+The current step has been rejected.
+================================
+Attempting step 38 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 117
+	E = -194.94010935035152
+Chance to accept = 0.045504287358078765
+The current step has been rejected.
+================================
+Attempting step 44 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 118
+	E = -194.79980728090428
+Chance to accept = 0.044001822034432043
+The current step has been rejected.
+================================
+Attempting step 44 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 119
+	E = -194.89418694969646
+Chance to accept = 0.9966500595737258
+newCluster belongs to cluster 3.
+The current step has been accepted.
+================================
+Attempting step 45 in Walk 2 with Walker 3
+Regenerated cluster:
+	ID = -105
+	E = -194.89396582191026
+Chance to accept = 0.9977911652117428
+newCluster belongs to cluster 3.
+The current step has been accepted.
+================================
+Attempting step 45 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 120
+	E = -194.83885777023963
+Chance to accept = 0.06502266726692287
+The current step has been rejected.
+================================
+Attempting step 40 in Walk 3 with Walker 4
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -4
+	E = -195.19105150218294
+Chance to accept = 0.9998999600400176
+newCluster belongs to cluster 4.
+The current step has been accepted.
+================================
+Attempting step 39 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 121
+	E = -195.05612385790795
+Chance to accept = 0.14517670051354956
+The current step has been rejected.
+================================
+Attempting step 41 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 122
+	E = -194.69277934877167
+Chance to accept = 0.006855379995898383
+The current step has been rejected.
+================================
+Attempting step 40 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 123
+	E = -194.83582208058283
+Chance to accept = 0.01603756609932087
+The current step has been rejected.
+================================
+Attempting step 46 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 124
+	E = -194.31279701200089
+Chance to accept = 0.00033760738344702003
+The current step has been rejected.
+================================
+Attempting step 42 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 125
+	E = -194.91747920936157
+Chance to accept = 0.06484711034876971
+The current step has been rejected.
+================================
+Attempting step 46 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 126
+	E = -194.672396853129
+Chance to accept = 0.10907825835449318
+The current step has been rejected.
+================================
+Attempting step 41 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 127
+	E = -194.86322614573066
+Chance to accept = 0.02109370179844175
+The current step has been rejected.
+================================
+Attempting step 43 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 128
+	E = -194.74779475945647
+Chance to accept = 0.011883939321841555
+The current step has been rejected.
+================================
+Attempting step 47 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 129
+	E = -195.03234403663993
+Chance to accept = 0.4501579856131628
+newCluster belongs to cluster 3.
+The current step has been rejected.
+================================
+Attempting step 47 in Walk 2 with Walker 3
+Regenerated cluster:
+	ID = -105
+	E = -194.89375510120828
+Chance to accept = 0.9978950115823678
+newCluster belongs to cluster 3.
+The current step has been accepted.
+================================
+Attempting step 48 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 130
+	E = -195.10245621453439
+Chance to accept = 0.9075243332112446
+The current step has been rejected.
+================================
+Attempting step 44 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 131
+	E = -195.11272541459363
+Chance to accept = 0.45691364073368435
+The current step has been rejected.
+================================
+Attempting step 48 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 132
+	E = -194.6238349842068
+Chance to accept = 0.06725921996711551
+The current step has been rejected.
+================================
+Attempting step 42 in Walk 4 with Walker 2
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -2
+	E = -195.24911349233332
+newCluster belongs to cluster 2.
+The current step has been accepted.
+================================
+Attempting step 45 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 133
+	E = -194.95893190784898
+Chance to accept = 0.09815612621558031
+The current step has been rejected.
+================================
+Attempting step 49 in Walk 2 with Walker 3
+Regenerated cluster:
+	ID = -105
+	E = -194.8935764015462
+Chance to accept = 0.9982145991069349
+newCluster belongs to cluster 3.
+The current step has been accepted.
+================================
+Attempting step 49 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 134
+	E = -194.5791410554363
+Chance to accept = 0.004843166722338817
+The current step has been rejected.
+================================
+Attempting step 46 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 135
+	E = -194.88597308596823
+Chance to accept = 0.047321801872244176
+The current step has been rejected.
+================================
+Attempting step 43 in Walk 4 with Walker 2
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -2
+	E = -195.24911040786264
+Chance to accept = 0.9999691557689221
+newCluster belongs to cluster 2.
+The current step has been accepted.
+================================
+Attempting step 44 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 136
+	E = -195.05378754850216
+Chance to accept = 0.14181546715089094
+The current step has been rejected.
+================================
+Attempting step 50 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 137
+	E = -195.12553552477218
+newCluster belongs to cluster 4.
+The current step has been rejected.
+================================
+Attempting step 47 in Walk 3 with Walker 4
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -4
+	E = -195.19104238717082
+Chance to accept = 0.999908854032853
+newCluster belongs to cluster 4.
+The current step has been accepted.
+================================
+Attempting step 50 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 138
+	E = -194.53974796164206
+Chance to accept = 0.02906314509564981
+The current step has been rejected.
+================================
+Attempting step 45 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 139
+	E = -194.5957677503314
+Chance to accept = 0.0014540150119852103
+The current step has been rejected.
+================================
+Attempting step 51 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 140
+	E = -193.8678275817408
+Chance to accept = 3.94397591620108e-6
+The current step has been rejected.
+================================
+Attempting step 48 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 141
+	E = -194.61579770146525
+Chance to accept = 0.0031750025069231416
+The current step has been rejected.
+================================
+Attempting step 51 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 142
+	E = -194.38422991436457
+Chance to accept = 0.006136720059513139
+The current step has been rejected.
+================================
+Attempting step 52 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 143
+	E = -195.10683456837864
+Chance to accept = 0.9481416564035883
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 46 in Walk 4 with Walker 2
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -2
+	E = -195.24910464329938
+Chance to accept = 0.9999423560287836
+newCluster belongs to cluster 2.
+The current step has been accepted.
+================================
+Attempting step 49 in Walk 3 with Walker 4
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -4
+	E = -195.1910500755204
+newCluster belongs to cluster 4.
+The current step has been accepted.
+================================
+Attempting step 52 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 144
+	E = -193.95187626487896
+Chance to accept = 8.13295314684281e-5
+The current step has been rejected.
+================================
+Attempting step 53 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 145
+	E = -195.11833152822405
+newCluster belongs to cluster 4.
+The current step has been rejected.
+================================
+Attempting step 50 in Walk 3 with Walker 4
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -4
+	E = -195.1910517592628
+newCluster belongs to cluster 4.
+The current step has been accepted.
+================================
+Attempting step 47 in Walk 4 with Walker 2
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -2
+	E = -195.2490896476322
+Chance to accept = 0.9998500545710776
+newCluster belongs to cluster 2.
+The current step has been accepted.
+================================
+Attempting step 53 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 146
+	E = -194.58912981727028
+Chance to accept = 0.04762174269360596
+The current step has been rejected.
+================================
+Attempting step 54 in Walk 1 with Walker 1
+Regenerated cluster:
+	ID = -1
+	E = -195.1248508038002
+newCluster belongs to cluster 4.
+The current step has been rejected.
+================================
+Attempting step 51 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 147
+	E = -194.97138921646243
+Chance to accept = 0.11117770320648787
+The current step has been rejected.
+================================
+Attempting step 48 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 148
+	E = -194.08664996055347
+Chance to accept = 8.945169690195453e-6
+The current step has been rejected.
+================================
+Attempting step 55 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 149
+	E = -194.98563594018998
+Chance to accept = 0.28217223186263524
+newCluster belongs to cluster 4.
+The current step has been rejected.
+================================
+Attempting step 52 in Walk 3 with Walker 4
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -4
+	E = -195.1910583351576
+newCluster belongs to cluster 4.
+The current step has been accepted.
+================================
+Attempting step 54 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 150
+	E = -194.8124526963685
+Chance to accept = 0.4443080940037857
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 55 in Walk 2 with Walker 3
+Regenerated cluster:
+	ID = -41
+	E = -195.16502316758226
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 53 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 151
+	E = -194.34617680187515
+Chance to accept = 0.00021415396632564507
+The current step has been rejected.
+================================
+Attempting step 56 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 152
+	E = -194.12740788630128
+Chance to accept = 5.2878264525024814e-5
+The current step has been rejected.
+================================
+Attempting step 49 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 153
+	E = -195.15270657019445
+Chance to accept = 0.38142891557868125
+The current step has been rejected.
+================================
+Attempting step 54 in Walk 3 with Walker 4
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -4
+	E = -195.19106143883764
+newCluster belongs to cluster 4.
+The current step has been accepted.
+================================
+Attempting step 57 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 154
+	E = -194.66843102821187
+Chance to accept = 0.011827987155036353
+The current step has been rejected.
+================================
+Attempting step 56 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 155
+	E = -194.62529531908314
+Chance to accept = 0.06837070574789535
+The current step has been rejected.
+================================
+Attempting step 50 in Walk 4 with Walker 2
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -2
+	E = -195.24910407515284
+newCluster belongs to cluster 2.
+The current step has been accepted.
+================================
+Attempting step 55 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 156
+	E = -193.0670029843818
+Chance to accept = 5.961167704031467e-10
+The current step has been rejected.
+================================
+Attempting step 51 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 157
+	E = -194.91213390780996
+Chance to accept = 0.03439989821653443
+The current step has been rejected.
+================================
+Attempting step 58 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 158
+	E = -194.41043429352996
+Chance to accept = 0.000896283212287938
+The current step has been rejected.
+================================
+Attempting step 57 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 159
+	E = -194.8847031338399
+Chance to accept = 0.9150901654712087
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 58 in Walk 2 with Walker 3
+Regenerated cluster:
+	ID = -110
+	E = -194.8945907957218
+newCluster belongs to cluster 3.
+The current step has been accepted.
+================================
+Attempting step 56 in Walk 3 with Walker 4
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -4
+	E = -195.1910543081105
+Chance to accept = 0.999928695270891
+newCluster belongs to cluster 4.
+The current step has been accepted.
+================================
+Attempting step 52 in Walk 4 with Walker 2
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -2
+	E = -195.24910526335844
+newCluster belongs to cluster 2.
+The current step has been accepted.
+================================
+Attempting step 59 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 160
+	E = -194.86264534390065
+Chance to accept = 0.7265452462017997
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 57 in Walk 3 with Walker 4
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -4
+	E = -195.1910560472867
+newCluster belongs to cluster 4.
+The current step has been accepted.
+================================
+Attempting step 53 in Walk 4 with Walker 2
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -2
+	E = -195.2490929559452
+Chance to accept = 0.9998769334408782
+newCluster belongs to cluster 2.
+The current step has been accepted.
+================================
+Attempting step 60 in Walk 2 with Walker 3
+Regenerated cluster:
+	ID = -41
+	E = -195.16498595523922
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 58 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 161
+	E = -195.04467122145508
+Chance to accept = 0.2313442869546599
+The current step has been rejected.
+================================
+Attempting step 59 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 162
+	E = -194.38390730369323
+Chance to accept = 0.0006874482471304283
+The current step has been rejected.
+================================
+Attempting step 54 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 163
+	E = -195.0613997539019
+Chance to accept = 0.15305896794550677
+newCluster belongs to cluster 2.
+The current step has been accepted.
+================================
+Attempting step 60 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 164
+	E = -194.9035346200096
+Chance to accept = 0.12415172843247407
+newCluster belongs to cluster 4.
+The current step has been rejected.
+================================
+Attempting step 61 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 165
+	E = -194.61135306167074
+Chance to accept = 0.05887272665258942
+The current step has been rejected.
+================================
+Attempting step 59 in Walk 3 with Walker 4
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -4
+	E = -195.19105055946727
+Chance to accept = 0.9999451233114185
+newCluster belongs to cluster 4.
+The current step has been accepted.
+================================
+Attempting step 61 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 166
+	E = -195.09768614220255
+Chance to accept = 0.8652510152863505
+newCluster belongs to cluster 1.
+The current step has been accepted.
+================================
+Attempting step 55 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 167
+	E = -194.24210781626294
+Chance to accept = 0.00027660518971306484
+The current step has been rejected.
+================================
+Attempting step 62 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 168
+	E = -193.67348657920743
+Chance to accept = 4.975214040099423e-6
+The current step has been rejected.
+================================
+Attempting step 62 in Walk 1 with Walker 1
+Regenerated cluster:
+	ID = -1
+	E = -195.12544660987604
+newCluster belongs to cluster 4.
+The current step has been rejected.
+================================
+Attempting step 60 in Walk 3 with Walker 4
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -4
+	E = -195.191052429801
+newCluster belongs to cluster 4.
+The current step has been accepted.
+================================
+Attempting step 63 in Walk 2 with Walker 3
+Regenerated cluster:
+	ID = -110
+	E = -194.89461463583453
+newCluster belongs to cluster 3.
+The current step has been accepted.
+================================
+Attempting step 56 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 169
+	E = -194.52406164446717
+Chance to accept = 0.004638421825808787
+The current step has been rejected.
+================================
+Attempting step 63 in Walk 1 with Walker 1
+Regenerated cluster:
+	ID = -137
+	E = -195.1259818684916
+newCluster belongs to cluster 4.
+The current step has been rejected.
+================================
+Attempting step 64 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 170
+	E = -194.88303873234898
+Chance to accept = 0.8906898226427705
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 61 in Walk 3 with Walker 4
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -4
+	E = -195.19103877043727
+Chance to accept = 0.9998634156911784
+newCluster belongs to cluster 4.
+The current step has been accepted.
+================================
+Attempting step 64 in Walk 1 with Walker 1
+Regenerated cluster:
+	ID = -29
+	E = -195.1200451446645
+newCluster belongs to cluster 4.
+The current step has been rejected.
+================================
+Attempting step 57 in Walk 4 with Walker 2
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -2
+	E = -195.2491056828835
+newCluster belongs to cluster 2.
+The current step has been accepted.
+================================
+Attempting step 65 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 171
+	E = -195.05153175986362
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 62 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 172
+	E = -194.67683301344937
+Chance to accept = 0.005845649498460112
+The current step has been rejected.
+================================
+Attempting step 66 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 173
+	E = -195.09605282608695
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 58 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 174
+	E = -194.95989167246069
+Chance to accept = 0.05545740090394904
+newCluster belongs to cluster 3.
+The current step has been rejected.
+================================
+Attempting step 65 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 175
+	E = -195.09889493009302
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 59 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 176
+	E = -194.72771337660188
+Chance to accept = 0.005440289172506698
+The current step has been rejected.
+================================
+Attempting step 66 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 177
+	E = -194.9558442084599
+Chance to accept = 0.2420963873167191
+newCluster belongs to cluster 4.
+The current step has been rejected.
+================================
+Attempting step 63 in Walk 3 with Walker 4
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -4
+	E = -195.19105827171697
+newCluster belongs to cluster 4.
+The current step has been accepted.
+================================
+Attempting step 67 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 178
+	E = -194.32481035668494
+Chance to accept = 0.003352520622338597
+The current step has been rejected.
+================================
+Attempting step 60 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 179
+	E = -195.09740075856593
+Chance to accept = 0.21935820564084663
+newCluster belongs to cluster 2.
+The current step has been accepted.
+================================
+Attempting step 68 in Walk 2 with Walker 3
+Regenerated cluster:
+	ID = -41
+	E = -195.1646045775499
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 67 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 180
+	E = -195.09942728107018
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 64 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 181
+	E = -194.6040885435695
+Chance to accept = 0.002823727999423238
+The current step has been rejected.
+================================
+Attempting step 61 in Walk 4 with Walker 2
+Tight minimisation run as sloppy energy < -195.18
+Generated new cluster:
+	ID = 182
+	E = -195.18321756250177
+newCluster belongs to cluster 2.
+The current step has been accepted.
+================================
+Attempting step 65 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 183
+	E = -194.70905606356413
+Chance to accept = 0.008066609014077354
+The current step has been rejected.
+================================
+Attempting step 69 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 184
+	E = -194.42410727362238
+Chance to accept = 0.009049247968544677
+The current step has been rejected.
+================================
+Attempting step 68 in Walk 1 with Walker 1
+Regenerated cluster:
+	ID = -166
+	E = -195.0975025815521
+Chance to accept = 0.9981660771908468
+newCluster belongs to cluster 1.
+The current step has been accepted.
+================================
+Attempting step 66 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 185
+	E = -195.07861601348583
+Chance to accept = 0.32483998156744726
+The current step has been rejected.
+================================
+Attempting step 62 in Walk 4 with Walker 2
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -182
+	E = -195.18321182378025
+Chance to accept = 0.9999426144314926
+newCluster belongs to cluster 2.
+The current step has been accepted.
+================================
+Attempting step 69 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 186
+	E = -195.1194481540319
+newCluster belongs to cluster 4.
+The current step has been rejected.
+================================
+Attempting step 70 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 187
+	E = -194.71281198787202
+Chance to accept = 0.16234582778981457
+The current step has been rejected.
+================================
+Attempting step 67 in Walk 3 with Walker 4
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -4
+	E = -195.19105258685855
+Chance to accept = 0.9999431530316278
+newCluster belongs to cluster 4.
+The current step has been accepted.
+================================
+Attempting step 63 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 188
+	E = -194.29308174153945
+Chance to accept = 0.000136211624054725
+The current step has been rejected.
+================================
+Attempting step 70 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 189
+	E = -195.02179902978645
+Chance to accept = 0.469054872870195
+newCluster belongs to cluster 4.
+The current step has been rejected.
+================================
+Attempting step 71 in Walk 2 with Walker 3
+Regenerated cluster:
+	ID = -110
+	E = -194.89468410000518
+newCluster belongs to cluster 3.
+The current step has been accepted.
+================================
+Attempting step 71 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 190
+	E = -194.87145170463342
+Chance to accept = 0.10429740794654953
+The current step has been rejected.
+================================
+Attempting step 68 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 191
+	E = -195.08745234179938
+Chance to accept = 0.3548704624543536
+The current step has been rejected.
+================================
+Attempting step 72 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 192
+	E = -194.48921586482243
+Chance to accept = 0.017340987641736156
+The current step has been rejected.
+================================
+Attempting step 64 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 193
+	E = -194.46719693193216
+Chance to accept = 0.0007769388440497709
+The current step has been rejected.
+================================
+Attempting step 72 in Walk 1 with Walker 1
+Regenerated cluster:
+	ID = -130
+	E = -195.10241138452184
+newCluster belongs to cluster 4.
+The current step has been rejected.
+================================
+Attempting step 69 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 194
+	E = -194.78464809022591
+Chance to accept = 0.017179388335881837
+The current step has been rejected.
+================================
+Attempting step 73 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 195
+	E = -194.81394797661545
+Chance to accept = 0.44603349276442444
+The current step has been rejected.
+================================
+Attempting step 70 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 196
+	E = -194.6612889788627
+Chance to accept = 0.005003407593589961
+The current step has been rejected.
+================================
+Attempting step 73 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 197
+	E = -195.0970384830878
+Chance to accept = 0.9953697680853208
+newCluster belongs to cluster 4.
+The current step has been rejected.
+================================
+Attempting step 65 in Walk 4 with Walker 2
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -182
+	E = -195.18321597668339
+newCluster belongs to cluster 2.
+The current step has been accepted.
+================================
+Attempting step 74 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 198
+	E = -194.11907638946394
+Chance to accept = 0.00042813281058484394
+The current step has been rejected.
+================================
+Attempting step 71 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 199
+	E = -194.7527954747977
+Chance to accept = 0.012493195778386458
+The current step has been rejected.
+================================
+Attempting step 74 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 200
+	E = -194.7042440229606
+Chance to accept = 0.019592947754914474
+The current step has been rejected.
+================================
+Attempting step 66 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 201
+	E = -194.23101681288566
+Chance to accept = 7.322368395890529e-5
+The current step has been rejected.
+================================
+Attempting step 72 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 202
+	E = -194.87282552291273
+Chance to accept = 0.041491336214402895
+The current step has been rejected.
+================================
+Attempting step 67 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 203
+	E = -194.92964640864903
+Chance to accept = 0.07920659762039177
+The current step has been rejected.
+================================
+Attempting step 75 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 204
+	E = -194.88364833105206
+Chance to accept = 0.8955137621051135
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 75 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 205
+	E = -194.66919520079028
+Chance to accept = 0.013800177734114955
+The current step has been rejected.
+================================
+Attempting step 76 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 206
+	E = -195.06160615542584
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 68 in Walk 4 with Walker 2
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -182
+	E = -195.18321835311775
+newCluster belongs to cluster 2.
+The current step has been accepted.
+================================
+Attempting step 73 in Walk 3 with Walker 4
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -4
+	E = -195.19105219503516
+Chance to accept = 0.9999960817737612
+newCluster belongs to cluster 4.
+The current step has been accepted.
+================================
+Attempting step 77 in Walk 2 with Walker 3
+Regenerated cluster:
+	ID = -119
+	E = -194.89406517606272
+Chance to accept = 0.9938298744639762
+newCluster belongs to cluster 3.
+The current step has been accepted.
+================================
+Attempting step 78 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 207
+	E = -195.09675901345537
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 76 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 208
+	E = -195.09930599415088
+newCluster belongs to cluster 4.
+The current step has been rejected.
+================================
+Attempting step 74 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 209
+	E = -194.96455813130478
+Chance to accept = 0.1038361983545517
+The current step has been rejected.
+================================
+Attempting step 75 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 210
+	E = -194.66653358473098
+Chance to accept = 0.005272840311680608
+The current step has been rejected.
+================================
+Attempting step 77 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 211
+	E = -195.09734167976558
+Chance to accept = 0.9983922759099583
+newCluster belongs to cluster 4.
+The current step has been rejected.
+================================
+Attempting step 79 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 212
+	E = -194.30974707787072
+Chance to accept = 0.0028996043511939173
+The current step has been rejected.
+================================
+Attempting step 69 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 213
+	E = -194.94627147643558
+Chance to accept = 0.09353039953426326
+The current step has been rejected.
+================================
+Attempting step 70 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 214
+	E = -195.0386867909861
+Chance to accept = 0.23567168180973036
+The current step has been rejected.
+================================
+Attempting step 80 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 215
+	E = -194.44679656241857
+Chance to accept = 0.011416608059364014
+The current step has been rejected.
+================================
+Attempting step 78 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 216
+	E = -194.72182107960396
+Chance to accept = 0.02335801685617261
+The current step has been rejected.
+================================
+Attempting step 76 in Walk 3 with Walker 4
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -4
+	E = -195.19105994053703
+newCluster belongs to cluster 4.
+The current step has been accepted.
+================================
+Attempting step 71 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 217
+	E = -195.10267635249295
+Chance to accept = 0.44690018626559186
+The current step has been rejected.
+================================
+Attempting step 79 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 218
+	E = -194.84146397621438
+Chance to accept = 0.07727490244707708
+The current step has been rejected.
+================================
+Attempting step 81 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 219
+	E = -194.25547019879383
+Chance to accept = 0.001685067304437884
+The current step has been rejected.
+================================
+Attempting step 72 in Walk 4 with Walker 2
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -182
+	E = -195.18321586379707
+Chance to accept = 0.9999751071030485
+newCluster belongs to cluster 2.
+The current step has been accepted.
+================================
+Attempting step 73 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 220
+	E = -194.91334600393378
+Chance to accept = 0.06729303102175871
+The current step has been rejected.
+================================
+Attempting step 80 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 221
+	E = -195.0992236578331
+newCluster belongs to cluster 4.
+The current step has been rejected.
+================================
+Attempting step 77 in Walk 3 with Walker 4
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -4
+	E = -195.19105068707714
+Chance to accept = 0.9999074696822595
+newCluster belongs to cluster 4.
+The current step has been accepted.
+================================
+Attempting step 82 in Walk 2 with Walker 3
+Regenerated cluster:
+	ID = -41
+	E = -195.1650738037208
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 78 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 222
+	E = -194.80252784229316
+Chance to accept = 0.020543135190476278
+The current step has been rejected.
+================================
+Attempting step 74 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 223
+	E = -194.3176075376347
+Chance to accept = 0.00017406473954064073
+The current step has been rejected.
+================================
+Attempting step 83 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 224
+	E = -194.7019129922475
+Chance to accept = 0.1463840197461154
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 75 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 225
+	E = -195.03349848840466
+Chance to accept = 0.22376167287277765
+newCluster belongs to cluster 2.
+The current step has been accepted.
+================================
+Attempting step 81 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 226
+	E = -194.48474299327188
+Chance to accept = 0.002181820011557772
+The current step has been rejected.
+================================
+Attempting step 76 in Walk 4 with Walker 2
+Regenerated cluster:
+	ID = -174
+	E = -194.95953482622411
+Chance to accept = 0.47728731981800865
+newCluster belongs to cluster 3.
+The current step has been rejected.
+================================
+Attempting step 84 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 227
+	E = -194.4785547802276
+Chance to accept = 0.015684160545394652
+The current step has been rejected.
+================================
+Attempting step 79 in Walk 3 with Walker 4
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -4
+	E = -195.19105669316235
+newCluster belongs to cluster 4.
+The current step has been accepted.
+================================
+Attempting step 82 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 228
+	E = -194.3940834815352
+Chance to accept = 0.0008812307921924422
+The current step has been rejected.
+================================
+Attempting step 85 in Walk 2 with Walker 3
+Regenerated cluster:
+	ID = -24
+	E = -194.89879605402692
+newCluster belongs to cluster 3.
+The current step has been accepted.
+================================
+Attempting step 80 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 229
+	E = -194.90910514594944
+Chance to accept = 0.059634830447343586
+The current step has been rejected.
+================================
+Attempting step 77 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 230
+	E = -194.73483055502933
+Chance to accept = 0.050454702079865306
+The current step has been rejected.
+================================
+Attempting step 86 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 231
+	E = -194.20853413937866
+Chance to accept = 0.001005149345038822
+The current step has been rejected.
+================================
+Attempting step 83 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 232
+	E = -195.04880605830016
+Chance to accept = 0.6144883967866098
+newCluster belongs to cluster 3.
+The current step has been rejected.
+================================
+Attempting step 78 in Walk 4 with Walker 2
+Tight minimisation run as sloppy energy < -195.18
+Generated new cluster:
+	ID = 233
+	E = -195.24579975864305
+newCluster belongs to cluster 2.
+The current step has been accepted.
+================================
+Attempting step 81 in Walk 3 with Walker 4
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -4
+	E = -195.19104520056243
+Chance to accept = 0.999885080604498
+newCluster belongs to cluster 4.
+The current step has been accepted.
+================================
+Attempting step 87 in Walk 2 with Walker 3
+Regenerated cluster:
+	ID = -173
+	E = -195.09590216450195
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 79 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 234
+	E = -194.90133178096306
+Chance to accept = 0.0319149803235879
+The current step has been rejected.
+================================
+Attempting step 84 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 235
+	E = -193.93062344280602
+Chance to accept = 8.556739093068505e-6
+The current step has been rejected.
+================================
+Attempting step 88 in Walk 2 with Walker 3
+Regenerated cluster:
+	ID = -37
+	E = -194.86324009424686
+Chance to accept = 0.7007811778575992
+newCluster belongs to cluster 3.
+The current step has been accepted.
+================================
+Attempting step 89 in Walk 2 with Walker 3
+Regenerated cluster:
+	ID = -41
+	E = -195.1649757556811
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 82 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 236
+	E = -194.70256765738645
+Chance to accept = 0.0075608214917835745
+The current step has been rejected.
+================================
+Attempting step 85 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 237
+	E = -194.520817781572
+Chance to accept = 0.0031296065043252695
+The current step has been rejected.
+================================
+Attempting step 80 in Walk 4 with Walker 2
+Tight minimisation run as sloppy energy < -195.18
+Generated new cluster:
+	ID = 238
+	E = -195.1837164353424
+Chance to accept = 0.5374963912230919
+The current step has been rejected.
+================================
+Attempting step 83 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 239
+	E = -194.61334666393662
+Chance to accept = 0.0030980408031884726
+The current step has been rejected.
+================================
+Attempting step 81 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 240
+	E = -194.92646588225014
+Chance to accept = 0.041034637004823064
+The current step has been rejected.
+================================
+Attempting step 90 in Walk 2 with Walker 3
+Regenerated cluster:
+	ID = -37
+	E = -194.86321711148503
+Chance to accept = 0.999770198790003
+newCluster belongs to cluster 3.
+The current step has been accepted.
+================================
+Attempting step 86 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 241
+	E = -194.8406256483193
+Chance to accept = 0.07662979322738844
+The current step has been rejected.
+================================
+Attempting step 84 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 242
+	E = -194.97631704015555
+Chance to accept = 0.11680123861441351
+The current step has been rejected.
+================================
+Attempting step 91 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 243
+	E = -194.98883738902455
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 82 in Walk 4 with Walker 2
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -233
+	E = -195.24579803392123
+Chance to accept = 0.9999827529306076
+newCluster belongs to cluster 2.
+The current step has been accepted.
+================================
+Attempting step 87 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 244
+	E = -194.81229046919177
+Chance to accept = 0.057721755954134035
+The current step has been rejected.
+================================
+Attempting step 83 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 245
+	E = -195.02584968533017
+Chance to accept = 0.11086040453773287
+The current step has been rejected.
+================================
+Attempting step 85 in Walk 3 with Walker 4
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -4
+	E = -195.19105628733823
+newCluster belongs to cluster 4.
+The current step has been accepted.
+================================
+Attempting step 92 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 246
+	E = -193.8458137998233
+Chance to accept = 3.81481567745015e-5
+The current step has been rejected.
+================================
+Attempting step 86 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 247
+	E = -194.58340027195098
+Chance to accept = 0.0022960611815288755
+The current step has been rejected.
+================================
+Attempting step 88 in Walk 1 with Walker 1
+Regenerated cluster:
+	ID = -1
+	E = -195.12503833612342
+newCluster belongs to cluster 4.
+The current step has been rejected.
+================================
+Attempting step 93 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 248
+	E = -194.59815510260105
+Chance to accept = 0.07060741661194522
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 84 in Walk 4 with Walker 2
+Tight minimisation run as sloppy energy < -195.18
+Generated new cluster:
+	ID = 249
+	E = -195.1905904850919
+Chance to accept = 0.5757535995932873
+The current step has been rejected.
+================================
+Attempting step 89 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 250
+	E = -195.09786725907162
+newCluster belongs to cluster 4.
+The current step has been rejected.
+================================
+Attempting step 87 in Walk 3 with Walker 4
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -4
+	E = -195.19105081045535
+Chance to accept = 0.9999452326710239
+newCluster belongs to cluster 4.
+The current step has been accepted.
+================================
+Attempting step 90 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 251
+	E = -194.42937129080883
+Chance to accept = 0.0012541303341633255
+The current step has been rejected.
+================================
+Attempting step 85 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 252
+	E = -194.28550445940385
+Chance to accept = 6.753019375760574e-5
+The current step has been rejected.
+================================
+Attempting step 94 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 253
+	E = -194.35372366857484
+Chance to accept = 0.006127708421021706
+The current step has been rejected.
+================================
+Attempting step 86 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 254
+	E = -194.90798922878102
+Chance to accept = 0.03411261398866301
+The current step has been rejected.
+================================
+Attempting step 95 in Walk 2 with Walker 3
+Regenerated cluster:
+	ID = -110
+	E = -194.89470858822662
+newCluster belongs to cluster 3.
+The current step has been accepted.
+================================
+Attempting step 88 in Walk 3 with Walker 4
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -4
+	E = -195.19106122519074
+newCluster belongs to cluster 4.
+The current step has been accepted.
+================================
+Attempting step 91 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 255
+	E = -194.11729057311518
+Chance to accept = 5.533416189570299e-5
+The current step has been rejected.
+================================
+Attempting step 87 in Walk 4 with Walker 2
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -233
+	E = -195.24580953820234
+newCluster belongs to cluster 2.
+The current step has been accepted.
+================================
+Attempting step 89 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 256
+	E = -194.75374967946496
+Chance to accept = 0.012611887501985828
+The current step has been rejected.
+================================
+Attempting step 92 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 257
+	E = -195.12390284909117
+newCluster belongs to cluster 4.
+The current step has been rejected.
+================================
+Attempting step 90 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 258
+	E = -194.61025689114405
+Chance to accept = 0.0030033007640511236
+The current step has been rejected.
+================================
+Attempting step 96 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 259
+	E = -193.99273130964198
+Chance to accept = 0.00012099361457755088
+The current step has been rejected.
+================================
+Attempting step 88 in Walk 4 with Walker 2
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -233
+	E = -195.2458084899139
+Chance to accept = 0.9999895171706957
+newCluster belongs to cluster 2.
+The current step has been accepted.
+================================
+Attempting step 91 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 260
+	E = -194.92830010365893
+Chance to accept = 0.07225084797949195
+The current step has been rejected.
+================================
+Attempting step 93 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 262
+	E = -194.75759163023193
+Chance to accept = 0.03340300165251422
+The current step has been rejected.
+================================
+Attempting step 97 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 261
+	E = -194.89020749294608
+Chance to accept = 0.9559870110360079
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 89 in Walk 4 with Walker 2
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -233
+	E = -195.24580248796988
+Chance to accept = 0.9999399823608328
+newCluster belongs to cluster 2.
+The current step has been accepted.
+================================
+Attempting step 94 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 263
+	E = -194.2263103108036
+Chance to accept = 0.00016461145034233254
+The current step has been rejected.
+================================
+Attempting step 98 in Walk 2 with Walker 3
+Generated new cluster:
+	ID = 264
+	E = -194.83398253290733
+Chance to accept = 0.544841390547907
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 90 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 265
+	E = -194.9939322094057
+Chance to accept = 0.08056404783325108
+The current step has been rejected.
+================================
+Attempting step 92 in Walk 3 with Walker 4
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -4
+	E = -195.19105252604678
+Chance to accept = 0.9999130123440294
+newCluster belongs to cluster 4.
+The current step has been accepted.
+================================
+Attempting step 99 in Walk 2 with Walker 3
+Regenerated cluster:
+	ID = -41
+	E = -195.1649500635796
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 91 in Walk 4 with Walker 2
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -233
+	E = -195.24581210874985
+newCluster belongs to cluster 2.
+The current step has been accepted.
+================================
+Attempting step 95 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 266
+	E = -194.13672409742946
+Chance to accept = 6.720352602333111e-5
+The current step has been rejected.
+================================
+Attempting step 100 in Walk 2 with Walker 3
+Regenerated cluster:
+	ID = -41
+	E = -195.16485383698782
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 96 in Walk 1 with Walker 1
+Regenerated cluster:
+	ID = -35
+	E = -195.1090017289666
+newCluster belongs to cluster 4.
+The current step has been rejected.
+================================
+Attempting step 92 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 268
+	E = -194.99024933636886
+Chance to accept = 0.07764347810700628
+newCluster belongs to cluster 4.
+The current step has been rejected.
+================================
+Attempting step 93 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 267
+	E = -195.03443539731157
+Chance to accept = 0.2088432543973967
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 93 in Walk 4 with Walker 2
+Regenerated cluster:
+	ID = -254
+	E = -194.90760577748807
+Chance to accept = 0.03397727661623956
+The current step has been rejected.
+================================
+Attempting step 94 in Walk 3 with Walker 4
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -4
+	E = -195.19104881234603
+Chance to accept = 0.9999628636820743
+newCluster belongs to cluster 4.
+The current step has been accepted.
+================================
+Attempting step 94 in Walk 4 with Walker 2
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -2
+	E = -195.24911053109543
+newCluster belongs to cluster 2.
+The current step has been accepted.
+================================
+Attempting step 97 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 269
+	E = -194.75586296036354
+Chance to accept = 0.032830536301570595
+The current step has been rejected.
+================================
+Attempting step 95 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 270
+	E = -194.91777937843187
+Chance to accept = 0.0363954494728875
+The current step has been rejected.
+================================
+Attempting step 98 in Walk 1 with Walker 1
+Regenerated cluster:
+	ID = -180
+	E = -195.09872952415446
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 95 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 271
+	E = -195.1747021569671
+Chance to accept = 0.8491949008782373
+newCluster belongs to cluster 4.
+The current step has been accepted.
+================================
+Attempting step 96 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 272
+	E = -194.9140041927619
+Chance to accept = 0.03504706581274972
+The current step has been rejected.
+================================
+Attempting step 99 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 273
+	E = -195.10291144939555
+newCluster belongs to cluster 4.
+The current step has been rejected.
+================================
+Attempting step 96 in Walk 3 with Walker 4
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -4
+	E = -195.19105194118555
+newCluster belongs to cluster 4.
+The current step has been accepted.
+================================
+Attempting step 100 in Walk 1 with Walker 1
+Generated new cluster:
+	ID = 274
+	E = -195.09443237138532
+Chance to accept = 0.9697644212538862
+newCluster belongs to cluster 2.
+The current step has been rejected.
+================================
+Attempting step 97 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 275
+	E = -194.46999849952266
+Chance to accept = 0.0007387622431208385
+The current step has been rejected.
+================================
+Attempting step 97 in Walk 4 with Walker 2
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -2
+	E = -195.2490885614396
+Chance to accept = 0.9997803275733314
+newCluster belongs to cluster 2.
+The current step has been accepted.
+================================
+Attempting step 98 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 276
+	E = -195.17280511425798
+Chance to accept = 0.8332110819000373
+newCluster belongs to cluster 4.
+The current step has been accepted.
+================================
+Attempting step 98 in Walk 4 with Walker 2
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -2
+	E = -195.24909834885491
+newCluster belongs to cluster 2.
+The current step has been accepted.
+================================
+Attempting step 99 in Walk 3 with Walker 4
+Tight minimisation run as sloppy energy < -195.18
+Regenerated cluster:
+	ID = -4
+	E = -195.19105689687214
+newCluster belongs to cluster 4.
+The current step has been accepted.
+================================
+Attempting step 99 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 277
+	E = -194.82696129439952
+Chance to accept = 0.01467851315633207
+The current step has been rejected.
+================================
+Attempting step 100 in Walk 3 with Walker 4
+Generated new cluster:
+	ID = 278
+	E = -194.9362409351116
+Chance to accept = 0.07822549843735706
+The current step has been rejected.
+================================
+Attempting step 100 in Walk 4 with Walker 2
+Generated new cluster:
+	ID = 279
+	E = -194.69191586267598
+Chance to accept = 0.0038035331732736584
+The current step has been rejected.

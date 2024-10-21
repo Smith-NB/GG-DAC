@@ -1,0 +1,27 @@
+0 true
+
+Task[Task (runnable) @0x000000010ca3cb90, Task (runnable) @0x000000010ca3cb90, Task (runnable) @0x000000010ca3cb90, Task (runnable) @0x000000010ca3cb90]
+[3979658317596722702, 4369487950513065445, 0, 4607182418800017408]
+0 0 0 0 
+0 true
+
+Task[Task (failed) @0x000000010ca3cb90, Task (failed) @0x000000010ca3cb90, Task (failed) @0x000000010ca3cb90, Task (failed) @0x000000010ca3cb90]
+[3979658317596722702, 4369487950513065445, 0, 4607182418800017408]
+0 0 0 0 
+starting task 1 on cluster 1
+starting task 2 on cluster 3
+starting task 3 on cluster 4
+starting task 4 on cluster 2
+0 true
+
+Task[Task (runnable) @0x000000010ca3eca0, Task (runnable) @0x000000010ca3f260, Task (runnable) @0x000000010ca3fb00, Task (runnable) @0x000000010ca3fde0]
+[1, 4, 2, 3]
+49 43 50 46 
+completing task 2 on cluster 3
+ending task 2 on cluster 3
+completing task 1 on cluster 1
+ending task 1 on cluster 1
+completing task 3 on cluster 4
+ending task 3 on cluster 4
+completing task 4 on cluster 2
+ending task 4 on cluster 2
