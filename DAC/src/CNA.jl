@@ -433,6 +433,54 @@ and returns it as a `Vector` of `Dict`'s, respectively.
 """
 getNormalCNAProfile(atoms::Cluster, rcut::Float64) = getNormalCNAProfile(atoms.positions, rcut)
 
+function getCNAMatrix(coordinates::Matrix{Float64}, rcut::Float64)
+	natoms = getNAtoms(coordinates)
+	bondlist, graphbonds = getNeighbourList(coordinates, rcut)
+	nbonds = length(bondlist)
+	commonNeighbours = zeros(Int64, natoms)
+	visited = trues(natoms, 2)
+
+	cnaMatrix = Matrix{Tuple{UInt8, UInt8, UInt8}}(undef, natoms, natoms)
+	fill!(cnaMatrix, (0, 0, 0))
+	
+
+	#for each bonding pair in cluster
+	for i in 1:nbonds
+		ncn::UInt8 = 0
+		nb::UInt8 = 0
+
+		#for each atom in cluster
+		for j in 1:natoms
+			#check if atom j is bonded to both atoms of current pair
+			if graphbonds[j, bondlist[i][1]] == true && graphbonds[j, bondlist[i][2]] == true
+				ncn += 1
+				commonNeighbours[ncn] = j
+				#check if bonds exist between current and previosuly discovered common neighbours
+				for k in 1:ncn-1
+					if graphbonds[commonNeighbours[k], j] == true
+						nb += 1
+					end
+				end
+			end
+		end
+		#find the longest chain of bonds between common neighbours
+		nl::UInt8 = findLongestChain(graphbonds, commonNeighbours, ncn, visited)
+
+		#add signature to profile
+		sig = (ncn, nb, nl)
+		cnaMatrix[bondlist[i][1], bondlist[i][2]] = sig
+		#cnaMatrix[bondlist[i][2], bondlist[i][1]] = sig
+
+		#reset oommonNeighbours
+		for j in 1:ncn
+			commonNeighbours[j] = 0
+		end
+	end
+
+	return cnaMatrix
+end
+
+getCNAMatrix(atoms::Cluster, rcut::Float64) = getCNAMatrix(atoms.positions, rcut)
 
 function getNormalCNAProfileAsVector(coordinates::Matrix{Float64}, rcut::Float64)
 	natoms = getNAtoms(coordinates)

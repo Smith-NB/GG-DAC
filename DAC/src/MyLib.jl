@@ -126,3 +126,29 @@ function sphericalToCartesian(ρ::Float64, θ::Float64, φ::Float64)
 
     return [x, y, z]
 end
+
+function cartesianToSpherical(x::Float64, y::Float64, z::Float64)
+    #x += 0.000001
+    #y += 0.000001
+    #z += 0.000001
+    ρ = sqrt(x^2 + y^2 + z^2)
+    θ = acos(z/ρ)
+    φ = sign(y) * acos(x / sqrt(x^2 + y^2))
+    if θ > 3.14
+        θ = 0
+    end
+    if abs(x) < 0.01 && abs(y) < 0.01 
+        φ = 0
+    end
+    if isnan(φ)
+        φ = 0
+    end
+    if isnan(θ)
+        θ = 0
+    end
+    println([ρ, θ, φ])
+    println(θ == NaN)
+
+    return [ρ, θ*180/pi, φ*180/pi]
+
+end

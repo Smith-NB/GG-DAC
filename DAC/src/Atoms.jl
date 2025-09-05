@@ -6,6 +6,7 @@ const CNAProfile = Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}
 const normalCNAProfile = Vector{Dict{Tuple{UInt8, UInt8, UInt8}, UInt16}}
 const CNASig = Tuple{UInt8, UInt8, UInt8}
 
+
 struct ClusterCompressed
 	positions::Array{Float64}
 	energy::Float64
@@ -13,13 +14,35 @@ struct ClusterCompressed
 	ID::Int64
 end
 
+"""
+    ClusterVector
 
+# Arguments
+
+- `vec::Vector{ClusterCompressed}`: `Vector` of `ClusterCompressed` objects.
+- `N::Threads.Atomic{Int64}`: Number of clusters in the Vector (atomic, datarace safe).
+- `lock::ReentrantLock`: A lock to prevent data races.
+"""
 mutable struct ClusterVector
 	vec::Vector{ClusterCompressed}
 	N::Threads.Atomic{Int64}
 	lock::ReentrantLock
 end
 
+"""
+    ClusterVectorWithML
+
+# Arguments
+
+- `vec::Vector{ClusterCompressed}`: `Vector` of `ClusterCompressed` objects.
+- `eLim::Float64`: The energy limit above which a cluster is not used for training.
+- `MLData::Matrix{UInt8}`: Data used for training, e.g. number of atoms belonging to Atom-64-Class
+- `nMLData::Int64`: 
+- `idsOfMLLabels::Vector{Vector{Int32}}`: 
+- `idToIndex::Vector{Int32}`: 
+- `N::Threads.Atomic{Int64}`: Number of clusters in the Vector (atomic, datarace safe).
+- `lock::ReentrantLock`: A lock to prevent data races.
+"""
 mutable struct ClusterVectorWithML
 	vec::Vector{ClusterCompressed}
 	eLim::Float64
@@ -174,6 +197,17 @@ function getCNAProfile(atoms::Cluster)
 end
 
 setFormula(atoms::Cluster, formula::Dict{String, Int64}) = atoms.formula = formula
+
+"""
+    setPositions!
+
+Sets the atomic positions of the Nanoparticle safely. Sets valid flags to `false`.
+
+# Arguments
+
+- `atoms::Cluster`: The Cluster.
+- `positions::Matrix{Float64}`: The new atomic positions.
+"""
 function setPositions!(atoms::Cluster, positions::Matrix{Float64})
 	atoms.positions = positions
 	atoms.validCNA = false
@@ -182,14 +216,37 @@ function setPositions!(atoms::Cluster, positions::Matrix{Float64})
 	atoms.validStresses = false
 	return nothing
 end
+
+"""
+    moveAtoms!
+
+Perturbs the nanoparticle atomic coordinates by `dr`
+
+# Arguments
+
+- `atoms::Cluster`: The cluster.
+- `dr::LinearAlgebra.Adjoint{Float64, Matrix{Float64}}`: the displacement matrix.
+"""
 function moveAtoms!(atoms::Cluster, dr::LinearAlgebra.Adjoint{Float64, Matrix{Float64}})
 	atoms.positions += dr
 	return nothing
 end
+
+"""
+    moveAtoms!
+
+Perturbs the nanoparticle atomic coordinates by `dr`
+
+# Arguments
+
+- `atoms::Cluster`: The cluster.
+- `dr::Matrix{Float64}`: the displacement matrix.
+"""
 function moveAtoms!(atoms::Cluster, dr::Matrix{Float64})
 	atoms.positions += dr
 	return nothing
 end
+
 setCell!(atoms::Cluster, cell::Matrix{Float64}) = atoms.cell = cell
 setCalculator!(atoms::Cluster, calculator::Calculator) = atoms.calculator = calculator
 function setEnergies!(atoms::Cluster, energies::Vector{Float64}) 
@@ -284,7 +341,9 @@ function getXYZDistances(coordinates::Matrix{Float64})
 	return r
 end
 
-
+"""
+	Wrapper function
+"""
 function getXYZDistances(atoms::Cluster)
 	return getXYZDistances(aotms.positions)
 end
@@ -353,7 +412,7 @@ end
 	getNeighboursList(coordinates::Matrix{Float64}, maxBondingDistance::Number)
 
 Returns the neighbours for all atoms from a coordinate Matrix, neighbours being other atoms
-	closer than the maxBongingDistance
+closer than the maxBongingDistance
 """
 function getNeighboursList(coordinates::Matrix{Float64}, maxBondingDistance::Number)
 	N = getNAtoms(coordinates)
@@ -377,7 +436,7 @@ end
 	getNeighboursList(atoms::Cluster, maxBondingDistance::Float64)
 
 Returns the neighbours for all atoms from a Cluster type, neighbours being other atoms
-	closer than the maxBongingDistance
+closer than the maxBongingDistance
 """
 function getNeighboursList(atoms::Cluster, maxBondingDistance::Float64)
 	return getNeighboursList(atoms.positions, maxBondingDistance)
@@ -472,6 +531,9 @@ function getCentreOfCluster(atoms::Cluster)
 	return getCentreOfCluster(atoms.positions)
 end
 
+getCentreOfMass(coordinates::Matrix{Float64}) = getCentreOfCluster(coordinates)
+getCentreOfMass(atoms::Cluster) = getCentreOfCluster(atoms)
+
 
 """
 	centreCluster!(atoms::Cluster)
@@ -485,6 +547,18 @@ function centreCluster!(atoms::Cluster)
 	atoms.positions .+= translation
 end
 
+
+"""
+	classifyAtomsSchebarchov(coordinates::Matrix{Float64}, rcut::Float64)
+
+Classified the atoms of the nanoparticle according to the modified Schebarchov scheme 
+(see https://doi.org/10.1021/acs.jcim.4c01516)
+
+# Arguments
+
+- `coordinates::Matrix{Float64}`: Atomic coordinates.
+- `rcut::Float64`: Cut-off distance defining a bond.
+"""
 function classifyAtomsSchebarchov(coordinates::Matrix{Float64}, rcut::Float64)
 
 	nCNA = getNormalCNAProfile(coordinates, rcut)
@@ -537,8 +611,21 @@ function classifyAtomsSchebarchov(coordinates::Matrix{Float64}, rcut::Float64)
 	return atomClass
 end
 
+
 classifyAtomsSchebarchov(cluster::Cluster, rcut::Float64) = classifyAtoms(cluster.positions, rcut)
 
+
+"""
+	classifyCluster(coordinates::Matrix{Float64}, rcut::Float64)
+
+Classifies nanoparticle according to the modified Schebarchov scheme 
+(see https://doi.org/10.1021/acs.jcim.4c01516)
+
+# Arguments
+
+- `coordinates::Matrix{Float64}`: Atomic coordinates.
+- `rcut::Float64`: Cut-off distance defining a bond.
+"""
 function classifyCluster(coordinates::Matrix{Float64}, rcut::Float64)
 
 	tag = classifyAtomsSchebarchov(coordinates, rcut)
@@ -668,7 +755,19 @@ end
 
 classifyCluster(cluster::Cluster, rcut::Float64) = classifyCluster(cluster.positions, rcut)
 
-function read_xyzs(filename::String, formula::Dict{String, Int64})
+
+"""
+	read_xyzs(filename::String, formula::Dict{String, Int64})
+
+Reads in a .xyz file containing multiple molecules and returns a `Vector` of `Cluster`s
+All molecules must have the same formula.
+
+# Arguments
+
+- `filename::String`: Atomic coordinates.
+- `formula::Dict{String, Int64}`: Chemical formula of molecules.
+"""
+function read_xyz(filename::String, formula::Dict{String, Int64})
 	lines = readlines(filename)
 	natoms = parse(Int64, lines[1])
 	linesPerCluster = natoms + 2
@@ -691,11 +790,16 @@ function read_xyzs(filename::String, formula::Dict{String, Int64})
 	return clusters
 end
 
+
 """
 	read_xyz(filename::String)
 
 Takes a path to a ".xyz" file and loads it as a Cluster type,
 which is returned.
+
+# Arguments
+
+- `filename::String`: Filename to save to.
 """
 function read_xyz(filename::String)
 	lines = readlines(open(filename, "r"))
@@ -747,6 +851,11 @@ end
 
 Takes a path (should end in ".xyz") to a file to write and saves a Cluster type
 to that path as a .xyz file.
+
+# Arguments
+
+- `filename::String`: Filename to save to.
+- `atoms::Cluster`: The nanoparticle to save.
 """
 function write_xyz(filename::String, atoms::Cluster)
 	
@@ -777,10 +886,18 @@ function write_xyz(filename::String, atoms::Cluster)
 end
 
 """
-	write_xyz(filename::String, positions::Matrix{Float64})
+	write_xyz(filename::String, atoms::Cluster)
 
-Takes a path (should end in ".xyz") to a file to write and saves a Cluster type
-to that path as a .xyz file.
+Takes a path (should end in ".xyz") to a file to write and saves the 
+given atomic coordinates, formula, and cell size (cubic) to that file.
+
+# Arguments
+
+- `filename::String`: Filename to save to.
+- `positions::Matrix{Float64}`: Atomic coordinates to save
+- `formula::Dict{String, Int64}`: Chemical formula. Must be synced to `positions, i.e.
+		if formula is CH_4, then first `positions` row must be for C.
+- `cell::Float64`: Length of the cubic unit cell.
 """
 function write_xyz(filename::String, positions::Matrix{Float64}, formula::Dict{String, Int64}, cell::Float64)
 	
@@ -814,6 +931,12 @@ end
 
 Takes a path (should end in ".xyz") to a file to write and saves a Cluster type
 to that path as a .xyz file. Also stores the `tags' of each atom.
+
+# Arguments
+
+- `filename::String`: Filename to save to.
+- `atoms::Cluster`: The nanoparticle to save.
+- `tags::Vector{Int64}`: the atom tags.
 """
 function write_xyz(filename::String, atoms::Cluster, tags::Vector{Int64})
 	newfile = open(filename, "w")
@@ -843,10 +966,19 @@ function write_xyz(filename::String, atoms::Cluster, tags::Vector{Int64})
 end
 
 """
-	write_xyz(filename::String, positions::Matrix{Float64})
+	write_xyz(filename::String, atoms::Cluster)
 
-Takes a path (should end in ".xyz") to a file to write and saves a Cluster type
-to that path as a .xyz file.
+Takes a path (should end in ".xyz") to a file to write and saves the 
+given atomic coordinates, formula, and cell size (cubic) to that file.
+
+# Arguments
+
+- `filename::String`: Filename to save to.
+- `positions::Matrix{Float64}`: Atomic coordinates to save
+- `formula::Dict{String, Int64}`: Chemical formula. Must be synced to `positions, i.e.
+		if formula is CH_4, then first `positions` row must be for C.
+- `cell::Float64`: Length of the cubic unit cell.
+- `tags::Vector{Int64}`: the atom tags.
 """
 function write_xyz(filename::String, positions::Matrix{Float64}, formula::Dict{String, Int64}, cell::Float64, tags::Vector{Int64})
 	
@@ -876,6 +1008,15 @@ function write_xyz(filename::String, positions::Matrix{Float64}, formula::Dict{S
 	write_xyz(filename, atoms, tags)
 end
 
+"""
+	formulaDictToString(formula::Dict{String, Int64})
+
+Takes a chemical formula of type `Dict` and converts to a `String`.
+
+# Arguments
+
+- `formula::Dict{String, Int64}`: Chemical formula to convert to `String`.
+"""
 function formulaDictToString(formula::Dict{String, Int64})
 	s = ""
 	for key in keys(formula)
@@ -886,6 +1027,15 @@ function formulaDictToString(formula::Dict{String, Int64})
 	return s
 end
 
+"""
+	formulaDictToString(formula::Dict{String, Int64})
+
+Get the chemical formula of a `Cluster` type and return as a `String`.
+
+# Arguments
+
+- `atoms::Cluster`: Cluster to get formula of.
+"""
 function formulaDictToString(atoms::Cluster) 
 	return formulaDictToString(atoms.formula)
 end
@@ -894,6 +1044,7 @@ end
 	view(atoms::Cluster)
 
 Takes a Cluster type and calls ASE gui module for visualisation.
+Note I only ever got this to work on Mahuika. Requires PyCall to be working.
 """
 function view(atoms::Cluster)
 	_view = pyimport("ase.visualize").view
