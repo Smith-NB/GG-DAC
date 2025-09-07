@@ -1,7 +1,34 @@
 #include("../base/Atoms.jl")
 #include("../base/FIRE.jl")
 #include("../base/CNA.jl")
+"""
+	BasinHopper Struct(optimizer::Optimizer
+		calculator::Calculator
+		metC::MetC
+		reseeder::Reseeder
+		formula::Dict{String, Int64}
+		boxLength::Float64
+		vacuumAdd::Float64
+		kT::Float64
+		perturber::Function
+		postOptimisationTasks::Function
+		fmax::Float64
+		fmaxTight::Float64
+		tightEnergyThreshold::Float64
+		rcut::Float64
+		energyRounding::Int64
+		walltime::Float64
+		recordingMode::String
+		io::Tuple{IO, Channel}
+		logIO::Tuple{IO, Channel}
+		CNAIO::Tuple{IO, Channel}
+		clusterVector::Union{ClusterVector, ClusterVectorWithML}
+		logResumeFile::Bool
+		exitOnReseed::Bool
+		version::String)
 
+The BasinHopper object underpinning the DACA.
+"""
 struct BasinHopper
 	optimizer::Optimizer
 	calculator::Calculator
@@ -23,12 +50,17 @@ struct BasinHopper
 	io::Tuple{IO, Channel}
 	logIO::Tuple{IO, Channel}
 	CNAIO::Tuple{IO, Channel}
-	clusterVector::Union{ClusterVector, Main.DAC.ClusterVectorWithML}
+	clusterVector::Union{ClusterVector, ClusterVectorWithML}
 	logResumeFile::Bool
 	exitOnReseed::Bool
 	version::String
 end
 
+"""
+	logCNA(io::Tuple{IO, Channel}, ID::Int64, CNA::CNAProfile, energy::Float64)
+
+for logging a CNA profile.
+"""
 function logCNA(io::Tuple{IO, Channel}, ID::Int64, CNA::CNAProfile, energy::Float64)
 	# block the file
 
@@ -183,10 +215,10 @@ function addToVector!(cluster::Union{Cluster, ClusterCompressed}, clusterVector:
 	return presentClusterID
 end
 
-function optRun(_opt::PyObject, workhorse::Workhorse, fmax::Float64)
-	opt = _opt(workhorse._py, logfile=nothing)
-	opt.run(fmax=fmax)
-end
+# function optRun(_opt::PyObject, workhorse::Workhorse, fmax::Float64)
+# 	opt = _opt(workhorse._py, logfile=nothing)
+# 	opt.run(fmax=fmax)
+# end
 
 function standardPostOptimisationTasks!(cluster::Cluster, bh::BasinHopper)
 	setCNAProfile!(cluster, bh.rcut) # total CNA profile

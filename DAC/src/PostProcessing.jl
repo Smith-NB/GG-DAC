@@ -169,127 +169,127 @@ end
 ####################################################
 ####################################################
 
-function plotBirdpoo(sims::Vector{Float64}, energies::Vector{Float64}, system::String, axs::PyObject; c::Union{Vector{Int64}, Nothing}=nothing)
+# function plotBirdpoo(sims::Vector{Float64}, energies::Vector{Float64}, system::String, axs::PyObject; c::Union{Vector{Int64}, Nothing}=nothing)
 
-	axs.scatter(sims, energies, c=c, s=1)
-	axs.set_xlim([0, 1])
-	axs.set_ylim(getAxesLims(system))
+# 	axs.scatter(sims, energies, c=c, s=1)
+# 	axs.set_xlim([0, 1])
+# 	axs.set_ylim(getAxesLims(system))
 
-	return nothing
-end
+# 	return nothing
+# end
 
-"""
-	plotBirdpoo(sims::Vector{Float64}, energies::Vector{Float64}, system::String, c::Union{Vector{Int64}, Nothing}=nothing, filename::String="")
+# """
+# 	plotBirdpoo(sims::Vector{Float64}, energies::Vector{Float64}, system::String, c::Union{Vector{Int64}, Nothing}=nothing, filename::String="")
 
-Takes a Vector of sims and energies and plots a birdpoo plot. system required to set ylim.
-colours can be fed, e.g. from structure classes from GMM. 
-if filename is provided, saves the figure, otherwise figure is displated with `show()`.
-"""
-function plotBirdpoo(sims::Vector{Float64}, energies::Vector{Float64}, system::String; c::Union{Vector{Int64}, Nothing}=nothing, filename::String="")
+# Takes a Vector of sims and energies and plots a birdpoo plot. system required to set ylim.
+# colours can be fed, e.g. from structure classes from GMM. 
+# if filename is provided, saves the figure, otherwise figure is displated with `show()`.
+# """
+# function plotBirdpoo(sims::Vector{Float64}, energies::Vector{Float64}, system::String; c::Union{Vector{Int64}, Nothing}=nothing, filename::String="")
 	
-	display = filename == ""
+# 	display = filename == ""
 
-	scatter(sims, energies, c=c, s=1)
+# 	scatter(sims, energies, c=c, s=1)
 
-	xlim([0, 1])
+# 	xlim([0, 1])
 
-	ylim(getAxesLims(system))
+# 	ylim(getAxesLims(system))
 
-	if display
-		show()
-	else
-		savefig(filename, dpi=250)
-	end
+# 	if display
+# 		show()
+# 	else
+# 		savefig(filename, dpi=250)
+# 	end
 
-	return nothing
-end
+# 	return nothing
+# end
 
-"""
-	plotBirdpoo(clusterVector::ClusterVector, refCNA::CNAProfile, gmm::GMM, pca::PCA, rcut::Float64, system::String, filename::String="")  
+# """
+# 	plotBirdpoo(clusterVector::ClusterVector, refCNA::CNAProfile, gmm::GMM, pca::PCA, rcut::Float64, system::String, filename::String="")  
 
-Wrapper function for plotting a birdpoo plot. Takes a clusterVector, and refCNA to get sims and energies from. Also takes
-gmm and pca models, alongside rcut, to recalculate normal cna profiles to determine structure classes from gmm model.
-passes these values along side system and filename to the actual plotting function.
-"""
-function plotBirdpoo(clusterVector::ClusterVector, refCNA::CNAProfile, gmm::GMM, pca::PCA, rcut::Float64, system::String; axs::Union{PyObject, Nothing}=nothing, filename::String="")  
+# Wrapper function for plotting a birdpoo plot. Takes a clusterVector, and refCNA to get sims and energies from. Also takes
+# gmm and pca models, alongside rcut, to recalculate normal cna profiles to determine structure classes from gmm model.
+# passes these values along side system and filename to the actual plotting function.
+# """
+# function plotBirdpoo(clusterVector::ClusterVector, refCNA::CNAProfile, gmm::GMM, pca::PCA, rcut::Float64, system::String; axs::Union{PyObject, Nothing}=nothing, filename::String="")  
 
-	sims, energies = getSimsAndEnergies(clusterVector, refCNA)
-	structureClasses = getStructureClasses(clusterVector, gmm, pca, rcut)
+# 	sims, energies = getSimsAndEnergies(clusterVector, refCNA)
+# 	structureClasses = getStructureClasses(clusterVector, gmm, pca, rcut)
 
-	if axs == nothing
-		plotBirdpoo(sims, energies, system, c=structureClasses, filename=filename)
-	else
-		plotBirdpoo(sims, energies, system, axs, c=structureClasses)
-	end
+# 	if axs == nothing
+# 		plotBirdpoo(sims, energies, system, c=structureClasses, filename=filename)
+# 	else
+# 		plotBirdpoo(sims, energies, system, axs, c=structureClasses)
+# 	end
 
-	return nothing
-end
-
-
-#=
-plotBirdpoo(clusterVector::String, refCNA::String, gmm::String, pca::String, rcut::Float64, system::String; 
-			axs::Union{PyObject, Nothing}=nothing, filename::String="") = plotBirdpoo(jldopen(clusterVector)["clusterVector"],
-																						stringToCNA(getCNA(refCNA)),
-																						jldopen(gmm)["gmm"],
-																						jldopen(pca)["pca"],
-																						rcut,
-																						system,
-																						axs=axs,
-																						filename=filename)
-=#
-"""
-	plotBirdpoo(clusterVector::String, refCNA::String, gmm::String, pca::String,
-											rcut::Float64, system::String, filename::String="")
-
-Wrapper function for plotting birdpoo plot. Takes filenames for clusterVector, structurename of refCNA, and 
-filenames of gmm and pca models (all files names point to .jld2 file), opens the files and passes to 
-middleman processing function to get plotting data.
-"""
-plotBirdpoo(
-			clusterVector::Union{String, ClusterVector}, 
-			refCNA::Union{String, CNAProfile}, 
-			gmm::Union{String, GMM}, 
-			pca::Union{String, PCA}, 
-			rcut::Float64, 
-			system::String; 
-			axs::Union{PyObject, Nothing}=nothing, 
-			filename::String=""
-			) = plotBirdpoo(
-							typeof(clusterVector) == String ? jldopen(clusterVector)["clusterVector"] : clusterVector,
-							typeof(refCNA) == String ? stringToCNA(getCNA(refCNA)) : refCNA,
-							typeof(gmm) == String ? jldopen(gmm)["gmm"] : gmm,
-							typeof(pca) == String ? jldopen(pca)["pca"] : pca,
-							rcut,
-							system,
-							axs=axs,
-							filename=filename
-							)
+# 	return nothing
+# end
 
 
-function plotBirdpoo(clusterVector::ClusterVector, refCNA::CNAProfile, system::String; 
-			axs::Union{PyObject, Nothing}=nothing, filename::String="") 
 
-	if axs != nothing
-		plotBirdpoo(getSimsAndEnergies(clusterVector, refCNA)..., system, axs, c=nothing)
-	else
-		plotBirdpoo(getSimsAndEnergies(clusterVector, refCNA)..., system; c=nothing, filename=filename)
-	end
+# plotBirdpoo(clusterVector::String, refCNA::String, gmm::String, pca::String, rcut::Float64, system::String; 
+# 			axs::Union{PyObject, Nothing}=nothing, filename::String="") = plotBirdpoo(jldopen(clusterVector)["clusterVector"],
+# 																						stringToCNA(getCNA(refCNA)),
+# 																						jldopen(gmm)["gmm"],
+# 																						jldopen(pca)["pca"],
+# 																						rcut,
+# 																						system,
+# 																						axs=axs,
+# 																						filename=filename)
 
-end
+# """
+# 	plotBirdpoo(clusterVector::String, refCNA::String, gmm::String, pca::String,
+# 											rcut::Float64, system::String, filename::String="")
 
-plotBirdpoo(clusterVector::String, refCNA::CNAProfile, system::String; 
-			axs::Union{PyObject, Nothing}=nothing, filename::String="") = plotBirdpoo(jldopen(clusterVector)["clusterVector"], 
-																						refCNA, 
-																						system, 
-																						axs=axs,
-																						filename=filename)
+# Wrapper function for plotting birdpoo plot. Takes filenames for clusterVector, structurename of refCNA, and 
+# filenames of gmm and pca models (all files names point to .jld2 file), opens the files and passes to 
+# middleman processing function to get plotting data.
+# """
+# plotBirdpoo(
+# 			clusterVector::Union{String, ClusterVector}, 
+# 			refCNA::Union{String, CNAProfile}, 
+# 			gmm::Union{String, GMM}, 
+# 			pca::Union{String, PCA}, 
+# 			rcut::Float64, 
+# 			system::String; 
+# 			axs::Union{PyObject, Nothing}=nothing, 
+# 			filename::String=""
+# 			) = plotBirdpoo(
+# 							typeof(clusterVector) == String ? jldopen(clusterVector)["clusterVector"] : clusterVector,
+# 							typeof(refCNA) == String ? stringToCNA(getCNA(refCNA)) : refCNA,
+# 							typeof(gmm) == String ? jldopen(gmm)["gmm"] : gmm,
+# 							typeof(pca) == String ? jldopen(pca)["pca"] : pca,
+# 							rcut,
+# 							system,
+# 							axs=axs,
+# 							filename=filename
+# 							)
 
-plotBirdpoo(clusterVector::String, refCNA::String, system::String; 
-			axs::Union{PyObject, Nothing}=nothing, filename::String="") = plotBirdpoo(jldopen(clusterVector)["clusterVector"], 
-																						stringToCNA(getCNA(refCNA)), 
-																						system, 
-																						axs=axs,
-																						filename=filename)
+
+# function plotBirdpoo(clusterVector::ClusterVector, refCNA::CNAProfile, system::String; 
+# 			axs::Union{PyObject, Nothing}=nothing, filename::String="") 
+
+# 	if axs != nothing
+# 		plotBirdpoo(getSimsAndEnergies(clusterVector, refCNA)..., system, axs, c=nothing)
+# 	else
+# 		plotBirdpoo(getSimsAndEnergies(clusterVector, refCNA)..., system; c=nothing, filename=filename)
+# 	end
+
+# end
+
+# plotBirdpoo(clusterVector::String, refCNA::CNAProfile, system::String; 
+# 			axs::Union{PyObject, Nothing}=nothing, filename::String="") = plotBirdpoo(jldopen(clusterVector)["clusterVector"], 
+# 																						refCNA, 
+# 																						system, 
+# 																						axs=axs,
+# 																						filename=filename)
+
+# plotBirdpoo(clusterVector::String, refCNA::String, system::String; 
+# 			axs::Union{PyObject, Nothing}=nothing, filename::String="") = plotBirdpoo(jldopen(clusterVector)["clusterVector"], 
+# 																						stringToCNA(getCNA(refCNA)), 
+# 																						system, 
+# 																						axs=axs,
+# 																						filename=filename)
 
 
 

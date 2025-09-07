@@ -3,11 +3,17 @@
 """
    LJ
 
+   Lennard-Jones `Calculator`.
+
    # Arguments
 
 - `epsilon::Float64`: epsilon parameter of the Lennard-Jones potential.
 - `sigma::Float64`: sigma parameter of the Lennard-Jones potential.
 - `rc::Float64`: Cut-off distance.
+- `distance_vectors::Matrix{Float64}`: Space in memory for force calculations.
+- `r2::Vector{Float64}`: Space in memory for force calculations.
+- `c6::Vector{Float64}`: Space in memory for force calculations.
+- `c12::Vector{Float64}`: Space in memory for force calculations.
 """
 struct LJ <: Calculator
 	epsilon::Float64
@@ -20,7 +26,19 @@ struct LJ <: Calculator
 end
 
 
+"""
+	LJ(epsilon::Number, sigma::Number, rc::Number, N::Int64)
 
+Wrapper function for Lennard-Jones `Calculator`, that more easily reserves the space
+needed in memory based off the number of atoms, `N`.	For reduced units, ``\\epsilon \\ = \\ \\sigma \\ = \\ 1``
+
+# Arguments
+
+- `epsilon::Float64`: epsilon parameter of the Lennard-Jones potential.
+- `sigma::Float64`: sigma parameter of the Lennard-Jones potential.
+- `rc::Float64`: Cut-off distance.
+- `N::Int64`: Number of atoms in `Atoms` object. Used to reserve space in memory.
+"""
 function LJ(epsilon::Number, sigma::Number, rc::Number, N::Int64)
 	LJ(epsilon, sigma, rc, zeros(Float64, 3, N), zeros(Float64, N), zeros(Float64, N), zeros(Float64, N))
 end
@@ -281,7 +299,7 @@ function calculateEnergyAndForces!(atoms::Cluster, calc::LJ)
 end
 
 """
-	calculate(atoms::Cluster, calc::LJ)
+	calculate!(atoms::Cluster, calc::LJ)
 
 Calculates the atomistic energies, forces, and stresses of a Cluster type, using
 the Lennard Jones potential.

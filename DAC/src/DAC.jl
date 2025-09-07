@@ -4,29 +4,37 @@ using LinearAlgebra
 using GaussianMixtures
 using MultivariateStats
 using Random
-using PyCall
+#using PyCall
 using PyPlot
 using HDF5
 using JLD2
 using Dates
 using BenchmarkTools
 
-
+export func
 
 include("Atoms.jl")
-include("Workhorse.jl")
+#include("Workhorse.jl")
 include("CNA.jl")
 include("FIRE.jl")
 include("LJ.jl")
 include("RGL.jl")
-include("LJ_ASAP3.jl")
+#include("LJ_ASAP3.jl")
 include("Reseed.jl")
 include("MetC.jl")
-#include("Reseed.jl")
+include("Reseed.jl")
 include("generateRandomSeed.jl")
 include("BasinHopping.jl")
 include("MyLib.jl")
 include("ILS.jl")
 include("InvertedILS.jl")
 include("PostProcessing.jl")
+
+"""
+    func(x)
+
+Return double the number `x` plus `1`.
+"""
+func(x) = 2x + 1
+
 end # module DAC
