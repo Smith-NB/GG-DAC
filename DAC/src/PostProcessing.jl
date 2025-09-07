@@ -300,69 +300,69 @@ end
 
 
 
-####################################################
-####################################################
-#############plotBirdpooAndILSDistances#############
-####################################################
-####################################################
+# ####################################################
+# ####################################################
+# #############plotBirdpooAndILSDistances#############
+# ####################################################
+# ####################################################
 
 
-function plotBirdpooAndILSDistances(sims::Vector{Float64}, energies::Vector{Float64}, Ri::Vector{Float64}, iterationLabelledAt::Vector{Int64}, system::String; filename::String="", cmap::String="jet")
+# function plotBirdpooAndILSDistances(sims::Vector{Float64}, energies::Vector{Float64}, Ri::Vector{Float64}, iterationLabelledAt::Vector{Int64}, system::String; filename::String="", cmap::String="jet")
 
-	display = filename == ""
+# 	display = filename == ""
 
-	fig, axs = subplots(1, 2)
+# 	fig, axs = subplots(1, 2)
 
-	x = [i for i in 1:length(Ri)]
-	N = length(Ri)
-	axs[1].scatter(x, Ri, c=x, cmap=cmap)
-	axs[1].plot(x, Ri, c="k")
+# 	x = [i for i in 1:length(Ri)]
+# 	N = length(Ri)
+# 	axs[1].scatter(x, Ri, c=x, cmap=cmap)
+# 	axs[1].plot(x, Ri, c="k")
 
-	insert!(iterationLabelledAt, 1, 0)
-	axs[2].scatter(sims, energies, c=iterationLabelledAt, s=1, cmap=cmap)
+# 	insert!(iterationLabelledAt, 1, 0)
+# 	axs[2].scatter(sims, energies, c=iterationLabelledAt, s=1, cmap=cmap)
 
-	axs[2].set_xlim([0, 1])
+# 	axs[2].set_xlim([0, 1])
 
-	axs[2].set_ylim(getAxesLims(system))
+# 	axs[2].set_ylim(getAxesLims(system))
 
-	if display
-		show()
-	else
-		savefig(filename, dpi=250)
-	end
+# 	if display
+# 		show()
+# 	else
+# 		savefig(filename, dpi=250)
+# 	end
 
-	return nothing
-end
+# 	return nothing
+# end
 
 
-function plotBirdpooAndILSDistances(clusterVector::ClusterVector, refCNA::CNAProfile, rcut::Float64, 
-									system::String; filename::String="", cmap::String="jet", cutOff::Int64=-1)
-	if cutOff != -1
-		clusterVector.vec = clusterVector.vec[1:cutOff]
-		clusterVector.N = Threads.Atomic{Int64}(cutOff)
-	end
+# function plotBirdpooAndILSDistances(clusterVector::ClusterVector, refCNA::CNAProfile, rcut::Float64, 
+# 									system::String; filename::String="", cmap::String="jet", cutOff::Int64=-1)
+# 	if cutOff != -1
+# 		clusterVector.vec = clusterVector.vec[1:cutOff]
+# 		clusterVector.N = Threads.Atomic{Int64}(cutOff)
+# 	end
 
 	
-	sims, energies = getSimsAndEnergies(clusterVector, refCNA)
-	classMatrix = getClassMatrix(clusterVector, rcut)
-	N = length(sims)
-	labels = zeros(Int64, N)
-	labels[1] = 1
-	Ri, iterationLabelledAt = ILS(classMatrix, labels, true)
+# 	sims, energies = getSimsAndEnergies(clusterVector, refCNA)
+# 	classMatrix = getClassMatrix(clusterVector, rcut)
+# 	N = length(sims)
+# 	labels = zeros(Int64, N)
+# 	labels[1] = 1
+# 	Ri, iterationLabelledAt = ILS(classMatrix, labels, true)
 
-	plotBirdpooAndILSDistances(sims, energies, Ri, iterationLabelledAt, system, filename=filename)
+# 	plotBirdpooAndILSDistances(sims, energies, Ri, iterationLabelledAt, system, filename=filename)
 
-	return nothing
-end
+# 	return nothing
+# end
 
-plotBirdpooAndILSDistances(clusterVector::String, refCNA::String, rcut::Float64, system::String; 
-							filename::String="", cmap::String="jet", cutOff::Int64=-1) = plotBirdpooAndILSDistances(jldopen(clusterVector)["clusterVector"],
-																													stringToCNA(getCNA(refCNA)),
-																													rcut,
-																													system,
-																													filename=filename,
-																													cmap=cmap,
-																													cutOff=cutOff)
+# plotBirdpooAndILSDistances(clusterVector::String, refCNA::String, rcut::Float64, system::String; 
+# 							filename::String="", cmap::String="jet", cutOff::Int64=-1) = plotBirdpooAndILSDistances(jldopen(clusterVector)["clusterVector"],
+# 																													stringToCNA(getCNA(refCNA)),
+# 																													rcut,
+# 																													system,
+# 																													filename=filename,
+# 																													cmap=cmap,
+# 																													cutOff=cutOff)
 	
 
 
@@ -373,114 +373,114 @@ plotBirdpooAndILSDistances(clusterVector::String, refCNA::String, rcut::Float64,
 
 
 
-####################################################
-####################################################
-##################plotBirdpooAndPCA#################
-####################################################
-####################################################
+# ####################################################
+# ####################################################
+# ##################plotBirdpooAndPCA#################
+# ####################################################
+# ####################################################
 
-function isNum(a::String)
-    return tryparse(Int64, a) !== nothing
-end
+# function isNum(a::String)
+#     return tryparse(Int64, a) !== nothing
+# end
 
-function plotBirdpooAndPCA(sims::Vector{Float64}, energies::Vector{Float64}, pcAxes::Any,
-							plotGridSpecs::Tuple{Int64, Int64}, plotAxes::Vector{Tuple{Any, Any}}, system::String; 
-							c::Union{Vector{Int64}, Nothing}=nothing, cmap::String="tab20", filename::String="")
+# function plotBirdpooAndPCA(sims::Vector{Float64}, energies::Vector{Float64}, pcAxes::Any,
+# 							plotGridSpecs::Tuple{Int64, Int64}, plotAxes::Vector{Tuple{Any, Any}}, system::String; 
+# 							c::Union{Vector{Int64}, Nothing}=nothing, cmap::String="tab20", filename::String="")
 
-	display = filename == ""
+# 	display = filename == ""
 
-	fig, axs = subplots(plotGridSpecs...)
-	nPlots::Int64 = plotGridSpecs[1] * plotGridSpecs[2]
-	if length(plotAxes) != nPlots
-		error("The number of specified plots in `plotAxes` must match the product of plotGridSpecs.")
-	end
+# 	fig, axs = subplots(plotGridSpecs...)
+# 	nPlots::Int64 = plotGridSpecs[1] * plotGridSpecs[2]
+# 	if length(plotAxes) != nPlots
+# 		error("The number of specified plots in `plotAxes` must match the product of plotGridSpecs.")
+# 	end
 
-	for i in 1:nPlots
-		x = nothing
-		y = nothing
+# 	for i in 1:nPlots
+# 		x = nothing
+# 		y = nothing
 
-		if typeof(plotAxes[i][1]) == Int64
-			x = pcAxes[:, plotAxes[i][1]]
-			axs[i].set_xlabel("PC$(plotAxes[i][1])")
-		elseif plotAxes[i][1] == "e"
-			x = energies
-			axs[i].set_xlim(getAxesLims(system))
-			axs[i].set_xlabel("Energy")
-		elseif plotAxes[i][1] == "s"
-			x = sims
-			axs[i].set_xlim([0, 1])
-			axs[i].set_xlabel("Similarity")
-		end
+# 		if typeof(plotAxes[i][1]) == Int64
+# 			x = pcAxes[:, plotAxes[i][1]]
+# 			axs[i].set_xlabel("PC$(plotAxes[i][1])")
+# 		elseif plotAxes[i][1] == "e"
+# 			x = energies
+# 			axs[i].set_xlim(getAxesLims(system))
+# 			axs[i].set_xlabel("Energy")
+# 		elseif plotAxes[i][1] == "s"
+# 			x = sims
+# 			axs[i].set_xlim([0, 1])
+# 			axs[i].set_xlabel("Similarity")
+# 		end
 
-		if typeof(plotAxes[i][2]) == Int64
-			y = pcAxes[:, plotAxes[i][2]]
-			axs[i].set_ylabel("PC$(plotAxes[i][2])")
-		elseif plotAxes[i][2] == "e"
-			y = energies
-			axs[i].set_ylim(getAxesLims(system))
-			axs[i].set_ylabel("Energy")
-		elseif plotAxes[i][2] == "s"
-			y = sims
-			axs[i].set_ylim([0, 1])
-			axs[i].set_ylabel("Similarity")
-		end
+# 		if typeof(plotAxes[i][2]) == Int64
+# 			y = pcAxes[:, plotAxes[i][2]]
+# 			axs[i].set_ylabel("PC$(plotAxes[i][2])")
+# 		elseif plotAxes[i][2] == "e"
+# 			y = energies
+# 			axs[i].set_ylim(getAxesLims(system))
+# 			axs[i].set_ylabel("Energy")
+# 		elseif plotAxes[i][2] == "s"
+# 			y = sims
+# 			axs[i].set_ylim([0, 1])
+# 			axs[i].set_ylabel("Similarity")
+# 		end
 
-		axs[i].scatter(x, y, s=1, c=c, cmap=cmap)
+# 		axs[i].scatter(x, y, s=1, c=c, cmap=cmap)
 
-	end
+# 	end
 
-	if display
-		show()
-	else
-		savefig(filename, dpi=250)
-	end
+# 	if display
+# 		show()
+# 	else
+# 		savefig(filename, dpi=250)
+# 	end
 
-	return nothing
+# 	return nothing
 
-end
+# end
 
-function plotBirdpooAndPCA(clusterVector::ClusterVector, refCNA::CNAProfile, pca::PCA, rcut::Float64,
-							plotGridSpecs::Tuple{Int64, Int64}, plotAxes::Vector{Tuple{Any, Any}}, system::String; 
-							gmm::Union{GMM, Nothing}=nothing, cmap::String="tab20", cutOff::Int64=-1, filename::String="")
+# function plotBirdpooAndPCA(clusterVector::ClusterVector, refCNA::CNAProfile, pca::PCA, rcut::Float64,
+# 							plotGridSpecs::Tuple{Int64, Int64}, plotAxes::Vector{Tuple{Any, Any}}, system::String; 
+# 							gmm::Union{GMM, Nothing}=nothing, cmap::String="tab20", cutOff::Int64=-1, filename::String="")
 	
-	if cutOff != -1
-		clusterVector.vec = clusterVector.vec[1:cutOff]
-		clusterVector.N = Threads.Atomic{Int64}(cutOff)
-	end
+# 	if cutOff != -1
+# 		clusterVector.vec = clusterVector.vec[1:cutOff]
+# 		clusterVector.N = Threads.Atomic{Int64}(cutOff)
+# 	end
 
-	sims, energies = getSimsAndEnergies(clusterVector, refCNA)
-	pcAxes = getPCAxes(clusterVector, pca, rcut)
-	if gmm != nothing
-		structureClasses = getStructureClasses(clusterVector, gmm, pcAxes)
-	end
+# 	sims, energies = getSimsAndEnergies(clusterVector, refCNA)
+# 	pcAxes = getPCAxes(clusterVector, pca, rcut)
+# 	if gmm != nothing
+# 		structureClasses = getStructureClasses(clusterVector, gmm, pcAxes)
+# 	end
 
-	plotBirdpooAndPCA(sims, energies, pcAxes, plotGridSpecs, plotAxes, system, c=structureClasses, cmap=cmap, filename=filename)
+# 	plotBirdpooAndPCA(sims, energies, pcAxes, plotGridSpecs, plotAxes, system, c=structureClasses, cmap=cmap, filename=filename)
 
-	return nothing
-end
+# 	return nothing
+# end
 
-plotBirdpooAndPCA(clusterVector::Union{String, ClusterVector}, 
-					refCNA::Union{String, CNAProfile},
-					pca::Union{String, PCA},
-					rcut::Float64, 
-					plotGridSpecs::Tuple{Int64, Int64},
-					plotAxes::Vector{Tuple{Any, Any}},
-					system::String; 
-					cmap::String="tab20",
-					gmm::Union{String, Nothing, GMM}=nothing,
-					cutOff::Int64=-1,
-					filename::String=""
-					) = plotBirdpooAndPCA(
-											typeof(clusterVector) == String ? jldopen(clusterVector)["clusterVector"] : clusterVector,
-											typeof(refCNA) == String ? stringToCNA(getCNA(refCNA)) : refCNA,
-											typeof(pca) == String ? jldopen(pca)["pca"] : pca,
-											rcut,
-											plotGridSpecs,
-											plotAxes,
-											system,
-											cmap=cmap,
-											cutOff=cutOff,
-											gmm=gmm==nothing ? nothing : typeof(gmm) == String ? jldopen(gmm)["gmm"] : gmm,
-											filename=filename
-										)
+# plotBirdpooAndPCA(clusterVector::Union{String, ClusterVector}, 
+# 					refCNA::Union{String, CNAProfile},
+# 					pca::Union{String, PCA},
+# 					rcut::Float64, 
+# 					plotGridSpecs::Tuple{Int64, Int64},
+# 					plotAxes::Vector{Tuple{Any, Any}},
+# 					system::String; 
+# 					cmap::String="tab20",
+# 					gmm::Union{String, Nothing, GMM}=nothing,
+# 					cutOff::Int64=-1,
+# 					filename::String=""
+# 					) = plotBirdpooAndPCA(
+# 											typeof(clusterVector) == String ? jldopen(clusterVector)["clusterVector"] : clusterVector,
+# 											typeof(refCNA) == String ? stringToCNA(getCNA(refCNA)) : refCNA,
+# 											typeof(pca) == String ? jldopen(pca)["pca"] : pca,
+# 											rcut,
+# 											plotGridSpecs,
+# 											plotAxes,
+# 											system,
+# 											cmap=cmap,
+# 											cutOff=cutOff,
+# 											gmm=gmm==nothing ? nothing : typeof(gmm) == String ? jldopen(gmm)["gmm"] : gmm,
+# 											filename=filename
+# 										)
 
