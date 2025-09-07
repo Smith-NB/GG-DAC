@@ -5,7 +5,7 @@ using GaussianMixtures
 using MultivariateStats
 using Random
 #using PyCall
-using PyPlot
+#using PyPlot
 using HDF5
 using JLD2
 using Dates
