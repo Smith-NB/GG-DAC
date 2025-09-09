@@ -23,5 +23,4 @@ HISTOMetC(kT::Float64, w::Float64, delta::Float64, resetPeriod::Float64, cluster
 ```@docs
 GMMMetC
 GMMMetC(gaussian::GMM, gaussianCluster::Int64, pca::PCA, mode::Symbol, useExplorationDataOnly::Bool, kT::Float64, io::Tuple{IO, Channel})
-GMMMetC(gaussian::GMM, gaussianCluster::Int64, pca::PCA, mode::Symbol, useExplorationDataOnly::Bool, kT::Float64, io::Tuple{IO, Channel})
-```
+GMMMetC(gaussian::GMM, gaussianCluster::Int64, pca::PCA, mode::Symbol, useExplorationDataOnly::Bool, kT::Float64, classes::normalCNAProfile, io::Tuple{IO, Channel})```
