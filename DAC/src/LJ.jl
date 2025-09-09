@@ -3,9 +3,9 @@
 """
    LJ
 
-   Lennard-Jones `Calculator`.
+Lennard-Jones `Calculator`.
 
-   # Arguments
+# Arguments
 
 - `epsilon::Float64`: epsilon parameter of the Lennard-Jones potential.
 - `sigma::Float64`: sigma parameter of the Lennard-Jones potential.
@@ -27,7 +27,7 @@ end
 
 
 """
-	LJ(epsilon::Number, sigma::Number, rc::Number, N::Int64)
+	LJ(epsilon::Float64, sigma::Float64, rc::Float64, N::Int64)
 
 Wrapper function for Lennard-Jones `Calculator`, that more easily reserves the space
 needed in memory based off the number of atoms, `N`.	For reduced units, ``\\epsilon \\ = \\ \\sigma \\ = \\ 1``
@@ -39,7 +39,7 @@ needed in memory based off the number of atoms, `N`.	For reduced units, ``\\epsi
 - `rc::Float64`: Cut-off distance.
 - `N::Int64`: Number of atoms in `Atoms` object. Used to reserve space in memory.
 """
-function LJ(epsilon::Number, sigma::Number, rc::Number, N::Int64)
+function LJ(epsilon::Float64, sigma::Float64, rc::Float64, N::Int64)
 	LJ(epsilon, sigma, rc, zeros(Float64, 3, N), zeros(Float64, N), zeros(Float64, N), zeros(Float64, N))
 end
 

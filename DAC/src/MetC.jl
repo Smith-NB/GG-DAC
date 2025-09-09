@@ -5,6 +5,24 @@ abstract type MetC end
 #=================================EnergyMetC==================================#
 #=============================================================================#
 
+
+
+"""
+	EnergyMetC
+
+The Energy Metropolis Criterion. Compares the energy of an `oldCluster` and `newCluster` to accept or reject the hop with:
+
+``A = \\exp\\left(\\frac{E_\\mathrm{old} - E_\\mathrm{new}}{kT}\\right)``
+
+An instance of this Metropolic Criterion can be called with:
+	
+	EnergyMetC(kT, io)
+
+# Fields
+
+- `kT::Float64`: reduced temperature
+- `io::Tuple{IO, Channel}`: IO channel for log.
+"""
 struct EnergyMetC <: MetC
 	kT::Float64
 	io::Tuple{IO, Channel}
@@ -121,8 +139,29 @@ end
 #=================================HISTOMetC===================================#
 #=============================================================================#
 
-# Accounts for accepted hops only
+"""
+	HISTOMetC
 
+The HISTO Metropolis Criterion. Compares the energy of an `oldCluster` and `newCluster` in addition to the heights of the histogram bars each cluster belongs to in feature space. Here, the similarity to a reference structure is used as the feature space. This reference structure is selected in situ as the lowest energy structure found after a specifed number of hops (the `waitTime`).
+
+``A = \\exp\\left[\\frac{E_\\mathrm{old} - E_\\mathrm{new} + w\\left(h_\\mathrm{old} - h+\\mathrm{new}\\right)}{kT}\\right]``
+
+
+
+# Fields
+
+- `kT::Float64`: reduced temperature
+- `w::Float64`: Wieght given to the memory contribution
+- `delta::Float64`: Histogram bar width in feature space.
+- `resetPeriod::Float64`: Redundant.
+- `refCNA::CNAProfile`: CNA profile used as a reference for the similarity histogram.
+- `refID::Int64`: ID of reference structure used for `refCNA`.
+- `clusterVector::ClusterVector`: Pointer to database of structures found by BHA.
+- `waitTime::Int64`: Number of hops to wait until setting the reference structure.
+- `timeElapsed::Int64`: Number of hops performed since the BHA started.
+- `hist::Vector{Int64}`: The histogram bar heights.
+- `io::Tuple{IO, Channel}`: IO channel for log.
+"""
 mutable struct HISTOMetC <: MetC
 	kT::Float64
 	w::Float64
@@ -137,6 +176,11 @@ mutable struct HISTOMetC <: MetC
 	io::Tuple{IO, Channel}
 end
 
+"""
+	HISTOMetC(kT::Float64, w::Float64, delta::Float64, resetPeriod::Float64, clusterVector::ClusterVector, waitTime::Int64, io::Tuple{IO, Channel})
+
+Wrapper function for HISTOMetC that sets some of the fields to initial empty states.
+"""
 function HISTOMetC(kT::Float64, w::Float64, delta::Float64, resetPeriod::Float64, clusterVector::ClusterVector, waitTime::Int64, io::Tuple{IO, Channel})
 	refCNA = CNAProfile()
 	refID = -1
@@ -519,6 +563,25 @@ end
 #==================================GMMMetC====================================#
 #=============================================================================#
 
+
+"""
+	GMMMetC
+
+Works just like the `EnergyMetC` except it will reject any hops outside of a given division of the PES according to a Gaussian Mixture Model (GMM).
+
+# Fields
+
+- `gaussian::GMM`: Trained GMM.
+- `gaussianCluster::Int64`: Index of the division this instance is allowed to search.
+- `pca::PCA`: Trained principal component analysis model used for dimensionality reduction.
+- `mode::Symbol`: Set to `:maxProbOnly`
+- `useExplorationDataOnly::Bool`: redundant.
+- `kT::Float64`: reduced temperature
+- `classes::normalCNAProfile`: The atomic class definitions (e.g. of Atom-64-Class)
+- `nClasses::Int64`: Number of atomic classes.
+- `workspace::Matrix{Float64}`: Workspace for memory.
+- `io::Tuple{IO, Channel}`: IO channel.
+"""
 mutable struct GMMMetC <: MetC
 	gaussian::GMM
 	gaussianCluster::Int64
@@ -532,12 +595,23 @@ mutable struct GMMMetC <: MetC
 	io::Tuple{IO, Channel}
 end
 
+
+"""
+	GMMMetC(gaussian::GMM, gaussianCluster::Int64, pca::PCA, mode::Symbol, useExplorationDataOnly::Bool, kT::Float64, io::Tuple{IO, Channel})
+
+Wrapper function that sets `classes` to Atom-64-Class and sets `workspace` automaticaly.
+"""
 function GMMMetC(gaussian::GMM, gaussianCluster::Int64, pca::PCA, mode::Symbol, useExplorationDataOnly::Bool, kT::Float64, io::Tuple{IO, Channel})
 	# sets workspace as a 1x{PCA_out_dims} Matrix.
 	classes = getClasses()
 	GMMMetC(gaussian, gaussianCluster, pca, mode, useExplorationDataOnly, kT, classes, length(classes), Matrix{Float64}(undef, 1, size(pca)[2]), io)
 end
 
+"""
+	GMMMetC(gaussian::GMM, gaussianCluster::Int64, pca::PCA, mode::Symbol, useExplorationDataOnly::Bool, kT::Float64, io::Tuple{IO, Channel})
+
+Wrapper function that sets `workspace` automaticaly.
+"""
 function GMMMetC(gaussian::GMM, gaussianCluster::Int64, pca::PCA, mode::Symbol, useExplorationDataOnly::Bool, kT::Float64, classes::normalCNAProfile, io::Tuple{IO, Channel})
 	# sets workspace as a 1x{PCA_out_dims} Matrix.
 	GMMMetC(gaussian, gaussianCluster, pca, mode, useExplorationDataOnly, kT, classes, length(classes), Matrix{Float64}(undef, 1, size(pca)[2]), io)

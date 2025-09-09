@@ -1,13 +1,19 @@
 #include("Atoms.jl")
 
 """
-   LJ
+   RGL
 
-   # Arguments
+RGL `Calculator`.
 
-- `epsilon::Float64`: epsilon parameter of the Lennard-Jones potential.
-- `sigma::Float64`: sigma parameter of the Lennard-Jones potential.
-- `rc::Float64`: Cut-off distance.
+# Arguments
+
+- `A::Float64`: Attractive coefficient
+- `p::Float64`: Range of attractive coefficient
+- `q::Float64`: Range of repulsive coefficient
+- `r0::Float64`: Equilibrium bond distance
+- `xi::Float64`: ``\\xi``, repulsive coefficient
+- `xi2::Float64`: ``\\xi^2`` square of repulsive coefficient.
+- `φ::Float64`: Space in memory
 """
 struct RGL <: Calculator
 	A::Float64
@@ -19,6 +25,20 @@ struct RGL <: Calculator
 	φ::Vector{Float64}
 end
 
+"""
+	RGL(A::Float64, p::Float64, q::Float64, r0::Float64, xi::Float64, natoms::Int64)
+
+Wrapper function for RGL `Calculator`, that more easily reserves the space needed in memory based off the number of atoms, `natoms`.	
+
+# Arguments
+
+- `A::Float64`: Attractive coefficient
+- `p::Float64`: Range of attractive coefficient
+- `q::Float64`: Range of repulsive coefficient
+- `r0::Float64`: Equilibrium bond distance
+- `xi::Float64`: ``\\xi``, repulsive coefficient
+- `natoms::Int64`: Number of atoms.
+"""
 function RGL(A::Float64, p::Float64, q::Float64, r0::Float64, xi::Float64, natoms::Int64)
 	RGL(A, p, q, r0, xi, xi*xi, zeros(Float64, natoms))
 end

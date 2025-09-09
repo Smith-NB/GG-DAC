@@ -201,8 +201,12 @@ end
 """
 	getCNAProfile(coordinates::Matrix{Float64}, rcut::Float64)
 
-Calculates the total CNA profile for the cluster described by coordinates
-and returns it as a sorted Vector.
+Calculates the total CNA profile for the cluster described by coordinates and returns it as a sorted `Vector` (sorted by the signature tuples as this slightly speeds computation for a `Vector`, which was used instead of a `Dict` to minimise storage space).
+
+# Arguments
+
+- `coordinates::Matrix{Float64}`: Atomic coordinates.
+- `rcut::Float64`: ``r_\\mathrm{cut}`` value used to define bond distance cut-off.
 """
 function getCNAProfile(coordinates::Matrix{Float64}, rcut::Float64)
 	natoms = getNAtoms(coordinates)
@@ -268,11 +272,17 @@ and returns it as a sorted Vector.
 """
 getCNAProfile(atoms::Cluster, rcut::Float64) = getCNAProfile(atoms.positions, rcut)
 
-"""
-	getCNAProfile(atoms::Cluster, rcut::Float64)
 
-Calculates the total and normal CNA profiles for the cluster described by `coordinates`
-and returns it as a sorted `Vector` and a `Vector` of `Dict`'s, respectively
+"""
+	getTotalAndNormalCNAProfile(coordinates::Matrix{Float64}, rcut::Float64)
+
+Calculates the total and normal CNA profile for the cluster described by coordinates
+and returns both
+
+# Arguments
+
+- `coordinates::Matrix{Float64}`: Atomic coordinates.
+- `rcut::Float64`: ``r_\\mathrm{cut}`` value used to define bond distance cut-off.
 """
 function getTotalAndNormalCNAProfile(coordinates::Matrix{Float64}, rcut::Float64)
 	natoms = getNAtoms(coordinates)
@@ -363,6 +373,12 @@ getTotalAndNormalCNAProfile(atoms::Cluster, rcut::Float64) = getTotalAndNormalCN
 Calculates the normal CNA profiles for the cluster described by `coordinates`
 and returns it as a `Vector` of `Dict`'s, respectively.
 `normalCNA[1]` is the atom level CNA profile of the atom at `coordinates[1, :]`
+
+# Arguments
+
+- `coordinates::Matrix{Float64}`: Atomic coordinates.
+- `rcut::Float64`: ``r_\\mathrm{cut}`` value used to define bond distance cut-off
+
 """
 function getNormalCNAProfile(coordinates::Matrix{Float64}, rcut::Float64)
 	natoms = getNAtoms(coordinates)

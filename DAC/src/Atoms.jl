@@ -2,11 +2,32 @@ abstract type Atoms end
 abstract type Calculator end
 abstract type _py_Calculator <: Calculator end
 
+"""
+	const CNAProfile = Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}
+
+Alias type for a total CNA profile, `Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}`
+"""
 const CNAProfile = Vector{Pair{Tuple{UInt8, UInt8, UInt8}, UInt16}}
+"""
+	const normalCNAProfile = Vector{Dict{Tuple{UInt8, UInt8, UInt8}, UInt16}}
+
+Alias type for `Vector{Dict{Tuple{UInt8, UInt8, UInt8}, UInt16}}`
+"""
 const normalCNAProfile = Vector{Dict{Tuple{UInt8, UInt8, UInt8}, UInt16}}
 const CNASig = Tuple{UInt8, UInt8, UInt8}
 
+"""
+	ClusterCompressed
 
+The `ClusterCompressed` type is for storing the structures of nanoparticles found during global optimisation. Only the positions, energy, and CNA profile of the structure is stored, along side an identifier.
+
+# Fields
+
+- `positions`: Atomic positions.
+- `energy`: Energy of the nanoparticle (rounded by the `BasinHopper`).
+- `CNA`: The CNA profile.
+- `ID`: ID of the nanoparticle.
+"""
 struct ClusterCompressed
 	positions::Array{Float64}
 	energy::Float64
@@ -17,11 +38,16 @@ end
 """
     ClusterVector
 
-# Arguments
+The `ClusterVector` is essentially a database of all nanoparticles found in the course of a global optimisation run. The BHA/DACA will store structures here in a data-race safe fashion (i.e. if multiple threads are performing walks in parallel, chaos is prevented).
+
+Structures are stored in the `vec` field and are ordered from lowest to highest energy by the BHA/DACA. The BHA/DACA will not add duplicate structures, where two structures are considered duplicate if their CNA profiles are identical, and their energies are the same to a given decimal place (the dp is specified to the `BasinHopper` instance.) Only ounded energies are stored.  
+
+Note that structures are not stored as a `Cluster` type, but rather as `ClusterCompressed`.
+# Fields
 
 - `vec::Vector{ClusterCompressed}`: `Vector` of `ClusterCompressed` objects.
-- `N::Threads.Atomic{Int64}`: Number of clusters in the Vector (atomic, datarace safe).
-- `lock::ReentrantLock`: A lock to prevent data races.
+- `N::Threads.Atomic{Int64}`: Number of clusters in the Vector (`Atomic`, datarace safe). To access the value of N itself (as opposed to the `Atomic` instance) use `ClusterVector.N[]`.
+- `lock::ReentrantLock`: A lock to prevent data races by parallel threads.
 """
 mutable struct ClusterVector
 	vec::Vector{ClusterCompressed}
@@ -32,7 +58,9 @@ end
 """
     ClusterVectorWithML
 
-# Arguments
+The `ClusterVectorWithML` is similar to `ClusterVector` but contains additional information regarding the Machine-Learning data used to classify the structure by DACA.
+
+# Fields
 
 - `vec::Vector{ClusterCompressed}`: `Vector` of `ClusterCompressed` objects.
 - `eLim::Float64`: The energy limit above which a cluster is not used for training.
@@ -66,16 +94,22 @@ end
 """
     Cluster
 
-# Arguments
+`Cluster` is a type (specifically a `mutable struct`) that holds information about a nanoparticle. The key fields are shown below (which may be accessed as `cluster.field`).
 
-- `forrmula::Dict{String, Int64}`: The chemical formula of the cluster, stored as a element keyed Dict type.
-- `positions::Array{Float64}`: The Euclidian coordinates of all atoms in the cluster.
-- `cell::Array{Float64}`: The dimensions of the lattice cell.
-- `calculator::Calculator`: The calculator used to calculate energies, forces, etc.
-- `energy::Float64`: Optional. The energy of the cluster. Typically calculated by the calculator.
-- `energies::Array{Float64}`: Optional. The energy of each atom in the cluster. Typically calculated by the calculator.
-- `forces::Array{Float64}`: Optional. The forces acting on each atom. Typically calculated by the calculator.
-- `stresses::Array{Float64}: Optional. The stresses experienced by each atom in the cluster. Typically calculated by the calculator.
+# Fields
+
+- `formula`: The chemical formula of the cluster, stored as an element keyed `Dict` type.
+- `positions`: The Euclidian coordinates of all atoms in the cluster.
+- `cell`: The dimensions of the lattice cell.
+- `energy`: The energy of the cluster
+- `energies`: The energies of each atom in the cluster.
+- `forces`: The forces of each atom in the cluster.
+- `stresses`: The stresses of each atom in the cluster.
+- `distances`: The distances between each atom in the cluster.
+- `CNA`: The total CNA profile of the cluster. No information on the rcut value is stored.
+- `nCNA`: The normal CNA profile of the cluster. No information on the rcut value is stored.
+- `atomClassCount`: A frequency count of each atom class (e.g. from Atom-64-Class) present in the cluster.
+- `calculator`: The calculator used to calculate energies, forces, etc.
 """
 mutable struct Cluster <: Atoms
 	formula::Dict{String, Int64}
@@ -134,7 +168,16 @@ mutable struct Cluster <: Atoms
 
 end
 
-#Cluster(formula::Dict{String, Int64}) = Cluster(formula, zeros(Float64, sum(get.([formula], keys(formula), nothing)), 3), zeros(Float64, 3, 3))
+
+"""
+	Cluster(formula::Dict{String, Int64}) 
+
+Creates an almost totally empty instance of `Cluster`, that only has the chemical formula defined.
+
+# Arguments
+
+- `formula::Dict{String, Int64}`: Formula, e.g. `Dict("Au" => 55)`.
+"""
 function Cluster(formula::Dict{String, Int64}) 
 	N = sum(get.([formula], keys(formula), nothing))
 	Cluster(
@@ -145,6 +188,16 @@ function Cluster(formula::Dict{String, Int64})
 		)
 end 
 
+"""
+	Cluster(formula::Dict{String, Int64}, positions::Matrix{Float64})
+
+Creates an instance of `Cluster` with only the formula and atomic positions defined.
+
+# Arguments
+
+- `formula::Dict{String, Int64}`: Formula, e.g. `Dict("Au" => 55)`.
+- `positions::Matrix{Float64}`: Atomic positions. As there is no cell, these positions are absolute coordinates.
+"""
 function Cluster(formula::Dict{String, Int64}, positions::Matrix{Float64})
 	N = sum(get.([formula], keys(formula), nothing))
 	Cluster(formula, positions, zeros(Float64, 3, 3), 
@@ -154,6 +207,17 @@ function Cluster(formula::Dict{String, Int64}, positions::Matrix{Float64})
 		)
 end
 
+"""
+	Cluster(formula::Dict{String, Int64}, positions::Matrix{Float64}, cell::Matrix{Float64})
+
+Creates an instance of `Cluster` with the formula, atomic positions, and cell dimensions defined
+
+# Arguments
+
+- `formula::Dict{String, Int64}`: Formula, e.g. `Dict("Au" => 55)`.
+- `positions::Matrix{Float64}`: Atomic positions. As there is no cell, these positions are absolute coordinates.
+- `cell::Matrix{Float64}`: The cell of the nanoparticle.
+"""
 function Cluster(formula::Dict{String, Int64}, positions::Matrix{Float64}, cell::Matrix{Float64})
 	N = sum(get.([formula], keys(formula), nothing))
 
@@ -759,15 +823,14 @@ classifyCluster(cluster::Cluster, rcut::Float64) = classifyCluster(cluster.posit
 """
 	read_xyzs(filename::String, formula::Dict{String, Int64})
 
-Reads in a .xyz file containing multiple molecules and returns a `Vector` of `Cluster`s
-All molecules must have the same formula.
+Reads in a .xyz file containing multiple molecules and returns a `Vector` of `Cluster` instances. All molecules must have the same formula, and this formula must also be provided as an argument.
 
 # Arguments
 
 - `filename::String`: Atomic coordinates.
 - `formula::Dict{String, Int64}`: Chemical formula of molecules.
 """
-function read_xyz(filename::String, formula::Dict{String, Int64})
+function read_xyzs(filename::String, formula::Dict{String, Int64})
 	lines = readlines(filename)
 	natoms = parse(Int64, lines[1])
 	linesPerCluster = natoms + 2
@@ -794,12 +857,11 @@ end
 """
 	read_xyz(filename::String)
 
-Takes a path to a ".xyz" file and loads it as a Cluster type,
-which is returned.
+Takes a path to a ".xyz" file and loads it as a `Cluster` type, which is returned.
 
 # Arguments
 
-- `filename::String`: Filename to save to.
+- `filename::String`: Filename to load.
 """
 function read_xyz(filename::String)
 	lines = readlines(open(filename, "r"))
@@ -849,8 +911,8 @@ end
 """
 	write_xyz(filename::String, atoms::Cluster)
 
-Takes a path (should end in ".xyz") to a file to write and saves a Cluster type
-to that path as a .xyz file.
+Takes a path (should end in ".xyz") to a file to write and saves a `Cluster` type
+to that path as an .xyz file.
 
 # Arguments
 
@@ -886,7 +948,7 @@ function write_xyz(filename::String, atoms::Cluster)
 end
 
 """
-	write_xyz(filename::String, atoms::Cluster)
+	write_xyz(filename::String, positions::Matrix{Float64}, formula::Dict{String, Int64}, cell::Float64)
 
 Takes a path (should end in ".xyz") to a file to write and saves the 
 given atomic coordinates, formula, and cell size (cubic) to that file.
@@ -895,8 +957,7 @@ given atomic coordinates, formula, and cell size (cubic) to that file.
 
 - `filename::String`: Filename to save to.
 - `positions::Matrix{Float64}`: Atomic coordinates to save
-- `formula::Dict{String, Int64}`: Chemical formula. Must be synced to `positions, i.e.
-		if formula is CH_4, then first `positions` row must be for C.
+- `formula::Dict{String, Int64}`: Chemical formula.
 - `cell::Float64`: Length of the cubic unit cell.
 """
 function write_xyz(filename::String, positions::Matrix{Float64}, formula::Dict{String, Int64}, cell::Float64)
@@ -927,10 +988,10 @@ end
 
 
 """
-	write_xyz(filename::String, atoms::Cluster)
+	write_xyz(filename::String, atoms::Cluster, tags::Vector{Int64})
 
 Takes a path (should end in ".xyz") to a file to write and saves a Cluster type
-to that path as a .xyz file. Also stores the `tags' of each atom.
+to that path as a .xyz file. Also stores the `tags` of each atom.
 
 # Arguments
 
@@ -966,7 +1027,7 @@ function write_xyz(filename::String, atoms::Cluster, tags::Vector{Int64})
 end
 
 """
-	write_xyz(filename::String, atoms::Cluster)
+	(filename::String, positions::Matrix{Float64}, formula::Dict{String, Int64}, cell::Float64, tags::Vector{Int64})
 
 Takes a path (should end in ".xyz") to a file to write and saves the 
 given atomic coordinates, formula, and cell size (cubic) to that file.
@@ -975,8 +1036,7 @@ given atomic coordinates, formula, and cell size (cubic) to that file.
 
 - `filename::String`: Filename to save to.
 - `positions::Matrix{Float64}`: Atomic coordinates to save
-- `formula::Dict{String, Int64}`: Chemical formula. Must be synced to `positions, i.e.
-		if formula is CH_4, then first `positions` row must be for C.
+- `formula::Dict{String, Int64}`: Chemical formula.
 - `cell::Float64`: Length of the cubic unit cell.
 - `tags::Vector{Int64}`: the atom tags.
 """
