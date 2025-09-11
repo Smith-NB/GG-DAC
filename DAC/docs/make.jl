@@ -10,7 +10,10 @@ makedocs(sitename="Divide and Conquer Algorithm",
 				"clustervector.md",
 				"cna.md",
 				"calculators.md",
+				"optimiser.md",
 				"metc.md",
+				"reseed.md",
+				"perturber.md",
 				"BHA" => "bha.md"
 				]
 			]

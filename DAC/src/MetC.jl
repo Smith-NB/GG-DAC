@@ -14,13 +14,15 @@ The Energy Metropolis Criterion. Compares the energy of an `oldCluster` and `new
 
 ``A = \\exp\\left(\\frac{E_\\mathrm{old} - E_\\mathrm{new}}{kT}\\right)``
 
+Note that `kT` should be set such that a basin hopping algorithm achieves an acceptance ratio of about 0.5 (i.e. around half of all hops are accepted).
+
 An instance of this Metropolic Criterion can be called with:
 	
 	EnergyMetC(kT, io)
 
 # Fields
 
-- `kT::Float64`: reduced temperature
+- `kT::Float64`: reduced temperature.
 - `io::Tuple{IO, Channel}`: IO channel for log.
 """
 struct EnergyMetC <: MetC
@@ -608,7 +610,7 @@ function GMMMetC(gaussian::GMM, gaussianCluster::Int64, pca::PCA, mode::Symbol, 
 end
 
 """
-	GMMMetC(gaussian::GMM, gaussianCluster::Int64, pca::PCA, mode::Symbol, useExplorationDataOnly::Bool, kT::Float64, io::Tuple{IO, Channel})
+	GMMMetC(gaussian::GMM, gaussianCluster::Int64, pca::PCA, mode::Symbol, useExplorationDataOnly::Bool, kT::Float64, classes::normalCNAProfile, io::Tuple{IO, Channel})
 
 Wrapper function that sets `workspace` automaticaly.
 """

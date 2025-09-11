@@ -28,6 +28,31 @@
 		version::String)
 
 The BasinHopper object underpinning the DACA.
+
+# Fields
+- `optimizer::Optimizer`: Force optimizer. Use `FIRE()` or implement your own.
+- `calculator::Calculator`: Energy and force calculator. See [`LJ`](@ref) and [`RGL`](@ref).
+- `reseeder::Reseeder`: Reseed operator to determine when a reseed is triggered. See [Reseeding](@ref).
+- `formula::Dict{String, Int64}`: Chemical formula. e.g. `Dict("Au" => 55)`.
+- `boxLength::Float64`: Box length for [`generateRandomSeed`](@ref).
+- `vacuumAdd::Float64`: Vacuum Add for [`generateRandomSeed`](@ref).
+- `kT::Float64`: Redundant (oops).
+- `perturber::Function`: Perturber to deform cluster at each hop. See [Building Composite Operators](@ref)
+- `postOptimisationTasks::Function`: See [Post Optimisation Tasks](@ref).
+- `fmax::Float64`: Convergence criterion for the force optimiser; maximum force any atom can experience for the optimisation to be considered converged.
+- `fmaxTight::Float64`: Optional tighter convergence criterion used if energy found after optimisation converged with `fmax` is below `tightEnergyThreshold`. `fmaxTight = 0.001` used for Au``_{55}`` to ensure all 16 LESs are distinguishable by their energy.
+- `tightEnergyThreshold::Float64`: See above `tightEnergyThreshold = -195.18` for Au``_{55}``. If you want this disabled, set to `-Inf` instead.
+- `rcut::Float64`: Used for bond definition for CNA calculation.
+- `energyRounding::Int64`: New structures are only stored in `clusterVector` if no other structure already in the database has the same CNA profile and energy, rounded to the decimal place given by `energyRounding`.
+- `walltime::Float64`: Walltime in hours after which the algorithm will exit. Give Slurm/the given workload manager on the HPC an additional few minutes than given here to ensure a clean and safe exit on timeout.
+- `recordingMode::String`: Redundant (oops).
+- `io::Tuple{IO, Channel}`: Defined in run file. See examples.
+- `logIO::Tuple{IO, Channel}`: Defined in run file. See examples.
+- `CNAIO::Tuple{IO, Channel}`: Defined in run file. See examples.
+- `clusterVector::Union{ClusterVector, ClusterVectorWithML}`: Database for storing structures.
+- `logResumeFile::Bool`: Save a file for resuming the run (probably doesnt work anymore).
+- `exitOnReseed::Bool`: `true` for DACA, `false` for BHA. DACA handles reseeds in the `run.jl` file.
+- `version::String`: Version check to ensure the user is aware which version of the algorithm is being run
 """
 struct BasinHopper
 	optimizer::Optimizer
@@ -220,6 +245,12 @@ end
 # 	opt.run(fmax=fmax)
 # end
 
+"""
+	standardPostOptimisationTasks!(cluster::Cluster, bh::BasinHopper)
+
+Sets the CNA profile of a cluster after optimisation. Intended for use with BHA.
+
+"""
 function standardPostOptimisationTasks!(cluster::Cluster, bh::BasinHopper)
 	setCNAProfile!(cluster, bh.rcut) # total CNA profile
 
@@ -239,6 +270,13 @@ function classMatrixOnlyPostOptimisationTasks!(cluster::Cluster, bh::BasinHopper
 	cluster.atomClassCount = clusterToGetValuesFrom.atomClassCount
 end
 
+
+"""
+	extendedPostOptimisationTasks!(cluster::Cluster, bh::BasinHopper)
+
+Sets the CNA profile of a nanoparticle after optimisation, and does all machine learning work for the DACA so the nanoparticle can be classified. Intended for DACA use when PCA is used in the ML process.
+
+"""
 function extendedPostOptimisationTasks!(cluster::Cluster, bh::BasinHopper)
 	setCNAProfiles!(cluster, bh.rcut) # normal and total CNA profiles
 	cluster.atomClassCount = getFrequencyClassVector(getAtomClasses(cluster.nCNA, bh.metC.classes), bh.metC.nClasses, UInt8)
@@ -252,6 +290,12 @@ function extendedPostOptimisationTasks!(cluster::Cluster, bh::BasinHopper, clust
 	cluster.mlLabel = clusterToGetValuesFrom.mlLabel
 end
 
+"""
+	extendedPostOptimisationTasksNoPCA!(cluster::Cluster, bh::BasinHopper)
+
+Sets the CNA profile of a nanoparticle after optimisation, and does all machine learning work for the DACA so the nanoparticle can be classified. Intended for DACA use when PCA is NOT used in the ML process.
+
+"""
 function extendedPostOptimisationTasksNoPCA!(cluster::Cluster, bh::BasinHopper)
 	setCNAProfiles!(cluster, bh.rcut) # normal and total CNA profiles
 	cluster.atomClassCount = getFrequencyClassVector(getAtomClasses(cluster.nCNA, bh.metC.classes), bh.metC.nClasses, UInt8)
@@ -265,8 +309,16 @@ function extendedPostOptimisationTasksNoPCA!(cluster::Cluster, bh::BasinHopper, 
 	cluster.mlLabel = clusterToGetValuesFrom.mlLabel
 end
 
+
+"""
+	hop(bh::BasinHopper, steps::Int64, 
+			stepsAtomic::Threads.Atomic{Int64}, seed::Union{String, Cluster}, 
+			walkID::Int64, additionalInfo::Dict{String, Any}, 
+			start::DateTime, version::String
+			)
+
 function hop(bh::BasinHopper, steps::Int64, stepsAtomic::Threads.Atomic{Int64}, seed::Union{String, Cluster}, walkID::Int64, additionalInfo::Dict{String, Any}, start::DateTime, version::String)
-	if version != "v1.2.4" || bh.version != "v1.2.4"
+	if version != "v1.2.5" || bh.version != "v1.2.5"
 		println(bh.io[1], "The version number passed to the hop function or BasinHopper constructor does not match\nthe hard coded
 			version number. Double check you are using the correct run script. This program will now terminate.")
 		return 0

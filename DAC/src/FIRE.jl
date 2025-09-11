@@ -1,12 +1,13 @@
 abstract type Optimizer end
-
+using BenchmarkTools
 
 """
     FIRE
 
+Implementation of the fast inertial relaxation engine for energy optimisation.
+
 # Arguments
 
-- `atoms::Cluster`: The cluster to optimize
 - `dt::Float64`: Some parameter for FIRE. Default values from ASE used.
 - `maxstep::Float64`: Some parameter for FIRE. Default values from ASE used.
 - `dtmax::Float64`: Some parameter for FIRE. Default values from ASE used.
@@ -17,6 +18,10 @@ abstract type Optimizer end
 - `fa::Float64`: Some parameter for FIRE. Default values from ASE used.
 - `a::Float64`: Some parameter for FIRE. Default values from ASE used.
 - `downhillCheck::Bool`: Some parameter for FIRE. Default values from ASE used.
+- `v::Matrix{Float64}`: Some parameter for FIRE. Default values from ASE used.
+- `f2::Matrix{Float64}`: Some parameter for FIRE. Default values from ASE used.
+- `f2sum::Vector{Float64}`: Some parameter for FIRE. Default values from ASE used.
+- `dr::Matrix{Float64}`: Some parameter for FIRE. Default values from ASE used.
 """
 mutable struct FIRE <: Optimizer
 	dt::Float64
@@ -35,6 +40,11 @@ mutable struct FIRE <: Optimizer
 	dr::Matrix{Float64}
 end
 
+"""
+	FIRE()
+
+Wrapper function, sets all fields of `FIRE` automatically.
+"""
 FIRE() = FIRE(0.1, 0.2, 0.5, 5, 1.1, 0.5, 0.1, 0.99, 0.1, false, zeros(3, 1), zeros(3, 1), zeros(1), zeros(3, 1))
 
 
@@ -58,6 +68,19 @@ function getForces2sum!(opt::FIRE, f::Matrix{Float64}, N::Int64)
 		opt.f2sum[i] = opt.f2[1, i] + opt.f2[2, i] + opt.f2[3, i]
 	end
 
+end
+
+function checkForces(f::Matrix{Float64}, fmax2::Float64, N::Int64)
+	for i in 1:N
+		#opt.f2[1, i] = f[1, i]^2#*f[1, i]
+		#opt.f2[2, i] = f[2, i]^2#*f[2, i]
+		#opt.f2[3, i] = f[3, i]^2#*f[3, i]
+
+		if f[1, i]^2 + f[2, i]^2 + f[3, i]^2 > fmax2
+			return true
+		end
+	end
+	return false
 end
 
 function myDot(a::Matrix{Float64}, b::Matrix{Float64})
@@ -92,9 +115,12 @@ function optimize!(opt::FIRE, atoms::Atoms, fmax::Float64)
 	fill!(opt.dr, 0.0)
 
 	NSteps::Int64 = 0
-	n = 0
+	n::Int64 = 0
 	fmax2::Float64 = fmax * fmax
-	while maximum(opt.f2sum) > fmax2
+
+	while checkForces(f, fmax2, natoms)#maximum(opt.f2sum) > fmax2
+	#while maximum(opt.f2sum) > fmax2
+		#println(opt.f2sum)
 		n += 1
 
 		is_uphill::Bool = false
@@ -148,7 +174,7 @@ function optimize!(opt::FIRE, atoms::Atoms, fmax::Float64)
 
 		f = getForces!(atoms)
 		
-		getForces2sum!(opt, f, natoms)
+		#getForces2sum!(opt, f, natoms)
 	end
 	#reset_params!(opt)
 	setDistances!(atoms)

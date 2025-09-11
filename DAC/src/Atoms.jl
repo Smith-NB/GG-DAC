@@ -864,7 +864,9 @@ Takes a path to a ".xyz" file and loads it as a `Cluster` type, which is returne
 - `filename::String`: Filename to load.
 """
 function read_xyz(filename::String)
-	lines = readlines(open(filename, "r"))
+	f = open(filename, "r")
+	lines = readlines(f)
+	close(f)
 	natoms = parse(Int64, lines[1])
 	formula = Dict{String, Int64}()
 	positions = zeros(Float64, natoms, 3)
@@ -948,7 +950,8 @@ function write_xyz(filename::String, atoms::Cluster)
 end
 
 """
-	write_xyz(filename::String, positions::Matrix{Float64}, formula::Dict{String, Int64}, cell::Float64)
+	write_xyz(filename::String, positions::Matrix{Float64}, formula::Dict{String, Int64}, 
+			cell::Float64)
 
 Takes a path (should end in ".xyz") to a file to write and saves the 
 given atomic coordinates, formula, and cell size (cubic) to that file.
@@ -1027,7 +1030,8 @@ function write_xyz(filename::String, atoms::Cluster, tags::Vector{Int64})
 end
 
 """
-	(filename::String, positions::Matrix{Float64}, formula::Dict{String, Int64}, cell::Float64, tags::Vector{Int64})
+	write_xyz(filename::String, positions::Matrix{Float64}, formula::Dict{String, Int64}, 
+			cell::Float64, tags::Vector{Int64})
 
 Takes a path (should end in ".xyz") to a file to write and saves the 
 given atomic coordinates, formula, and cell size (cubic) to that file.

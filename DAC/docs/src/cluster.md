@@ -43,3 +43,9 @@ write_xyz(filename::String, positions::Matrix{Float64}, formula::Dict{String, In
 write_xyz(filename::String, atoms::Cluster, tags::Vector{Int64})
 write_xyz(filename::String, positions::Matrix{Float64}, formula::Dict{String, Int64}, cell::Float64, tags::Vector{Int64})
 ```
+
+# Generating a random `Cluster`
+
+```@docs
+	generateRandomSeed(formula::Dict{String, Int64}, boxLength::Number, vacuumAdd::Number, returnCoordsOnly::Bool=false)
+```

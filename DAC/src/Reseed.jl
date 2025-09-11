@@ -4,6 +4,36 @@ abstract type Reseeder end
 #===============================NewLESReseeder================================#
 #=============================================================================#
 
+"""
+	NewLESReseeder
+
+Will trigger a reseed after `reseedPeriod` if no new lowest energy structure (since the last reseed) is found within that period. This period resets when a new LES is found.
+
+# Fields
+
+- `reseedPeriod::Int64`: The period after the latest LES discovery until a reseed is triggered.
+- `hopsToReseed::Int64`: The hops until the next reseed is triggered if no LES is found.
+- `reseedEnergyToBeat::Float64`: Tracks the latest LES energy.
+- `getReseedStructure::Function`: Function called if a reseed is triggered to generate the new seed.
+- `args::Vector{Any}`: Function arguments passed to `getReseedStructure`.
+
+# Example
+
+```julia
+reseedPeriod = 50
+reseedEnergyToBeat = Inf # any structure will have a lower energy than +.v.e infty.
+formula = Dict("Au" => 55)
+boxLength = 5.0
+vacuumAdd = 10.0
+returnCoordsOnly = true
+coherencyDistance = 4.0
+getReseedStructure = generateRandomSeed
+args = [formula, boxLength, vacuumAdd, returnCoordsOnly, coherencyDistance]
+reseeder = NewLESReseeder(reseedPeriod, reseedPeriod, reseedEnergyToBeat, 
+					getReseedStructure, args)
+```
+
+"""
 mutable struct NewLESReseeder <: Reseeder
 	reseedPeriod::Int64
 	hopsToReseed::Int64
@@ -48,6 +78,17 @@ setReseedEnergyToBeat!(r::NewLESReseeder, energy::Float64) = r.reseedEnergyToBea
 #===============================ReseedDisabled================================#
 #=============================================================================#
 
+"""
+	ReseedDisabled
+
+Will never trigger a reseed.
+
+# Example
+
+```julia
+reseeder = ReseedDisabled()
+```
+"""
 struct ReseedDisabled <: Reseeder end
 
 function timeToReseed!(r::ReseedDisabled) return false end

@@ -30,10 +30,34 @@ end
 isClusterCoherent(clusterCoords::Matrix{Float64}, maxDistance::Int64) = isClusterCoherent(clusterCoords, float(maxDistance))
 
 """
-	generateRandomSeed(formula::Dict{String, Int64}, boxLength::Number, vacuumAdd::Number, returnCoordsOnly::Bool=false)
+	generateRandomSeed(formula::Dict{String, Int64}, boxLength::Number, 
+			vacuumAdd::Number, returnCoordsOnly::Bool=false, 
+			oherencyDistance::Float64=1.5)
 
-Returns a DC.Cluster or Matrix{Float64} (`returnCoordsOnly` dependant) type with randomly generated positions of atoms inside
-	a box of size `boxLength` and with a cell of size `boxLength` + `vacuumAdd`.
+Generates a seed with randomised atomic coordinates. Returns this either as a `Cluster` or simply the coordinates at `Matrix{Float64}`, debending on the value of `returnCoordsOnly`.
+
+The coordinates are generated in a cubic cell with side lengths `boxLength`. Additional vacuum padding of lenghth `vacuumAdd` is added after atomic coordinates are generated. The final structure is also checked to make sure all atoms are connected, e.g. if one had two atom pair, with the members of each pair separated by 1 ``\\AA`` but the pairs themselves separated by 2 ``\\AA``, the nanoparticle would be conisdered incoherent if `coherencyDistance` was less than 2.
+
+# Arguments
+
+- `formula::Dict{String, Int64}`: Chemical formula.
+- `boxLength::Number`: Length of box to generate coordinates in.
+- `vacuumAdd::Number`: Amount of vacuum padding to add to the cell.
+- `returnCoordsOnly::Bool`: Will return a `Cluster` if `false` (default), or only the atomic coordinates if `true`.
+- `coherencyDistance::Float64`: Maximum distance any atom/group of atoms can be seperated from another group before the cluster is considered non-coherent.
+
+# Examples
+
+To generate a random Au``_{55}`` `Cluster`:
+
+```julia
+generateRandomSeed(Dict("Au" => 55), 5.0, 10.0, false, 4.0)
+```
+To take an existing Au``_{55}`` `Cluster` called `atoms` and randomise is coordinates:
+
+```julia
+setPositions!(atoms, generateRandomSeed(Dict("Au" => 55), 5.0, 10.0, true, 4.0)) 
+```
 """
 function generateRandomSeed(formula::Dict{String, Int64}, boxLength::Number, vacuumAdd::Number, returnCoordsOnly::Bool=false, coherencyDistance::Float64=1.5)
 	# get number of atoms
@@ -87,13 +111,15 @@ function generateRandomSeed(formula::Dict{String, Int64}, boxLength::Number, vac
 end
 
 """
-	perturbClusterSurface(coords::Matrix{Float64}, nAtomsToMove::Number, rCut::Float64)
+	perturbClusterSurface(coords::Matrix{Float64}, nAtomsToMove::Int64, rCut::Float64)
 
-Returns new postions of a cluster after moving `nAtomsToMove` atoms on the surface.
-	`nAtomsToMove` can be a number (number of atoms) or float < 1 (% of total atoms).
-	Only the least coordinated atoms are selected. If the number of lowest coordination atoms 
-	is less than `nAtomsToMove` then only this lower number of atoms are displaced.
-	Atoms are moved to a random location on the cluster surface.
+Returns new postions of a cluster after moving `nAtomsToMove` atoms on the surface. `nAtomsToMove` can be a number (number of atoms) or float < 1 (% of total atoms). Only the least coordinated atoms are selected. If the number of lowest coordination atoms is less than `nAtomsToMove` then only this lower number of atoms are displaced (e.g. if `nAtomsToMove == 2`, and the lowest coordination number of an atom is 5, but only one such atom exists, only that atom will move). Atoms are moved to a random location on the cluster surface.
+
+# Arguments
+
+- `coords::Matrix{Float64}`: The atomic coordinates (a wrapper function exists if a `Cluster` type is used instead).
+- `nAtomsToMove::Number`: The number of atoms to move.
+- `rCut::Float64`: The bond distance cutoff definition.
 """
 function perturbClusterSurface(coords::Matrix{Float64}, nAtomsToMove::Number, rCut::Float64)
 	
@@ -228,7 +254,11 @@ end
 """
 	perturbCluster(coords::Matrix{Float64}, dr::Float64)
 
-Returns positions of atoms after moving each atom in each coordinate direction by ±`dr`
+Returns positions of atoms after moving each atom in each Cartesian direction by ±`dr`. Called by `cartesianDisplacement`, this name for the function is now deprecated.
+
+# Arguments
+- `coords::Matrix{Float64}`: Atomic coordinates (a wrapper function exists if a `Cluster` type is used instead).
+- `dr::Float64` distance to move each atom in each direction.
 """
 function perturbCluster(coords::Matrix{Float64}, dr::Float64)
 	n = getNAtoms(coords)
@@ -252,6 +282,18 @@ function perturbCluster(atoms::Cluster, dr::Float64)
 	return perturbCluster(atoms.positions, dr)
 end
 
+"""
+	cartesianDisplacement(coords::Matrix{Float64}, dr::Float64)
+
+Returns positions of atoms after moving each atom in each Cartesian direction by ±`dr`
+
+# Arguments
+- `coords::Matrix{Float64}`: Atomic coordinates (a wrapper function exists if a `Cluster` type is used instead).
+- `dr::Float64` distance to move each atom in each direction.
+"""
+cartesianDisplacement(coords::Matrix{Float64}, dr::Float64) = perturbCluster(coords, dr)
+
+cartesianDisplacement(atoms::Cluster, dr::Float64) = perturbCluster(atoms.positions, dr)
 
 """
 	perturbCluster!(coords::Matrix{Float64}, dr::Float64)
@@ -298,6 +340,14 @@ function geometricCentreDisplacement!(atoms::Cluster, alphaMin::Float64, alphaMa
 
 end
 
+"""
+	geometricCentreDisplacement(
+		coords::Matrix{Float64}, alphaMin::Float64, 
+		alphaMax::Float64, w::Float64
+		)
+
+Displaces atoms more the further away from the cluster centre they are. Didn't use this much and don't really remember how it works so good luck :/
+"""
 function geometricCentreDisplacement(coords::Matrix{Float64}, alphaMin::Float64, alphaMax::Float64, w::Float64)
 	CoM = getCentreOfCluster(coords)
 	N = getNAtoms(coords)
