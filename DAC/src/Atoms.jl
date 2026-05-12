@@ -312,7 +312,7 @@ function moveAtoms!(atoms::Cluster, dr::Matrix{Float64})
 end
 
 setCell!(atoms::Cluster, cell::Matrix{Float64}) = atoms.cell = cell
-setCalculator!(atoms::Cluster, calculator::Calculator) = atoms.calculator = calculator
+#setCalculator!(atoms::Cluster, calculator::Calculator) = atoms.calculator = calculator
 function setEnergies!(atoms::Cluster, energies::Vector{Float64}) 
 	atoms.energies = energies
 	atoms.energy = sum(energies)

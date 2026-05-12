@@ -447,7 +447,7 @@ and returns it as a `Vector` of `Dict`'s, respectively.
 `normalCNA[1]` is the atom level CNA profile of the atom at 
 `atom.positions[1, :]`
 """
-getNormalCNAProfile(atoms::Cluster, rcut::Float64) = getNormalCNAProfile(atoms.positions, rcut)
+#getNormalCNAProfile(atoms::Cluster, rcut::Float64) = getNormalCNAProfile(atoms.positions, rcut)
 
 function getCNAMatrix(coordinates::Matrix{Float64}, rcut::Float64)
 	natoms = getNAtoms(coordinates)

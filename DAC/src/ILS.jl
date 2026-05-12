@@ -1,5 +1,4 @@
 using BenchmarkTools
-using PyPlot
 import Random
 using MultivariateStats
 
@@ -100,7 +99,7 @@ function getDistances!(data::Matrix{Float64}, D::Matrix{Float64}, nLab::Int64, u
     closestUnl[nLab] = minIndex
     closestDist[nLab] = min
     
-    return D
+    return nothing
 end
 
 """
@@ -110,21 +109,28 @@ Returns the decrement of `a` if `a` > `b`. Intended for use in `broadcast!` func
 """
 decrementIfGThan(a::Int64, b::Int64) = a > b ? a-1 : a
 
+function decrementArray!(a::Vector{Int64}, b::Int64, N::Int64)
+    for i in 1:N
+        a[i] = a[i] > b ? a[i]-1 : a[i]
+    end
+end
 
 function getMinFromClosestUnl!(D::Matrix{Float64}, closestUnl::Vector{Int64}, closestDist::Vector{Float64}, unlPerm::Vector{Int64}, toUpdate::Vector{Int64}, nLab::Int64)
    v::SubArray{Float64, 1, Vector{Float64}, Tuple{UnitRange{Int64}}, true} = Base.view(closestDist, 1:nLab)
-   min::Float64, labIndex::Int64 = findmin(v) # min is the smallest distance. labIndex gives the labelled poiint involved.
+   min::Float64, labIndex::Int64 = findmin(v) # min is the smallest distance. labIndex gives the labelled point involved.
    unlIndex = closestUnl[labIndex]
    nToUpdate::Int64 = 0
-   
-   for i in 1:length(closestUnl)
+   N::Int64 = length(closestUnl)
+
+   for i in 1:N
        if closestUnl[i] == unlIndex
            nToUpdate += 1
            toUpdate[nToUpdate] = i
        end
    end
-    
+       
    broadcast!(decrementIfGThan, closestUnl, closestUnl, unlIndex)
+   #decrementArray!(closestUnl, unlIndex, N)
    return min, (unlIndex, labIndex), nToUpdate
 end
 
@@ -133,13 +139,18 @@ function ILS(data::Matrix{Float64}, labels::Vector{Int64}, iterative::Bool)
     # seperate labelled and unlabelled points
     nDims, nSamples = size(data)
     
+
     labelled = findall(i->i!=0, labels)             # indices of all labelled points in data
     unlabelled = findall(i->i==0, labels)           # indices of all unlabelled points in data
+    
     unlPerm = [i for i in 1:length(unlabelled)]     # Gives the row index in D for the corresponding unlabelled point in `unlabelled`.
     
     Ri = Vector{Float64}(undef, length(unlabelled))             # The distances between the closest labelled and unlabelled points at each interation
-    iterationLabelledAt = Vector{Int64}(undef, length(unlabelled))   # The order points were labelled in. iterationLabelledAt[1] gives the interation the first unlabelled point was labelled at.
-    
+    #iterationLabelledAt = Vector{Int64}(undef, length(unlabelled))   # The order points were labelled in. iterationLabelledAt[1] gives the interation the first unlabelled point was labelled at.
+    #Ri = Vector{Float64}(undef, nSamples)             # The distances between the closest labelled and unlabelled points at each interation
+    iterationLabelledAt = Vector{Int64}(undef, nSamples)   # The order points were labelled in. iterationLabelledAt[1] gives the interation the first unlabelled point was labelled at.
+    #Ri[unlabelled] .= 0
+    iterationLabelledAt[labelled] .= 0
     i = 1
     D = Matrix{Float64}(undef, nSamples-1, nSamples-1)          # Distance matrix working space
     #D = zeros(nSamples-1, nSamples-1)
@@ -151,12 +162,13 @@ function ILS(data::Matrix{Float64}, labels::Vector{Int64}, iterative::Bool)
     nCols = size(data)[2]-1
     nLab = length(labelled)
     nUnl = length(unlabelled)
+    initial_nLab = nLab
 
     while length(unlabelled) > 0
         
         # get distances between each labelled point to each unlabelled point
         
-        getDistances!(data, D, nLab, unlPerm, labelled[nLab], unlabelled, closestUnl, closestDist, nDims)        
+        getDistances!(data, D, nLab, unlPerm, labelled[nLab], unlabelled, closestUnl, closestDist, nDims) 
         Ri[i], index, nToUpdate = getMinFromClosestUnl!(D, closestUnl, closestDist, unlPerm, toUpdate, nLab)
         
         for j in 1:nLab
@@ -164,7 +176,7 @@ function ILS(data::Matrix{Float64}, labels::Vector{Int64}, iterative::Bool)
         end
         
         labels[unlabelled[index[1]]] = labelled[index[2]]
-        iterationLabelledAt[unlabelled[index[1]]-1] = i
+        iterationLabelledAt[unlabelled[index[1]]] = i
         
         push!(labelled, popat!(unlabelled, index[1]))       # add newly labelled point to list, and remove from unlabelled
         popat!(unlPerm, index[1])                           # remove the pointer to D of the unlabelled datapoint
@@ -192,6 +204,11 @@ function ILS(data::Matrix{Float64}, labels::Vector{Int64}, iterative::Bool)
         nLab += 1
         nUnl -= 1
     end
+
+    for i in 1:initial_nLab
+        prepend!(Ri, 0)
+    end
+
     return Ri, iterationLabelledAt
 end
 

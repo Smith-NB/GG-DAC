@@ -18,10 +18,6 @@ function removeall!(a::Array, item::Any)
 	deleteat!(a, findall(x->x==item, a))
 end
 
-function printsep(sep, x)
-    print(x, sep)
-end
-
 function printsep(sep, xs...)
     for x in xs
         printsep(sep, x)

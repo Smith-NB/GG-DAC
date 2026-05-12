@@ -316,6 +316,7 @@ end
 			walkID::Int64, additionalInfo::Dict{String, Any}, 
 			start::DateTime, version::String
 			)
+"""
 
 function hop(bh::BasinHopper, steps::Int64, stepsAtomic::Threads.Atomic{Int64}, seed::Union{String, Cluster}, walkID::Int64, additionalInfo::Dict{String, Any}, start::DateTime, version::String)
 	if version != "v1.2.5" || bh.version != "v1.2.5"
