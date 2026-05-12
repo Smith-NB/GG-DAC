@@ -3,10 +3,33 @@ Garden Group Divide-and-Conquer Algorithm (DACA) v1.2.4
 Clone the repo or otherwise download to a directory of the users choice.
 
 
+
+
 Example run files are provided to run the DACA or the basin-hopping algorithm (BHA). These must be edited to point to installation directory, i.e.: `include("<install_dir>/DAC/src/DAC.jl")`
 The example run files are named `BHA_example_run_file.jl` for the BHA and `DACA_example_run_fle.jl` for the DACA. These files are fully commented and should allow for the replication of all data presented in the paper.
 
 The user must have Julia installed, version 1.8.0 is recommended.
+
+The following packages are required to be installed in Julia as dependencies:
+	
+	 LinearAlgebra
+	 GaussianMixtures
+	 MultivariateStats
+	 Random
+	 HDF5
+	 JLD2
+	 Dates
+	 BenchmarkTools
+
+One can add the DAC package to julia manually with the following process (note the ']' key puts Julia into package mode). This will allow for one to replace the `include` line in the example run files with `using DAC` which calls on the precompiled DAC package (this is faster).
+	
+	> cd <install-dir>/GG-DAC
+	> julia
+	julia> ]
+	pkg> activate DAC
+	pkg> instantiate
+	pkg> precompile
+	
 
 The BHA and DACA may be run from the terminal using the command: `julia <runFileName.jl>`
 
