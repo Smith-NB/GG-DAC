@@ -26,9 +26,7 @@ One can add the DAC package to julia manually with the following process (note t
 	> cd <install-dir>/GG-DAC
 	> julia
 	julia> ]
-	pkg> activate DAC
-	pkg> instantiate
-	pkg> precompile
+	pkg> dev DAC
 	
 
 The BHA and DACA may be run from the terminal using the command: `julia <runFileName.jl>`
