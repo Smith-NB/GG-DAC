@@ -676,7 +676,7 @@ function classifyAtomsSchebarchov(coordinates::Matrix{Float64}, rcut::Float64)
 end
 
 
-classifyAtomsSchebarchov(cluster::Cluster, rcut::Float64) = classifyAtoms(cluster.positions, rcut)
+classifyAtomsSchebarchov(cluster::Cluster, rcut::Float64) = classifyAtomsSchebarchov(cluster.positions, rcut)
 
 
 """
